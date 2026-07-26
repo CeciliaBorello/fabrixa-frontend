@@ -1,0 +1,52 @@
+<div class="form-page">
+  <app-back-button texto="Volver a pedidos" ruta="/pedidos"></app-back-button>
+
+  <div class="form-card">
+    <h1>Nuevo pedido</h1>
+
+    <form [formGroup]="form" (ngSubmit)="guardar()">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Cliente</mat-label>
+        <mat-select formControlName="clienteId">
+          <mat-option *ngFor="let c of clientes()" [value]="c.id">{{ c.razonSocial }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <h3>Productos</h3>
+
+      <div formArrayName="items" class="items-list">
+        <div class="item-row" *ngFor="let item of itemsArray.controls; let i = index" [formGroupName]="i">
+          <mat-form-field appearance="outline" class="item-producto">
+            <mat-label>Producto</mat-label>
+            <mat-select formControlName="productoId">
+              <mat-option *ngFor="let p of productos()" [value]="p.id">{{ p.nombre }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="item-cantidad">
+            <mat-label>Cantidad</mat-label>
+            <input matInput type="number" formControlName="cantidad" min="1" />
+          </mat-form-field>
+
+          <button mat-icon-button type="button" (click)="quitarItem(i)"
+                  [disabled]="itemsArray.length === 1" matTooltip="Quitar">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </div>
+      </div>
+
+      <button mat-stroked-button type="button" (click)="agregarItem()" class="add-item-btn">
+        <mat-icon>add</mat-icon>
+        Agregar producto
+      </button>
+
+      <p class="error" *ngIf="error()">{{ error() }}</p>
+
+      <div class="form-actions">
+        <button mat-flat-button color="primary" type="submit" [disabled]="guardando()">
+          {{ guardando() ? 'Guardando...' : 'Crear pedido' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

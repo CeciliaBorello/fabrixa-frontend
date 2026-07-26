@@ -1,0 +1,65 @@
+.page {
+  padding: 2rem;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.page-header {
+  margin-bottom: 1.5rem;
+}
+
+.page-header h1 {
+  margin: 0;
+  color: #101A2E;
+  font-size: 24px;
+}
+
+.subtitle {
+  margin: 4px 0 0;
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.content-card {
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  padding: 0.5rem 0;
+}
+
+table {
+  width: 100%;
+}
+
+th, td {
+  font-size: 13px;
+  padding: 10px 12px !important;
+}
+
+mat-chip {
+  font-size: 11px !important;
+  min-height: 22px !important;
+}
+
+mat-chip.ingreso {
+  background-color: #d4f2e5 !important;
+  color: #0d3d2c !important;
+}
+
+mat-chip.egreso {
+  background-color: #f5d5d0 !important;
+  color: #7a2418 !important;
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  padding: 3rem;
+}
+
+.empty-msg {
+  text-align: center;
+  color: #6b7280;
+  padding: 3rem;
+}

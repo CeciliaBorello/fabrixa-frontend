@@ -1,0 +1,65 @@
+.form-page {
+  padding: 2rem;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.form-card {
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  padding: 2rem;
+}
+
+h1 {
+  margin: 0 0 1.5rem;
+  color: #101A2E;
+  font-size: 22px;
+}
+
+h3 {
+  color: #101A2E;
+  font-size: 15px;
+  margin: 1.5rem 0 0.75rem;
+}
+
+.full-width {
+  width: 100%;
+  margin-bottom: 0.5rem;
+}
+
+.items-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.item-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.item-producto {
+  flex: 2;
+}
+
+.item-cantidad {
+  flex: 1;
+}
+
+.add-item-btn {
+  margin: 0.5rem 0 1rem;
+}
+
+.error {
+  color: #c0392b;
+  font-size: 0.85rem;
+  margin: 0 0 0.8rem;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1rem;
+}

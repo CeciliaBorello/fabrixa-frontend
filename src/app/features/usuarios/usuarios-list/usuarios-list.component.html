@@ -1,0 +1,84 @@
+<div class="usuarios-page">
+  <div class="page-header">
+    <div>
+      <h1>Usuarios</h1>
+      <p class="subtitle">Administrá quién tiene acceso al sistema y con qué rol</p>
+    </div>
+
+    <div class="page-header-top">
+      <a mat-flat-button color="primary" routerLink="nuevo">
+        <mat-icon>add</mat-icon>
+        Nuevo usuario
+      </a>
+    </div>
+  </div>
+
+  <div class="error-banner" *ngIf="error()">
+    <mat-icon>error_outline</mat-icon>
+    {{ error() }}
+  </div>
+
+  <div class="content-card">
+    <div class="loading-container" *ngIf="cargando()">
+      <mat-spinner diameter="36"></mat-spinner>
+      <p>Cargando usuarios...</p>
+    </div>
+
+    <table mat-table [dataSource]="usuarios()" *ngIf="!cargando() && usuarios().length">
+
+      <ng-container matColumnDef="avatar">
+        <th mat-header-cell *matHeaderCellDef></th>
+        <td mat-cell *matCellDef="let u">
+          <div class="avatar">{{ iniciales(u.nombre) }}</div>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="nombre">
+        <th mat-header-cell *matHeaderCellDef>Nombre</th>
+        <td mat-cell *matCellDef="let u">{{ u.nombre }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="email">
+        <th mat-header-cell *matHeaderCellDef>Email</th>
+        <td mat-cell *matCellDef="let u">{{ u.email }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="rol">
+        <th mat-header-cell *matHeaderCellDef>Rol</th>
+        <td mat-cell *matCellDef="let u">
+          <mat-chip class="rol-chip">{{ u.rol }}</mat-chip>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="estado">
+        <th mat-header-cell *matHeaderCellDef>Estado</th>
+        <td mat-cell *matCellDef="let u">
+          <span class="estado-dot" [class.activo]="u.activo" [class.inactivo]="!u.activo"></span>
+          {{ u.activo ? 'Activo' : 'Inactivo' }}
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="acciones">
+        <th mat-header-cell *matHeaderCellDef></th>
+        <td mat-cell *matCellDef="let u" class="actions">
+          <a mat-icon-button [routerLink]="[u.id, 'editar']" matTooltip="Editar">
+            <mat-icon>edit</mat-icon>
+          </a>
+          <button mat-icon-button (click)="toggleEstado(u)"
+                  [matTooltip]="u.activo ? 'Desactivar' : 'Reactivar'">
+            <mat-icon>{{ u.activo ? 'block' : 'check_circle' }}</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="columnas"></tr>
+      <tr mat-row *matRowDef="let row; columns: columnas;"></tr>
+    </table>
+
+    <div class="empty-state" *ngIf="sinResultados()">
+      <mat-icon>group_off</mat-icon>
+      <p>No hay usuarios cargados todavía.</p>
+      <a mat-stroked-button routerLink="nuevo">Crear el primero</a>
+    </div>
+  </div>
+</div>

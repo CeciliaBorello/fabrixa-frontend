@@ -1,0 +1,80 @@
+<div class="page">
+  <div class="page-header">
+    <div>
+      <h1>Pedidos</h1>
+      <p class="subtitle">Seguimiento de pedidos, desde que entran hasta que se despachan</p>
+    </div>
+    <div class="page-header-top">
+      <a mat-flat-button color="primary" routerLink="nuevo">
+        <mat-icon>add</mat-icon>
+        Nuevo pedido
+      </a>
+    </div>
+  </div>
+
+  <div class="error-banner" *ngIf="error()">{{ error() }}</div>
+
+  <div class="content-card">
+    <div class="loading-container" *ngIf="cargando()">
+      <mat-spinner diameter="36"></mat-spinner>
+    </div>
+
+    <table mat-table [dataSource]="items()" *ngIf="!cargando() && items().length">
+      <ng-container matColumnDef="id">
+        <th mat-header-cell *matHeaderCellDef>#</th>
+        <td mat-cell *matCellDef="let p">{{ p.id }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="cliente">
+        <th mat-header-cell *matHeaderCellDef>Cliente</th>
+        <td mat-cell *matCellDef="let p">{{ p.clienteNombre }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="usuario">
+        <th mat-header-cell *matHeaderCellDef>Cargado por</th>
+        <td mat-cell *matCellDef="let p">{{ p.usuarioNombre }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="estado">
+        <th mat-header-cell *matHeaderCellDef>Estado</th>
+        <td mat-cell *matCellDef="let p">
+          <mat-chip [class]="'estado-' + p.estado.toLowerCase()">
+            {{ etiquetaEstado(p.estado) }}
+          </mat-chip>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="fecha">
+        <th mat-header-cell *matHeaderCellDef>Fecha</th>
+        <td mat-cell *matCellDef="let p">{{ p.fechaPedido | date:'dd/MM/yyyy HH:mm' }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="acciones">
+        <th mat-header-cell *matHeaderCellDef></th>
+        <td mat-cell *matCellDef="let p" class="actions">
+          <button mat-icon-button *ngIf="p.estado === 'NUEVO'"
+                  (click)="pasarAPendiente(p)" matTooltip="Pasar a pendiente de entrega">
+            <mat-icon>local_shipping</mat-icon>
+          </button>
+          <button mat-icon-button *ngIf="p.estado === 'PENDIENTE_ENTREGA'"
+                  (click)="marcarEntregado(p)" matTooltip="Marcar como entregado">
+            <mat-icon>check_circle</mat-icon>
+          </button>
+          <button mat-icon-button *ngIf="p.estado === 'NUEVO' || p.estado === 'PENDIENTE_ENTREGA'"
+                  (click)="cancelar(p)" matTooltip="Cancelar pedido">
+            <mat-icon>cancel</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="columnas"></tr>
+      <tr mat-row *matRowDef="let row; columns: columnas;"></tr>
+    </table>
+
+    <div class="empty-state" *ngIf="sinResultados()">
+      <mat-icon>receipt_long</mat-icon>
+      <p>No hay pedidos cargados todavía.</p>
+      <a mat-stroked-button routerLink="nuevo">Crear el primero</a>
+    </div>
+  </div>
+</div>

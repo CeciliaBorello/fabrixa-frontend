@@ -1,0 +1,44 @@
+<div class="form-page">
+  <app-back-button texto="Volver a usuarios" ruta="/usuarios"></app-back-button>
+
+  <div class="form-card">
+    <h1>{{ esEdicion ? 'Editar usuario' : 'Nuevo usuario' }}</h1>
+    <p class="subtitle">
+      {{ esEdicion ? 'Modificá los datos del usuario' : 'Completá los datos para dar de alta un nuevo acceso' }}
+    </p>
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Nombre</mat-label>
+        <input matInput formControlName="nombre" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Email</mat-label>
+        <input matInput type="email" formControlName="email" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Rol</mat-label>
+        <mat-select formControlName="rolId">
+          <mat-option *ngFor="let r of roles" [value]="r.id">{{ r.nombre }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>{{ esEdicion ? 'Nueva contraseña (opcional)' : 'Contraseña' }}</mat-label>
+        <input matInput type="password" formControlName="password" />
+        <mat-hint *ngIf="esEdicion">Dejalo vacío para no cambiarla</mat-hint>
+      </mat-form-field>
+
+      <p class="error" *ngIf="error">{{ error }}</p>
+
+      <div class="form-actions">
+        <a mat-button routerLink="/usuarios">Cancelar</a>
+        <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid || cargando">
+          {{ cargando ? 'Guardando...' : 'Guardar' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

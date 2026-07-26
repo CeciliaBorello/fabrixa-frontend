@@ -1,0 +1,51 @@
+<div class="form-page">
+  <app-back-button texto="Volver a productos" ruta="/productos"></app-back-button>
+
+  <div class="form-card">
+    <h1>{{ esEdicion ? 'Editar' : 'Nuevo' }} producto</h1>
+
+    <div class="loading-container" *ngIf="cargando()">
+      <mat-icon>hourglass_empty</mat-icon>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="guardar()" *ngIf="!cargando()">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Nombre</mat-label>
+        <input matInput formControlName="nombre" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Categoría</mat-label>
+        <input matInput formControlName="categoria" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Unidad de medida</mat-label>
+        <input matInput formControlName="unidadMedida" placeholder="kg, unidad, litro..." />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Código de barra</mat-label>
+        <input matInput formControlName="codigoBarra" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>RNPA</mat-label>
+        <input matInput formControlName="rnpa" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Valor nutricional</mat-label>
+        <textarea matInput formControlName="valorNutricional" rows="3"></textarea>
+      </mat-form-field>
+
+      <p class="error" *ngIf="error()">{{ error() }}</p>
+
+      <div class="form-actions">
+        <button mat-flat-button color="primary" type="submit" [disabled]="guardando()">
+          {{ guardando() ? 'Guardando...' : 'Guardar' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

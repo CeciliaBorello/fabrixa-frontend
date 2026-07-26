@@ -1,0 +1,40 @@
+.login-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background: #101A2E;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 380px;
+  padding: 1rem;
+}
+
+.full-width {
+  width: 100%;
+  margin-bottom: 0.5rem;
+}
+
+.error {
+  color: #c0392b;
+  font-size: 0.85rem;
+  margin: -0.3rem 0 0.8rem 0;
+}
+.login-card img {
+  max-width: 180px;
+  height: auto;
+}
+
+.login-card mat-card-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.logo {
+  width: 120px;
+  height: auto;
+  padding: 15px;
+}

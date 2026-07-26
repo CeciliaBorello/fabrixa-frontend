@@ -1,0 +1,26 @@
+<div class="home">
+  <main class="content">
+    <h1>Hola, {{ auth.currentUser()?.nombre }} 👋</h1>
+    <p class="subtitle">¿Qué querés hacer hoy?</p>
+
+    <div class="modules-grid">
+      <div class="module-card" routerLink="/usuarios">
+        <div class="module-icon">👥</div>
+        <h3>Usuarios</h3>
+        <p>Gestioná usuarios, roles y permisos del sistema</p>
+      </div>
+
+      <div class="module-card disabled">
+        <div class="module-icon">📦</div>
+        <h3>Stock</h3>
+        <p>Próximamente</p>
+      </div>
+
+      <div class="module-card disabled">
+        <div class="module-icon">🧾</div>
+        <h3>Facturación</h3>
+        <p>Próximamente</p>
+      </div>
+    </div>
+  </main>
+</div>

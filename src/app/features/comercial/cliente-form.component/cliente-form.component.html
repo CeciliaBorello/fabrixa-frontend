@@ -1,0 +1,60 @@
+<div class="form-page">
+  <app-back-button texto="Volver a clientes" ruta="/clientes"></app-back-button>
+
+  <div class="form-card">
+    <h1>{{ esEdicion ? 'Editar' : 'Nuevo' }} cliente/proveedor</h1>
+
+    <div class="loading-container" *ngIf="cargando()">
+      <mat-icon>hourglass_empty</mat-icon>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="guardar()" *ngIf="!cargando()">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Tipo</mat-label>
+        <mat-select formControlName="tipo">
+          <mat-option value="CLIENTE">Cliente</mat-option>
+          <mat-option value="PROVEEDOR">Proveedor</mat-option>
+          <mat-option value="AMBOS">Cliente y proveedor</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Razón social</mat-label>
+        <input matInput formControlName="razonSocial" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>CUIT</mat-label>
+        <input matInput formControlName="cuit" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Condición frente al IVA</mat-label>
+        <input matInput formControlName="condicionIva" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Dirección</mat-label>
+        <input matInput formControlName="direccion" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Teléfono</mat-label>
+        <input matInput formControlName="telefono" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Email</mat-label>
+        <input matInput type="email" formControlName="email" />
+      </mat-form-field>
+
+      <p class="error" *ngIf="error()">{{ error() }}</p>
+
+      <div class="form-actions">
+        <button mat-flat-button color="primary" type="submit" [disabled]="guardando()">
+          {{ guardando() ? 'Guardando...' : 'Guardar' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
