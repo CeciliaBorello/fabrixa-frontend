@@ -1,0 +1,14 @@
+.form-page { padding: 2rem; max-width: 550px; margin: 0 auto; }
+.form-card { background: #ffffff; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); padding: 2rem; }
+h1 { margin: 0 0 1.5rem; color: #101A2E; font-size: 22px; }
+.full-width { width: 100%; margin-bottom: 0.5rem; }
+.insumos-preview {
+  background: #f5f6f8;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+.preview-title { margin: 0 0 0.5rem; font-size: 13px; color: #6b7280; font-weight: 500; }
+.insumos-preview ul { margin: 0; padding-left: 1.2rem; font-size: 14px; color: #101A2E; }
+.error { color: #c0392b; font-size: 0.85rem; margin: 0 0 0.8rem; }
+.form-actions { display: flex; justify-content: flex-end; margin-top: 1rem; }

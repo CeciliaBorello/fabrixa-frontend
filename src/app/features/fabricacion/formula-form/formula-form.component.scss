@@ -1,0 +1,39 @@
+.form-page { padding: 2rem; max-width: 650px; margin: 0 auto; }
+.form-card { background: #ffffff; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); padding: 2rem; }
+h1 { margin: 0; color: #101A2E; font-size: 22px; }
+.subtitle { margin: 4px 0 1.5rem; color: #6b7280; font-size: 14px; }
+h3 { color: #101A2E; font-size: 15px; margin: 1.5rem 0 0.75rem; }
+.full-width { width: 100%; margin-bottom: 0.5rem; }
+.insumos-list { display: flex; flex-direction: column; gap: 0.25rem; }
+.insumo-row { display: flex; align-items: flex-start; gap: 8px; }
+.insumo-producto { flex: 2; }
+.insumo-cantidad { flex: 1; }
+.insumo-unidad { flex: 1; }
+.add-item-btn { margin: 0.5rem 0 1rem; }
+.error { color: #c0392b; font-size: 0.85rem; margin: 0 0 0.8rem; }
+.form-actions { display: flex; justify-content: flex-end; margin-top: 1rem; }
+
+.base-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #eef1f5;
+  color: #101A2E;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  margin-bottom: 1.5rem;
+}
+
+.base-banner mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  color: #2AAE7E;
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  padding: 2rem;
+}

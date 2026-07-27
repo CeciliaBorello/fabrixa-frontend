@@ -113,3 +113,11 @@ th, td {
   height: 40px;
   color: #cbd0d6;
 }
+
+::ng-deep .mat-mdc-tab-body-content {
+  padding-top: 1rem;
+}
+
+::ng-deep .mat-mdc-tab-label-container {
+  padding: 0 1rem;
+}

@@ -1,0 +1,76 @@
+<div class="page">
+  <div class="page-header">
+    <div>
+      <h1>Fórmulas de producción</h1>
+      <p class="subtitle">Qué insumos necesita cada producto terminado</p>
+    </div>
+    <div class="page-header-top">
+      <a mat-flat-button color="primary" routerLink="nueva">
+        <mat-icon>add</mat-icon>
+        Nueva fórmula
+      </a>
+    </div>
+  </div>
+
+  <div class="error-banner" *ngIf="error()">{{ error() }}</div>
+
+  <div class="content-card">
+    <div class="loading-container" *ngIf="cargando()">
+      <mat-spinner diameter="36"></mat-spinner>
+    </div>
+
+    <table mat-table [dataSource]="items()" *ngIf="!cargando() && items().length">
+      <ng-container matColumnDef="producto">
+        <th mat-header-cell *matHeaderCellDef>Producto terminado</th>
+        <td mat-cell *matCellDef="let f">{{ f.productoTerminadoNombre }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="nombre">
+        <th mat-header-cell *matHeaderCellDef>Fórmula</th>
+        <td mat-cell *matCellDef="let f">{{ f.nombre }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="version">
+        <th mat-header-cell *matHeaderCellDef>Versión</th>
+        <td mat-cell *matCellDef="let f">v{{ f.version }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="insumos">
+        <th mat-header-cell *matHeaderCellDef>Insumos</th>
+        <td mat-cell *matCellDef="let f">{{ f.insumos.length }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="estado">
+        <th mat-header-cell *matHeaderCellDef>Estado</th>
+        <td mat-cell *matCellDef="let f">
+          <span class="estado-dot" [class.activo]="f.activo" [class.inactivo]="!f.activo"></span>
+          {{ f.activo ? 'Activa' : 'Inactiva' }}
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="acciones">
+        <th mat-header-cell *matHeaderCellDef></th>
+        <td mat-cell *matCellDef="let f" class="actions">
+          <a mat-icon-button [routerLink]="['nueva']" [queryParams]="{ desde: f.id }" matTooltip="Nueva versión a partir de esta">
+            <mat-icon>content_copy</mat-icon>
+          </a>
+          <button mat-icon-button *ngIf="f.activo" (click)="desactivar(f)" matTooltip="Desactivar">
+            <mat-icon>block</mat-icon>
+          </button>
+          <button mat-icon-button *ngIf="!f.activo" (click)="reactivar(f)" matTooltip="Reactivar">
+            <mat-icon>check_circle</mat-icon>
+          </button>
+        </td>
+      </ng-container>>
+
+      <tr mat-header-row *matHeaderRowDef="columnas"></tr>
+      <tr mat-row *matRowDef="let row; columns: columnas;"></tr>
+    </table>
+
+    <div class="empty-state" *ngIf="sinResultados()">
+      <mat-icon>science</mat-icon>
+      <p>No hay fórmulas cargadas todavía.</p>
+      <a mat-stroked-button routerLink="nueva">Crear la primera</a>
+    </div>
+  </div>
+</div>

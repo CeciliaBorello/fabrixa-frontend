@@ -1,0 +1,40 @@
+<div class="form-page">
+  <app-back-button texto="Volver a órdenes" ruta="/fabricacion/ordenes"></app-back-button>
+
+  <div class="form-card">
+    <h1>Nueva orden de fabricación</h1>
+
+    <form [formGroup]="form" (ngSubmit)="guardar()">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Fórmula</mat-label>
+        <mat-select formControlName="formulaId">
+          <mat-option *ngFor="let f of formulas()" [value]="f.id">
+            {{ f.productoTerminadoNombre }} — {{ f.nombre }} (v{{ f.version }})
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <div class="insumos-preview" *ngIf="formulaSeleccionada() as formula">
+        <p class="preview-title">Esta orden va a consumir (por unidad planificada):</p>
+        <ul>
+          <li *ngFor="let i of formula.insumos">
+            {{ i.cantidadNecesaria }} {{ i.unidadMedida || '' }} de {{ i.insumoNombre }}
+          </li>
+        </ul>
+      </div>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Cantidad planificada</mat-label>
+        <input matInput type="number" step="0.001" formControlName="cantidadPlanificada" />
+      </mat-form-field>
+
+      <p class="error" *ngIf="error()">{{ error() }}</p>
+
+      <div class="form-actions">
+        <button mat-flat-button color="primary" type="submit" [disabled]="guardando()">
+          {{ guardando() ? 'Creando...' : 'Crear orden' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

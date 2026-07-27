@@ -1,0 +1,79 @@
+<div class="form-page">
+  <app-back-button texto="Volver a fórmulas" ruta="/fabricacion/formulas"></app-back-button>
+
+  <div class="form-card">
+    <h1>Nueva fórmula</h1>
+    <p class="subtitle" *ngIf="!formulaBaseNombre()">
+      Definí qué insumos y en qué cantidad necesita el producto terminado
+    </p>
+    <div class="base-banner" *ngIf="formulaBaseNombre()">
+      <mat-icon>content_copy</mat-icon>
+      Partiendo de: <strong>{{ formulaBaseNombre() }}</strong> — se va a guardar como una versión nueva
+    </div>
+
+    <div class="loading-container" *ngIf="cargando()">
+      <mat-spinner diameter="32"></mat-spinner>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="guardar()" *ngIf="!cargando()">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Producto terminado</mat-label>
+        <mat-select formControlName="productoTerminadoId">
+          <mat-option *ngFor="let p of productosTerminados()" [value]="p.id">{{ p.nombre }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Nombre de la fórmula</mat-label>
+        <input matInput formControlName="nombre" placeholder="Ej: Fórmula estándar" />
+      </mat-form-field>
+
+      <h3>Insumos</h3>
+
+      <div formArrayName="insumos" class="insumos-list">
+        <div class="insumo-row" *ngFor="let insumo of insumosArray.controls; let i = index" [formGroupName]="i">
+          <mat-form-field appearance="outline" class="insumo-producto">
+            <mat-label>Insumo</mat-label>
+            <mat-select formControlName="insumoProductoId">
+              <mat-option *ngFor="let p of insumosDisponibles()" [value]="p.id">{{ p.nombre }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="insumo-cantidad">
+            <mat-label>Cantidad por unidad</mat-label>
+            <input matInput type="number" step="0.001" formControlName="cantidadNecesaria" />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="insumo-unidad">
+            <mat-label>Unidad</mat-label>
+            <mat-select formControlName="unidadMedida">
+              <mat-option value="KG">KG</mat-option>
+              <mat-option value="G">G</mat-option>
+              <mat-option value="L">L</mat-option>
+              <mat-option value="ML">ML</mat-option>
+              <mat-option value="UNIDAD">Unidad</mat-option>
+            </mat-select>
+          </mat-form-field>>
+
+          <button mat-icon-button type="button" (click)="quitarInsumo(i)"
+                  [disabled]="insumosArray.length === 1" matTooltip="Quitar">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </div>
+      </div>
+
+      <button mat-stroked-button type="button" (click)="agregarInsumo()" class="add-item-btn">
+        <mat-icon>add</mat-icon>
+        Agregar insumo
+      </button>
+
+      <p class="error" *ngIf="error()">{{ error() }}</p>
+
+      <div class="form-actions">
+        <button mat-flat-button color="primary" type="submit" [disabled]="guardando()">
+          {{ guardando() ? 'Guardando...' : 'Guardar fórmula' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

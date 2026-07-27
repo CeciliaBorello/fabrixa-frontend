@@ -2,6 +2,7 @@ import { Component, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { MatTableModule } from '@angular/material/table';
+import { MatTabsModule } from '@angular/material/tabs';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -15,8 +16,8 @@ import { ConfirmDialogComponent } from '../../../shared/confirm-dialog/confirm-d
   selector: 'app-productos-list',
   standalone: true,
   imports: [
-    CommonModule, RouterLink, MatTableModule, MatButtonModule, MatIconModule,
-    MatProgressSpinnerModule, MatTooltipModule, MatDialogModule
+    CommonModule, RouterLink, MatTableModule, MatTabsModule, MatButtonModule,
+    MatIconModule, MatProgressSpinnerModule, MatTooltipModule, MatDialogModule
   ],
   templateUrl: './productos-list.component.html',
   styleUrl: './productos-list.component.scss'
@@ -25,7 +26,13 @@ export class ProductosListComponent implements OnInit {
   items = signal<ProductoResponse[]>([]);
   cargando = signal(true);
   error = signal('');
-  sinResultados = computed(() => !this.cargando() && this.items().length === 0);
+
+  // "Ambos" aparece en las dos pestañas — no se filtra de forma excluyente
+  terminados = computed(() => this.items().filter((p) => p.tipo === 'TERMINADO' || p.tipo === 'AMBOS'));
+  insumos = computed(() => this.items().filter((p) => p.tipo === 'INSUMO' || p.tipo === 'AMBOS'));
+
+  sinTerminados = computed(() => !this.cargando() && this.terminados().length === 0);
+  sinInsumos = computed(() => !this.cargando() && this.insumos().length === 0);
 
   columnas = ['nombre', 'categoria', 'codigoBarra', 'estado', 'acciones'];
 

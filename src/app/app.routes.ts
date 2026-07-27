@@ -12,6 +12,11 @@ import { PedidosListComponent } from './features/pedidos/pedidos-list.component/
 import { PedidoFormComponent } from './features/pedidos/pedido-form.component/pedido-form.component';
 import { StockListComponent } from './features/stock/stock-list/stock-list.component';
 import { StockHistorialComponent } from './features/stock/stock-historial/stock-historial.component';
+import { FormulasListComponent } from './features/fabricacion/formulas-list/formulas-list.component';
+import { FormulaFormComponent } from './features/fabricacion/formula-form/formula-form.component';
+import { OrdenesListComponent } from './features/fabricacion/ordenes-list/ordenes-list.component';
+import { OrdenFormComponent } from './features/fabricacion/orden-form/orden-form.component';
+
 
 
 export const routes: Routes = [
@@ -59,6 +64,17 @@ export const routes: Routes = [
       { path: '', component: StockListComponent },
       { path: ':id/historial', component: StockHistorialComponent }
     ]
+  },
+  {
+  path: 'fabricacion',
+  canActivate: [authGuard],
+  children: [
+    { path: '', redirectTo: 'ordenes', pathMatch: 'full' },
+    { path: 'ordenes', component: OrdenesListComponent },
+    { path: 'ordenes/nueva', component: OrdenFormComponent },
+    { path: 'formulas', component: FormulasListComponent },
+    { path: 'formulas/nueva', component: FormulaFormComponent }
+  ]
   },
   { path: '**', redirectTo: '' }
 ];

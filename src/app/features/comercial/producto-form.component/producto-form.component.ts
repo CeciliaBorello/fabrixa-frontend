@@ -8,11 +8,13 @@ import { MatButtonModule } from '@angular/material/button';
 import { ProductoService } from '../producto.service';
 import { BackButtonComponent } from '../../../shared/back-button/back-button.component';
 import { MatIconModule } from '@angular/material/icon';
+import { MatSelectModule } from '@angular/material/select';
+import { TipoProducto, UnidadMedida } from '../producto.model';
 
 @Component({
   selector: 'app-producto-form',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatIconModule, BackButtonComponent],
+  imports: [CommonModule, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatIconModule, BackButtonComponent, MatSelectModule],
   templateUrl: './producto-form.component.html',
   styleUrl: './producto-form.component.scss'
 })
@@ -36,12 +38,13 @@ export class ProductoFormComponent implements OnInit {
     private router: Router
   ) {
     this.form = this.fb.group({
-    nombre: ['', Validators.required],
-    codigoBarra: [''],
-    rnpa: [''],
-    valorNutricional: [''],
-    unidadMedida: [''],
-    categoria: ['']
+      nombre: ['', Validators.required],
+      tipo: ['TERMINADO', Validators.required],
+      codigoBarra: [''],
+      rnpa: [''],
+      valorNutricional: [''],
+      unidadMedida: ['KG', Validators.required],
+      categoria: ['']
     });
   }
 
@@ -54,6 +57,7 @@ export class ProductoFormComponent implements OnInit {
         next: (item) => {
           this.form.patchValue({
             nombre: item.nombre,
+            tipo: item.tipo,
             codigoBarra: item.codigoBarra ?? '',
             rnpa: item.rnpa ?? '',
             valorNutricional: item.valorNutricional ?? '',
@@ -82,10 +86,11 @@ export class ProductoFormComponent implements OnInit {
 
     const request = {
       nombre: valores.nombre!,
+      tipo: valores.tipo as TipoProducto,
       codigoBarra: valores.codigoBarra || undefined,
       rnpa: valores.rnpa || undefined,
       valorNutricional: valores.valorNutricional || undefined,
-      unidadMedida: valores.unidadMedida || undefined,
+      unidadMedida: valores.unidadMedida as UnidadMedida,
       categoria: valores.categoria || undefined
     };
 

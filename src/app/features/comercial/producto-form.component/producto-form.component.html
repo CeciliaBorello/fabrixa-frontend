@@ -20,8 +20,23 @@
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Tipo</mat-label>
+        <mat-select formControlName="tipo">
+          <mat-option value="INSUMO">Insumo (se usa para fabricar otros productos)</mat-option>
+          <mat-option value="TERMINADO">Terminado (se vende / se fabrica)</mat-option>
+          <mat-option value="AMBOS">Ambos</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
         <mat-label>Unidad de medida</mat-label>
-        <input matInput formControlName="unidadMedida" placeholder="kg, unidad, litro..." />
+        <mat-select formControlName="unidadMedida">
+          <mat-option value="KG">Kilogramos (KG)</mat-option>
+          <mat-option value="G">Gramos (G)</mat-option>
+          <mat-option value="L">Litros (L)</mat-option>
+          <mat-option value="ML">Mililitros (ML)</mat-option>
+          <mat-option value="UNIDAD">Unidad (contable)</mat-option>
+        </mat-select>
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="full-width">
