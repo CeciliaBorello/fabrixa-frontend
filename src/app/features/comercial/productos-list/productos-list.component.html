@@ -1,0 +1,123 @@
+<div class="page">
+      <div class="titulo-con-volver">
+        <app-back-button ruta="/"></app-back-button>
+<div> 
+  <div class="page-header">
+    <div>
+      <h1>Productos</h1>
+      <p class="subtitle">Catálogo de productos terminados e insumos de la fábrica</p>
+    </div>
+    <div class="page-header-top">
+      <a mat-flat-button color="primary" routerLink="nuevo">
+        <mat-icon>add</mat-icon>
+        Nuevo
+      </a>
+    </div>
+  </div>
+
+  <div class="error-banner" *ngIf="error()">{{ error() }}</div>
+
+  <div class="content-card">
+    <div class="loading-container" *ngIf="cargando()">
+      <mat-spinner diameter="36"></mat-spinner>
+    </div>
+
+    <mat-tab-group *ngIf="!cargando()">
+      <mat-tab label="Productos terminados">
+        <ng-container
+          [ngTemplateOutlet]="tablaTemplate"
+          [ngTemplateOutletContext]="{ dataSource: dataSourceTerminados, paginatorRef: 'paginatorTerminados', icono: 'inventory_2', mensaje: 'No hay productos terminados cargados.' }">
+        </ng-container>
+      </mat-tab>
+
+      <mat-tab label="Insumos">
+        <ng-container
+          [ngTemplateOutlet]="tablaTemplate"
+          [ngTemplateOutletContext]="{ dataSource: dataSourceInsumos, paginatorRef: 'paginatorInsumos', icono: 'science', mensaje: 'No hay insumos cargados.' }">
+        </ng-container>
+      </mat-tab>
+    </mat-tab-group>
+  </div>
+</div>
+
+<ng-template #tablaTemplate let-dataSource="dataSource" let-paginatorRef="paginatorRef" let-icono="icono" let-mensaje="mensaje">
+  <table mat-table [dataSource]="dataSource" *ngIf="dataSource.data.length">
+    <ng-container matColumnDef="nombre">
+      <th mat-header-cell *matHeaderCellDef>Nombre</th>
+      <td mat-cell *matCellDef="let p">{{ p.nombre }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="categoria">
+      <th mat-header-cell *matHeaderCellDef>Categoría</th>
+      <td mat-cell *matCellDef="let p">{{ p.categoria || '-' }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="codigoBarra">
+      <th mat-header-cell *matHeaderCellDef>Código de barra</th>
+      <td mat-cell *matCellDef="let p">{{ p.codigoBarra || '-' }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="precio">
+      <th mat-header-cell *matHeaderCellDef>Precio</th>
+      <td mat-cell *matCellDef="let p">
+        {{ p.precioActual != null ? (p.precioActual | currency:'ARS') : '—' }}
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="estado">
+      <th mat-header-cell *matHeaderCellDef>Estado</th>
+      <td mat-cell *matCellDef="let p">
+        <span class="estado-dot" [class.activo]="p.activo" [class.inactivo]="!p.activo"></span>
+        {{ p.activo ? 'Activo' : 'Inactivo' }}
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="acciones">
+      <th mat-header-cell *matHeaderCellDef></th>
+      <td mat-cell *matCellDef="let p" class="actions-cell">
+        <div class="actions">
+          <a mat-icon-button [routerLink]="[p.id, 'editar']" matTooltip="Editar">
+            <mat-icon>edit</mat-icon>
+          </a>
+          <button mat-icon-button (click)="actualizarPrecio(p)" matTooltip="Actualizar precio">
+            <mat-icon>attach_money</mat-icon>
+          </button>
+          <button mat-icon-button (click)="verHistorialPrecio(p)" matTooltip="Historial de precios">
+            <mat-icon>history</mat-icon>
+          </button>
+          <a mat-icon-button [routerLink]="['/fabricacion/costos', p.id]" matTooltip="Costo de fabricación" *ngIf="p.tipo !== 'INSUMO'">
+            <mat-icon>trending_up</mat-icon>
+          </a>
+          <button mat-icon-button (click)="toggleEstado(p)" [matTooltip]="p.activo ? 'Desactivar' : 'Reactivar'">
+            <mat-icon>{{ p.activo ? 'block' : 'check_circle' }}</mat-icon>
+          </button>
+        </div>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="columnas"></tr>
+    <tr mat-row *matRowDef="let row; columns: columnas;"></tr>
+  </table>
+
+  <mat-paginator
+    *ngIf="dataSource.data.length && paginatorRef === 'paginatorTerminados'"
+    #paginatorTerminados="matPaginator"
+    [pageSize]="10"
+    [pageSizeOptions]="[10, 25, 50]"
+    showFirstLastButtons>
+  </mat-paginator>
+
+  <mat-paginator
+    *ngIf="dataSource.data.length && paginatorRef === 'paginatorInsumos'"
+    #paginatorInsumos="matPaginator"
+    [pageSize]="10"
+    [pageSizeOptions]="[10, 25, 50]"
+    showFirstLastButtons>
+  </mat-paginator>
+
+  <div class="empty-state" *ngIf="!dataSource.data.length">
+    <mat-icon>{{ icono }}</mat-icon>
+    <p>{{ mensaje }}</p>
+    <a mat-stroked-button routerLink="nuevo">Crear el primero</a>
+  </div>
+</ng-template>

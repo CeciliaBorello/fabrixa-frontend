@@ -1,8 +1,9 @@
-import { Component, OnInit, signal, computed } from '@angular/core';
+import { Component, OnInit, signal, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { forkJoin } from 'rxjs';
-import { MatTableModule } from '@angular/material/table';
+import { MatTableModule, MatTableDataSource } from '@angular/material/table';
+import { MatPaginatorModule, MatPaginator } from '@angular/material/paginator';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -12,24 +13,26 @@ import { StockService } from '../stock.service';
 import { StockFila } from '../stock.model';
 import { ProductoService } from '../../comercial/producto.service';
 import { AjusteDialogComponent } from '../ajuste-dialog/ajuste-dialog.component';
+import { BackButtonComponent } from '../../../shared/back-button/back-button.component';
 
 @Component({
   selector: 'app-stock-list',
   standalone: true,
   imports: [
-    CommonModule, MatTableModule, MatButtonModule, MatIconModule,
-    MatProgressSpinnerModule, MatTooltipModule, MatDialogModule
+    CommonModule, MatTableModule, MatPaginatorModule, MatButtonModule, MatIconModule,
+    MatProgressSpinnerModule, MatTooltipModule, MatDialogModule, BackButtonComponent
   ],
   templateUrl: './stock-list.component.html',
   styleUrl: './stock-list.component.scss'
 })
 export class StockListComponent implements OnInit {
-  filas = signal<StockFila[]>([]);
+  dataSource = new MatTableDataSource<StockFila>([]);
   cargando = signal(true);
   error = signal('');
-  sinResultados = computed(() => !this.cargando() && this.filas().length === 0);
 
   columnas = ['nombre', 'cantidad', 'unidad', 'acciones'];
+
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
 
   constructor(
     private stockService: StockService,
@@ -60,8 +63,9 @@ export class StockListComponent implements OnInit {
             unidadMedida: p.unidadMedida
           }));
 
-        this.filas.set(filas);
+        this.dataSource.data = filas;
         this.cargando.set(false);
+        setTimeout(() => (this.dataSource.paginator = this.paginator));
       },
       error: () => {
         this.error.set('No se pudo cargar el stock');

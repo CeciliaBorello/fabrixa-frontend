@@ -41,9 +41,9 @@ th, td {
   justify-content: flex-end;
 }
 
-.usuarios-page {
+.page {
   padding: 2rem;
-  max-width: 850px;
+  max-width: 900px;
   margin: 0 auto;
 }
 
@@ -51,7 +51,18 @@ th, td {
   display: flex;
   flex-direction: column;
   margin-bottom: 1.5rem;
-  width: 100%;
+}
+
+.page-header h1 {
+  margin: 0;
+  color: #101A2E;
+  font-size: 26px;
+}
+
+.subtitle {
+  margin: 4px 0 0;
+  color: #6b7280;
+  font-size: 14px;
 }
 
 .page-header-top {
@@ -70,4 +81,17 @@ th, td {
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
   overflow: hidden;
   width: 100%;
+}
+.content-card {
+  overflow: hidden; // sin scroll horizontal — con paginado, las filas nunca desbordan
+}
+
+::ng-deep .mat-mdc-paginator {
+  background: transparent;
+}
+
+.titulo-con-volver {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
 }

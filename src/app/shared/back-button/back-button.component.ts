@@ -8,28 +8,18 @@ import { MatIconModule } from '@angular/material/icon';
   standalone: true,
   imports: [MatButtonModule, MatIconModule],
   template: `
-    <button mat-button class="back-button" (click)="volver()">
+    <button mat-icon-button class="back-button" (click)="router.navigate([ruta])">
       <mat-icon>arrow_back</mat-icon>
-      {{ texto }}
     </button>
   `,
   styles: [`
     .back-button {
       color: #101A2E;
-      margin-bottom: 1rem;
-    }
-    .back-button mat-icon {
-      margin-right: 4px;
     }
   `]
 })
 export class BackButtonComponent {
-  @Input() texto = 'Volver';
-  @Input() ruta = '/usuarios';
+  @Input() ruta = '/';
 
-  constructor(private router: Router) {}
-
-  volver() {
-    this.router.navigate([this.ruta]);
-  }
+  constructor(public router: Router) {}
 }

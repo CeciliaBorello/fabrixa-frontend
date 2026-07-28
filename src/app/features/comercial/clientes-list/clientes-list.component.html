@@ -1,4 +1,7 @@
 <div class="page">
+      <div class="titulo-con-volver">
+        <app-back-button ruta="/"></app-back-button>
+<div> 
   <div class="page-header">
     <div>
       <h1>Clientes y Proveedores</h1>
@@ -23,7 +26,7 @@
       <p>Cargando...</p>
     </div>
 
-    <table mat-table [dataSource]="items()" *ngIf="!cargando() && items().length">
+    <table mat-table [dataSource]="dataSource" *ngIf="!cargando() && dataSource.data.length">
       <ng-container matColumnDef="razonSocial">
         <th mat-header-cell *matHeaderCellDef>Razón social</th>
         <td mat-cell *matCellDef="let c">{{ c.razonSocial }}</td>
@@ -72,7 +75,14 @@
       <tr mat-row *matRowDef="let row; columns: columnas;"></tr>
     </table>
 
-    <div class="empty-state" *ngIf="sinResultados()">
+    <mat-paginator
+      *ngIf="!cargando() && dataSource.data.length"
+      [pageSize]="10"
+      [pageSizeOptions]="[10, 25, 50]"
+      showFirstLastButtons>
+    </mat-paginator>
+    
+    <div class="empty-state" *ngIf="!cargando() && !dataSource.data.length">
       <mat-icon>groups</mat-icon>
       <p>No hay clientes ni proveedores cargados todavía.</p>
       <a mat-stroked-button routerLink="nuevo">Crear el primero</a>

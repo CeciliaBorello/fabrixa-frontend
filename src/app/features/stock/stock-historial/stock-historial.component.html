@@ -1,10 +1,14 @@
 <div class="page">
-  <app-back-button texto="Volver a stock" ruta="/stock"></app-back-button>
-
+  <div class="titulo-con-volver">
+    <app-back-button ruta="/"></app-back-button>
+  <div>
   <div class="page-header">
-    <h1>Historial de movimientos</h1>
-    <p class="subtitle" *ngIf="nombreProducto()">{{ nombreProducto() }}</p>
+    <div>
+      <h1>Historial de movimientos</h1>
+      <p class="subtitle" *ngIf="nombreProducto()">{{ nombreProducto() }}</p>
+    </div>
   </div>
+
 
   <div class="content-card">
     <div class="loading-container" *ngIf="cargando()">
@@ -51,4 +55,6 @@
       Este producto todavía no tiene movimientos registrados.
     </p>
   </div>
+</div>
+</div>
 </div>

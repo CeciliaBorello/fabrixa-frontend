@@ -1,4 +1,7 @@
 <div class="page">
+      <div class="titulo-con-volver">
+        <app-back-button ruta="/"></app-back-button>
+<div> 
   <div class="page-header">
     <div>
       <h1>Órdenes de fabricación</h1>
@@ -19,7 +22,7 @@
       <mat-spinner diameter="36"></mat-spinner>
     </div>
 
-    <table mat-table [dataSource]="items()" *ngIf="!cargando() && items().length">
+    <table mat-table [dataSource]="dataSource" *ngIf="!cargando() && dataSource.data.length">
       <ng-container matColumnDef="id">
         <th mat-header-cell *matHeaderCellDef>#</th>
         <td mat-cell *matCellDef="let o">{{ o.id }}</td>
@@ -52,29 +55,58 @@
         <td mat-cell *matCellDef="let o">{{ o.usuarioNombre }}</td>
       </ng-container>
 
-      <ng-container matColumnDef="acciones">
-        <th mat-header-cell *matHeaderCellDef></th>
-        <td mat-cell *matCellDef="let o" class="actions">
-          <button mat-icon-button *ngIf="o.estado === 'PLANIFICADA'"
-                  (click)="iniciar(o)" matTooltip="Iniciar producción">
-            <mat-icon>play_circle</mat-icon>
-          </button>
-          <button mat-icon-button *ngIf="o.estado === 'EN_PROCESO'"
-                  (click)="finalizar(o)" matTooltip="Finalizar">
-            <mat-icon>check_circle</mat-icon>
-          </button>
-          <button mat-icon-button *ngIf="o.estado === 'PLANIFICADA'"
-                  (click)="cancelar(o)" matTooltip="Cancelar">
-            <mat-icon>cancel</mat-icon>
-          </button>
+      <ng-container matColumnDef="costo">
+        <th mat-header-cell *matHeaderCellDef>Costo unitario</th>
+        <td mat-cell *matCellDef="let o">
+          {{ o.costoUnitarioProducido != null ? (o.costoUnitarioProducido | currency:'ARS') : '—' }}
         </td>
       </ng-container>
+
+  <ng-container matColumnDef="acciones">
+      <th mat-header-cell *matHeaderCellDef></th>
+
+      <td mat-cell *matCellDef="let o" class="actions-cell">
+        <div class="actions">
+          <button
+            mat-icon-button
+            *ngIf="o.estado === 'PLANIFICADA'"
+            (click)="iniciar(o)"
+            matTooltip="Iniciar producción">
+            <mat-icon>play_circle</mat-icon>
+          </button>
+
+          <button
+            mat-icon-button
+            *ngIf="o.estado === 'EN_PROCESO'"
+            (click)="finalizar(o)"
+            matTooltip="Finalizar">
+            <mat-icon>check_circle</mat-icon>
+          </button>
+
+          <button
+            mat-icon-button
+            *ngIf="o.estado === 'PLANIFICADA'"
+            (click)="cancelar(o)"
+            matTooltip="Cancelar">
+            <mat-icon>cancel</mat-icon>
+          </button>
+
+        </div>
+      </td>
+    </ng-container>
 
       <tr mat-header-row *matHeaderRowDef="columnas"></tr>
       <tr mat-row *matRowDef="let row; columns: columnas;"></tr>
     </table>
 
-    <div class="empty-state" *ngIf="sinResultados()">
+    <mat-paginator
+      *ngIf="!cargando() && dataSource.data.length"
+      [pageSize]="10"
+      [pageSizeOptions]="[10, 25, 50]"
+      showFirstLastButtons>
+    </mat-paginator>
+
+    <div class="empty-state" *ngIf="!cargando() && !dataSource.data.length">
       <mat-icon>precision_manufacturing</mat-icon>
       <p>No hay órdenes de fabricación todavía.</p>
       <a mat-stroked-button routerLink="nueva">Crear la primera</a>

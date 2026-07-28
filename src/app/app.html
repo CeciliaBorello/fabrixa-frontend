@@ -1,24 +1,16 @@
 <mat-toolbar class="app-toolbar" *ngIf="estaLogueado">
-    <div class="brand">
-        <div class="logo-container">
-            <img src="assets/solo_F_mas_chico_sin_fondo.png" alt="Fabrixa" class="brand-logo" />
-        </div>
-        <span class="brand-name">Fabrixa</span>
+  <div class="brand">
+    <div class="logo-container">
+      <img src="assets/solo_F_mas_chico_sin_fondo.png" alt="Fabrixa" class="brand-logo" />
     </div>
-
-<nav class="nav-links">
-  <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Inicio</a>
-  <a routerLink="/usuarios" routerLinkActive="active">Usuarios</a>
-  <a routerLink="/clientes" routerLinkActive="active">Clientes</a>
-  <a routerLink="/productos" routerLinkActive="active">Productos</a>
-  <a routerLink="/pedidos" routerLinkActive="active">Pedidos</a>
-  <a routerLink="/stock" routerLinkActive="active">Stock</a>
-  <a routerLink="/fabricacion/ordenes" routerLinkActive="active">Orden Fabricación</a>
-  <a routerLink="/fabricacion/formulas" routerLinkActive="active">Formulas
-  </a>
-</nav>
+    <span class="brand-name">Fabrixa</span>
+  </div>
 
   <span class="spacer"></span>
+
+  <a mat-icon-button routerLink="/" matTooltip="Ir al inicio" *ngIf="!enHome()">
+    <mat-icon>home</mat-icon>
+  </a>
 
   <button mat-icon-button [matMenuTriggerFor]="userMenu">
     <mat-icon>account_circle</mat-icon>

@@ -1,0 +1,38 @@
+.page { padding: 2rem; max-width: 800px; margin: 0 auto; }
+.page-header { margin-bottom: 1rem; }
+.page-header h1 { margin: 0; color: #101A2E; font-size: 24px; }
+.subtitle { margin: 4px 0 0; color: #6b7280; font-size: 14px; }
+
+.costo-actual-card {
+  background: #d4f2e5;
+  border-radius: 10px;
+  padding: 1rem 1.5rem;
+  margin-bottom: 1.5rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.costo-actual-card .label {
+  font-size: 12px;
+  color: #0d3d2c;
+  opacity: 0.8;
+}
+
+.costo-actual-card .valor {
+  font-size: 24px;
+  font-weight: 700;
+  color: #0d3d2c;
+}
+
+.content-card { background: #ffffff; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); overflow: hidden; padding: 0.5rem 0; }
+table { width: 100%; }
+th, td { font-size: 13px; padding: 10px 12px !important; }
+.costo-unitario { font-weight: 600; color: #101A2E; }
+.loading-container { display: flex; justify-content: center; padding: 3rem; }
+.empty-msg { text-align: center; color: #6b7280; padding: 3rem; }
+
+.titulo-con-volver {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}

@@ -4,18 +4,20 @@ import { HomeComponent } from './features/home/home.component';
 import { authGuard } from './core/auth/auth.guard';
 import { UsuariosListComponent } from './features/usuarios/usuarios-list/usuarios-list.component';
 import { UsuarioFormComponent } from './features/usuarios/usuario-form/usuario-form.component';
-import { ClientesListComponent } from './features/comercial/clientes-list.component/clientes-list.component';
-import { ClienteFormComponent } from './features/comercial/cliente-form.component/cliente-form.component';
-import { ProductosListComponent } from './features/comercial/productos-list.component/productos-list.component';
-import { ProductoFormComponent } from './features/comercial/producto-form.component/producto-form.component';
-import { PedidosListComponent } from './features/pedidos/pedidos-list.component/pedidos-list.component';
-import { PedidoFormComponent } from './features/pedidos/pedido-form.component/pedido-form.component';
+import { ClientesListComponent } from './features/comercial/clientes-list/clientes-list.component';
+import { ClienteFormComponent } from './features/comercial/cliente-form/cliente-form.component';
+import { ProductosListComponent } from './features/comercial/productos-list/productos-list.component';
+import { ProductoFormComponent } from './features/comercial/producto-form/producto-form.component';
+import { PedidosListComponent } from './features/pedidos/pedidos-list/pedidos-list.component';
+import { PedidoFormComponent } from './features/pedidos/pedido-form/pedido-form.component';
 import { StockListComponent } from './features/stock/stock-list/stock-list.component';
 import { StockHistorialComponent } from './features/stock/stock-historial/stock-historial.component';
 import { FormulasListComponent } from './features/fabricacion/formulas-list/formulas-list.component';
 import { FormulaFormComponent } from './features/fabricacion/formula-form/formula-form.component';
 import { OrdenesListComponent } from './features/fabricacion/ordenes-list/ordenes-list.component';
 import { OrdenFormComponent } from './features/fabricacion/orden-form/orden-form.component';
+import { PrecioHistorialComponent } from './features/comercial/precio-historial/precio-historial.component';
+
 
 
 
@@ -46,7 +48,8 @@ export const routes: Routes = [
     children: [
       { path: '', component: ProductosListComponent },
       { path: 'nuevo', component: ProductoFormComponent },
-      { path: ':id/editar', component: ProductoFormComponent }
+      { path: ':id/editar', component: ProductoFormComponent },
+      { path: ':id/precios', component: PrecioHistorialComponent }
     ]
   },
   {

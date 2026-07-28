@@ -4,23 +4,15 @@
     <p class="subtitle">¿Qué querés hacer hoy?</p>
 
     <div class="modules-grid">
-      <div class="module-card" routerLink="/usuarios">
-        <div class="module-icon">👥</div>
-        <h3>Usuarios</h3>
-        <p>Gestioná usuarios, roles y permisos del sistema</p>
-      </div>
-
-      <div class="module-card disabled">
-        <div class="module-icon">📦</div>
-        <h3>Stock</h3>
-        <p>Próximamente</p>
-      </div>
-
-      <div class="module-card disabled">
-        <div class="module-icon">🧾</div>
-        <h3>Facturación</h3>
-        <p>Próximamente</p>
-      </div>
+      
+        <a *ngFor="let modulo of modulos"
+        class="module-card"
+        [class.disabled]="!modulo.disponible"
+        [routerLink]="modulo.disponible ? modulo.ruta : null">
+        <div class="module-icon">{{ modulo.icono }}</div>
+        <h3>{{ modulo.titulo }}</h3>
+        <p>{{ modulo.disponible ? modulo.descripcion : 'Próximamente' }}</p>
+      </a>
     </div>
   </main>
 </div>

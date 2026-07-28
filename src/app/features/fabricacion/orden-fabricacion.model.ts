@@ -11,6 +11,8 @@ export interface OrdenFabricacionResponse {
   fechaInicio: string | null;
   fechaFin: string | null;
   usuarioNombre: string;
+  costoTotalInsumos: number | null;
+  costoUnitarioProducido: number | null;
 }
 
 export interface OrdenFabricacionRequest {

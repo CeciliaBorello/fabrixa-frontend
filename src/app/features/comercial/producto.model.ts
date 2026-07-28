@@ -10,6 +10,7 @@ export interface ProductoResponse {
   valorNutricional: string | null;
   unidadMedida: UnidadMedida;
   categoria: string | null;
+  precioActual: number | null;
   activo: boolean;
 }
 

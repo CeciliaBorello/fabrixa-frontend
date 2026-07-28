@@ -28,4 +28,8 @@ export class OrdenFabricacionService {
   cancelar(id: number): Observable<OrdenFabricacionResponse> {
     return this.http.put<OrdenFabricacionResponse>(`${this.baseUrl}/${id}/cancelar`, {});
   }
+
+  historialPorProducto(productoId: number): Observable<OrdenFabricacionResponse[]> {
+  return this.http.get<OrdenFabricacionResponse[]>(`${this.baseUrl}/por-producto/${productoId}`);
+}
 }
