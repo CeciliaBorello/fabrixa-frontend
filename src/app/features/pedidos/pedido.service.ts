@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { PedidoRequest, PedidoResponse } from './pedido.model';
+import { PageResponse } from '../../shared/page-response.model';
 
 @Injectable({ providedIn: 'root' })
 export class PedidoService {
@@ -31,5 +32,9 @@ export class PedidoService {
 
   cancelar(id: number): Observable<PedidoResponse> {
     return this.http.put<PedidoResponse>(`${this.baseUrl}/${id}/cancelar`, {});
+  }
+
+  listarPaginado(page: number, size: number): Observable<PageResponse<PedidoResponse>> {
+    return this.http.get<PageResponse<PedidoResponse>>(`${this.baseUrl}/pagina?page=${page}&size=${size}`);
   }
 }

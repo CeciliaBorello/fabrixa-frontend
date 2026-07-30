@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { ClienteProveedorRequest, ClienteProveedorResponse } from './cliente-proveedor.model';
+import { PageResponse } from '../../shared/page-response.model';
 
 @Injectable({ providedIn: 'root' })
 export class ClienteProveedorService {
@@ -31,5 +32,9 @@ export class ClienteProveedorService {
 
   reactivar(id: number): Observable<void> {
     return this.http.put<void>(`${this.baseUrl}/${id}/reactivar`, {});
+  }
+
+  listarPaginado(page: number, size: number): Observable<PageResponse<ClienteProveedorResponse>> {
+    return this.http.get<PageResponse<ClienteProveedorResponse>>(`${this.baseUrl}/pagina?page=${page}&size=${size}`);
   }
 }

@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { FinalizarRequest, OrdenFabricacionRequest, OrdenFabricacionResponse } from './orden-fabricacion.model';
+import { PageResponse } from '../../shared/page-response.model';
 
 @Injectable({ providedIn: 'root' })
 export class OrdenFabricacionService {
@@ -30,6 +31,10 @@ export class OrdenFabricacionService {
   }
 
   historialPorProducto(productoId: number): Observable<OrdenFabricacionResponse[]> {
-  return this.http.get<OrdenFabricacionResponse[]>(`${this.baseUrl}/por-producto/${productoId}`);
-}
+    return this.http.get<OrdenFabricacionResponse[]>(`${this.baseUrl}/por-producto/${productoId}`);
+  }
+
+  listarPaginado(page: number, size: number): Observable<PageResponse<OrdenFabricacionResponse>> {
+    return this.http.get<PageResponse<OrdenFabricacionResponse>>(`${this.baseUrl}/pagina?page=${page}&size=${size}`);
+  }
 }

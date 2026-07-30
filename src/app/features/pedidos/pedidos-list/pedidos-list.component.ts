@@ -1,8 +1,8 @@
-import { Component, OnInit, signal, ViewChild } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import { MatTableModule, MatTableDataSource } from '@angular/material/table';
-import { MatPaginatorModule, MatPaginator } from '@angular/material/paginator';
+import { MatTableModule } from '@angular/material/table';
+import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
@@ -19,19 +19,21 @@ import { BackButtonComponent } from '../../../shared/back-button/back-button.com
   standalone: true,
   imports: [
     CommonModule, RouterLink, MatTableModule, MatPaginatorModule, MatButtonModule,
-    MatIconModule, MatChipsModule, MatProgressSpinnerModule, MatTooltipModule, MatDialogModule, BackButtonComponent
+    MatIconModule, MatChipsModule, MatProgressSpinnerModule, MatTooltipModule, MatDialogModule,
+    BackButtonComponent
   ],
   templateUrl: './pedidos-list.component.html',
   styleUrl: './pedidos-list.component.scss'
 })
 export class PedidosListComponent implements OnInit {
-  dataSource = new MatTableDataSource<PedidoResponse>([]);
+  items = signal<PedidoResponse[]>([]);
+  totalItems = signal(0);
+  pageIndex = signal(0);
+  pageSize = signal(10);
   cargando = signal(true);
   error = signal('');
 
   columnas = ['id', 'cliente', 'usuario', 'estado', 'fecha', 'acciones'];
-
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
 
   constructor(private service: PedidoService, private dialog: MatDialog) {}
 
@@ -41,17 +43,23 @@ export class PedidosListComponent implements OnInit {
 
   cargar() {
     this.cargando.set(true);
-    this.service.listar().subscribe({
-      next: (data) => {
-        this.dataSource.data = data;
+    this.service.listarPaginado(this.pageIndex(), this.pageSize()).subscribe({
+      next: (pagina) => {
+        this.items.set(pagina.content);
+        this.totalItems.set(pagina.totalElements);
         this.cargando.set(false);
-        setTimeout(() => (this.dataSource.paginator = this.paginator));
       },
       error: () => {
         this.error.set('No se pudieron cargar los pedidos');
         this.cargando.set(false);
       }
     });
+  }
+
+  onPageChange(event: PageEvent) {
+    this.pageIndex.set(event.pageIndex);
+    this.pageSize.set(event.pageSize);
+    this.cargar();
   }
 
   etiquetaEstado(estado: string): string {

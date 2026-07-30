@@ -1,8 +1,8 @@
-import { Component, OnInit, signal, ViewChild, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import { MatTableModule, MatTableDataSource } from '@angular/material/table';
-import { MatPaginatorModule, MatPaginator } from '@angular/material/paginator';
+import { MatTableModule } from '@angular/material/table';
+import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
@@ -19,25 +19,23 @@ import { BackButtonComponent } from '../../../shared/back-button/back-button.com
   standalone: true,
   imports: [
     CommonModule, RouterLink, MatTableModule, MatPaginatorModule, MatButtonModule,
-    MatIconModule, MatChipsModule, MatProgressSpinnerModule, MatTooltipModule, MatDialogModule, BackButtonComponent
+    MatIconModule, MatChipsModule, MatProgressSpinnerModule, MatTooltipModule, MatDialogModule,
+    BackButtonComponent
   ],
   templateUrl: './clientes-list.component.html',
   styleUrl: './clientes-list.component.scss'
 })
 export class ClientesListComponent implements OnInit {
-  dataSource = new MatTableDataSource<ClienteProveedorResponse>([]);
+  items = signal<ClienteProveedorResponse[]>([]);
+  totalItems = signal(0);
+  pageIndex = signal(0);
+  pageSize = signal(10);
   cargando = signal(true);
   error = signal('');
 
   columnas = ['razonSocial', 'cuit', 'tipo', 'saldo', 'estado', 'acciones'];
 
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
-
-  constructor(
-    private service: ClienteProveedorService,
-    private dialog: MatDialog,
-    private cdr: ChangeDetectorRef
-  ) {}
+  constructor(private service: ClienteProveedorService, private dialog: MatDialog) {}
 
   ngOnInit() {
     this.cargar();
@@ -45,18 +43,23 @@ export class ClientesListComponent implements OnInit {
 
   cargar() {
     this.cargando.set(true);
-    this.service.listar().subscribe({
-      next: (data) => {
-        this.dataSource.data = data;
+    this.service.listarPaginado(this.pageIndex(), this.pageSize()).subscribe({
+      next: (pagina) => {
+        this.items.set(pagina.content);
+        this.totalItems.set(pagina.totalElements);
         this.cargando.set(false);
-        this.cdr.detectChanges();
-        this.dataSource.paginator = this.paginator;
       },
       error: () => {
         this.error.set('No se pudieron cargar los clientes/proveedores');
         this.cargando.set(false);
       }
     });
+  }
+
+  onPageChange(event: PageEvent) {
+    this.pageIndex.set(event.pageIndex);
+    this.pageSize.set(event.pageSize);
+    this.cargar();
   }
 
   toggleEstado(item: ClienteProveedorResponse) {

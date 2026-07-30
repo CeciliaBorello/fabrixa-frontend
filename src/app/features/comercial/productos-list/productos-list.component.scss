@@ -6,7 +6,8 @@
 
 .page-header {
   display: flex;
-  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-start;
   margin-bottom: 1.5rem;
 }
 
@@ -22,10 +23,10 @@
   font-size: 14px;
 }
 
-.page-header-top {
+.titulo-con-volver {
   display: flex;
-  justify-content: flex-end;
-  margin-top: 1rem;
+  align-items: flex-start;
+  gap: 8px;
 }
 
 .error-banner {
@@ -58,27 +59,15 @@ th, td {
   font-size: 14px;
 }
 
-.mat-column-razonSocial { width: 220px; }
-.mat-column-cuit { width: 130px; }
-.mat-column-tipo { width: 140px; }
-.mat-column-saldo { width: 140px; }
+.mat-column-nombre { width: 200px; }
+.mat-column-categoria { width: 140px; }
+.mat-column-codigoBarra { width: 150px; }
+.mat-column-precio { width: 110px; }
 .mat-column-estado { width: 110px; }
 .mat-column-acciones {
-  width: 90px;
+  width: 170px;
   text-align: right;
   padding-right: 12px !important;
-}
-
-.tipo-chip {
-  background-color: #eef1f5 !important;
-  color: #101A2E !important;
-  font-size: 12px !important;
-  min-height: 24px !important;
-}
-
-.saldo-negativo {
-  color: #c0392b;
-  font-weight: 500;
 }
 
 .estado-dot {
@@ -122,14 +111,6 @@ th, td {
   padding: 0 1rem;
 }
 
-.mat-column-acciones {
-  width: 170px;
-  text-align: right;
-  padding-right: 12px !important;
-}
-
-.titulo-con-volver {
-  display: flex;
-  align-items: flex-start;
-  gap: 8px;
+::ng-deep .mat-mdc-tab-body-content {
+  overflow: hidden !important;
 }

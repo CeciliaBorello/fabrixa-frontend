@@ -1,8 +1,8 @@
-import { Component, OnInit, signal, ViewChild } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import { MatTableModule, MatTableDataSource } from '@angular/material/table';
-import { MatPaginatorModule, MatPaginator } from '@angular/material/paginator';
+import { MatTableModule } from '@angular/material/table';
+import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
@@ -11,6 +11,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { UsuarioService } from '../usuario.service';
 import { UsuarioResponse } from '../usuario.model';
 import { BackButtonComponent } from '../../../shared/back-button/back-button.component';
+
 
 @Component({
   selector: 'app-usuarios-list',
@@ -23,13 +24,14 @@ import { BackButtonComponent } from '../../../shared/back-button/back-button.com
   styleUrl: './usuarios-list.component.scss'
 })
 export class UsuariosListComponent implements OnInit {
-  dataSource = new MatTableDataSource<UsuarioResponse>([]);
+  items = signal<UsuarioResponse[]>([]);
+  totalItems = signal(0);
+  pageIndex = signal(0);
+  pageSize = signal(10);
   cargando = signal(true);
   error = signal('');
 
   columnas = ['avatar', 'nombre', 'email', 'rol', 'estado', 'acciones'];
-
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
 
   constructor(private usuarioService: UsuarioService) {}
 
@@ -41,19 +43,23 @@ export class UsuariosListComponent implements OnInit {
     this.cargando.set(true);
     this.error.set('');
 
-    this.usuarioService.listar().subscribe({
-      next: (data) => {
-        this.dataSource.data = data;
+    this.usuarioService.listarPaginado(this.pageIndex(), this.pageSize()).subscribe({
+      next: (pagina) => {
+        this.items.set(pagina.content);
+        this.totalItems.set(pagina.totalElements);
         this.cargando.set(false);
-        // el <mat-paginator> recién se renderiza cuando cargando pasa a false,
-        // así que esperamos un ciclo antes de conectarlo
-        setTimeout(() => (this.dataSource.paginator = this.paginator));
       },
       error: () => {
         this.error.set('No se pudieron cargar los usuarios');
         this.cargando.set(false);
       }
     });
+  }
+
+  onPageChange(event: PageEvent) {
+    this.pageIndex.set(event.pageIndex);
+    this.pageSize.set(event.pageSize);
+    this.cargar();
   }
 
   toggleEstado(usuario: UsuarioResponse) {

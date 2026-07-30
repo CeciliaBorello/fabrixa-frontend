@@ -26,7 +26,7 @@
       <p>Cargando...</p>
     </div>
 
-    <table mat-table [dataSource]="dataSource" *ngIf="!cargando() && dataSource.data.length">
+    <table mat-table [dataSource]="items()" *ngIf="!cargando() && items().length">
       <ng-container matColumnDef="razonSocial">
         <th mat-header-cell *matHeaderCellDef>Razón social</th>
         <td mat-cell *matCellDef="let c">{{ c.razonSocial }}</td>
@@ -76,13 +76,16 @@
     </table>
 
     <mat-paginator
-      *ngIf="!cargando() && dataSource.data.length"
-      [pageSize]="10"
+      *ngIf="!cargando() && totalItems() > 0"
+      [length]="totalItems()"
+      [pageSize]="pageSize()"
+      [pageIndex]="pageIndex()"
       [pageSizeOptions]="[10, 25, 50]"
-      showFirstLastButtons>
+      showFirstLastButtons
+      (page)="onPageChange($event)">
     </mat-paginator>
-    
-    <div class="empty-state" *ngIf="!cargando() && !dataSource.data.length">
+
+    <div class="empty-state" *ngIf="!cargando() && !items().length">
       <mat-icon>groups</mat-icon>
       <p>No hay clientes ni proveedores cargados todavía.</p>
       <a mat-stroked-button routerLink="nuevo">Crear el primero</a>

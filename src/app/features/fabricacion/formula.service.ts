@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { FormulaRequest, FormulaResponse } from './formula.model';
+import { PageResponse } from '../../shared/page-response.model';
 
 @Injectable({ providedIn: 'root' })
 export class FormulaService {
@@ -26,6 +27,10 @@ export class FormulaService {
   }
 
   reactivar(id: number): Observable<void> {
-  return this.http.put<void>(`${this.baseUrl}/${id}/reactivar`, {});
-}
+    return this.http.put<void>(`${this.baseUrl}/${id}/reactivar`, {});
+  }
+
+  listarPaginado(page: number, size: number): Observable<PageResponse<FormulaResponse>> {
+    return this.http.get<PageResponse<FormulaResponse>>(`${this.baseUrl}/pagina?page=${page}&size=${size}`);
+  }
 }

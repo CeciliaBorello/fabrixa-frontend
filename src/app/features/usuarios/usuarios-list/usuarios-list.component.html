@@ -26,7 +26,7 @@
       <p>Cargando usuarios...</p>
     </div>
 
-    <table mat-table [dataSource]="dataSource" *ngIf="!cargando() && dataSource.data.length">
+    <table mat-table [dataSource]="items()" *ngIf="!cargando() && items().length">
 
       <ng-container matColumnDef="avatar">
         <th mat-header-cell *matHeaderCellDef></th>
@@ -76,13 +76,17 @@
       <tr mat-header-row *matHeaderRowDef="columnas"></tr>
       <tr mat-row *matRowDef="let row; columns: columnas;"></tr>
     </table>
-    <mat-paginator
-      *ngIf="!cargando() && dataSource.data.length"
-      [pageSize]="10"
-      [pageSizeOptions]="[10, 25, 50]"
-      showFirstLastButtons>
-    </mat-paginator>
-    <div class="empty-state" *ngIf="!cargando() && !dataSource.data.length">
+   <mat-paginator
+    *ngIf="!cargando() && totalItems() > 0"
+    [length]="totalItems()"
+    [pageSize]="pageSize()"
+    [pageIndex]="pageIndex()"
+    [pageSizeOptions]="[10, 25, 50]"
+    showFirstLastButtons
+    (page)="onPageChange($event)">
+  </mat-paginator>
+
+  <div class="empty-state" *ngIf="!cargando() && !items().length">
       <mat-icon>group_off</mat-icon>
       <p>No hay usuarios cargados todavía.</p>
       <a mat-stroked-button routerLink="nuevo">Crear el primero</a>

@@ -2,6 +2,8 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { Rol, UsuarioRequest, UsuarioResponse } from './usuario.model';
+import { PageResponse } from '../../shared/page-response.model';
+import { Observable } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class UsuarioService {
@@ -12,6 +14,10 @@ export class UsuarioService {
   listar() {
     return this.http.get<UsuarioResponse[]>(this.base);
   }
+
+  listarPaginado(page: number, size: number): Observable<PageResponse<UsuarioResponse>> {
+  return this.http.get<PageResponse<UsuarioResponse>>(`${this.base}/pagina?page=${page}&size=${size}`);
+}
 
   buscarPorId(id: number) {
     return this.http.get<UsuarioResponse>(`${this.base}/${id}`);
