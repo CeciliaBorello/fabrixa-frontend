@@ -1,10 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import {
-  FormBuilder,
-  ReactiveFormsModule,
-  Validators
-} from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -17,13 +13,8 @@ import { AuthService } from '../../core/auth/auth.service';
   selector: 'app-login',
   standalone: true,
   imports: [
-    CommonModule,
-    ReactiveFormsModule,
-    MatCardModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatButtonModule,
-    MatProgressSpinnerModule
+    CommonModule, ReactiveFormsModule, MatCardModule, MatFormFieldModule,
+    MatInputModule, MatButtonModule, MatProgressSpinnerModule
   ],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css'
@@ -31,8 +22,8 @@ import { AuthService } from '../../core/auth/auth.service';
 export class LoginComponent {
   form;
 
-  cargando = false;
-  error = '';
+  cargando = signal(false);
+  error = signal('');
 
   constructor(
     private fb: FormBuilder,
@@ -48,16 +39,16 @@ export class LoginComponent {
   onSubmit() {
     if (this.form.invalid) return;
 
-    this.cargando = true;
-    this.error = '';
+    this.cargando.set(true);
+    this.error.set('');
 
     this.auth.login(this.form.getRawValue() as any).subscribe({
       next: () => this.router.navigate(['/']),
       error: (err) => {
-        this.cargando = false;
-        this.error = err.status === 401
-          ? 'Email o contraseña incorrectos'
-          : 'No se pudo conectar con el servidor';
+        this.cargando.set(false);
+        this.error.set(
+          err.status === 401 ? 'Email o contraseña incorrectos' : 'No se pudo conectar con el servidor'
+        );
       }
     });
   }

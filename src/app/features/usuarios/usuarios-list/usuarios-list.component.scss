@@ -95,3 +95,19 @@ th, td {
   align-items: flex-start;
   gap: 8px;
 }
+
+.permiso-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #fdecea;
+  color: #c0392b;
+  padding: 14px 18px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.permiso-banner mat-icon {
+  color: #c0392b;
+}

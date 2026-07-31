@@ -1,13 +1,13 @@
 <div class="page">
-      <div class="titulo-con-volver">
-        <app-back-button ruta="/"></app-back-button>
-<div> 
   <div class="page-header">
-    <div>
-      <h1>Usuarios</h1>
-      <p class="subtitle">Administrá quién tiene acceso al sistema y con qué rol</p>
+    <div class="titulo-con-volver">
+      <app-back-button ruta="/"></app-back-button>
+      <div>
+        <h1>Usuarios</h1>
+        <p class="subtitle">Administrá quién tiene acceso al sistema y con qué rol</p>
+      </div>
     </div>
-    <div class="page-header-top">
+    <div class="page-header-top" *ngIf="!sinPermiso()">
       <a mat-flat-button color="primary" routerLink="nuevo">
         <mat-icon>add</mat-icon>
         Nuevo usuario
@@ -15,10 +15,13 @@
     </div>
   </div>
 
-  <div class="error-banner" *ngIf="error()">
-    <mat-icon>error_outline</mat-icon>
-    {{ error() }}
+  <div class="permiso-banner" *ngIf="sinPermiso()">
+    <mat-icon>warning</mat-icon>
+    Esta sección no corresponde con su rol
   </div>
+
+  <ng-container *ngIf="!sinPermiso()">
+    <div class="error-banner" *ngIf="error()">{{ error() }}</div>
 
   <div class="content-card">
     <div class="loading-container" *ngIf="cargando()">
@@ -92,6 +95,5 @@
       <a mat-stroked-button routerLink="nuevo">Crear el primero</a>
     </div>
   </div>
-</div>
-</div>
+  </ng-container>
 </div>

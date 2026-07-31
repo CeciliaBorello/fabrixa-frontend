@@ -12,6 +12,7 @@
   align-items: center;
   gap: 8px;
   margin-right: 2rem;
+  color: #ffffff;
 }
 
 .brand-f {
@@ -81,4 +82,9 @@
 .brand-logo {
   height: 20px;
   width: auto;
+}
+
+.brand {
+  text-decoration: none;
+  cursor: pointer;
 }

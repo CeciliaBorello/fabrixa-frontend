@@ -9,6 +9,7 @@ interface ModuloCard {
   icono: string;
   ruta: string;
   disponible: boolean;
+  rolesPermitidos?: string[]; // si no se define, lo ve cualquier rol logueado
 }
 
 @Component({
@@ -19,8 +20,8 @@ interface ModuloCard {
   styleUrl: './home.component.scss'
 })
 export class HomeComponent {
-  modulos: ModuloCard[] = [
-    { titulo: 'Usuarios', descripcion: 'Gestioná usuarios, roles y permisos del sistema', icono: '👥', ruta: '/usuarios', disponible: true },
+  todosLosModulos: ModuloCard[] = [
+    { titulo: 'Usuarios', descripcion: 'Gestioná usuarios, roles y permisos del sistema', icono: '👥', ruta: '/usuarios', disponible: true, rolesPermitidos: ['ADMINISTRADOR'] },
     { titulo: 'Clientes y proveedores', descripcion: 'Cartera comercial y cuentas corrientes', icono: '🤝', ruta: '/clientes', disponible: true },
     { titulo: 'Productos', descripcion: 'Catálogo de productos terminados e insumos', icono: '📦', ruta: '/productos', disponible: true },
     { titulo: 'Pedidos', descripcion: 'Seguimiento de pedidos, de nuevo a entregado', icono: '🧾', ruta: '/pedidos', disponible: true },
@@ -31,4 +32,11 @@ export class HomeComponent {
   ];
 
   constructor(public auth: AuthService) {}
+
+  get modulos(): ModuloCard[] {
+    const rolActual = this.auth.currentUser()?.rol;
+    return this.todosLosModulos.filter(
+      (m) => !m.rolesPermitidos || (rolActual && m.rolesPermitidos.includes(rolActual))
+    );
+  }
 }

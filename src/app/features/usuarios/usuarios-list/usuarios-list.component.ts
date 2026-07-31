@@ -11,6 +11,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { UsuarioService } from '../usuario.service';
 import { UsuarioResponse } from '../usuario.model';
 import { BackButtonComponent } from '../../../shared/back-button/back-button.component';
+import { AuthService } from '../../../core/auth/auth.service';
 
 
 @Component({
@@ -33,9 +34,16 @@ export class UsuariosListComponent implements OnInit {
 
   columnas = ['avatar', 'nombre', 'email', 'rol', 'estado', 'acciones'];
 
-  constructor(private usuarioService: UsuarioService) {}
+  constructor(private usuarioService: UsuarioService, private auth: AuthService) {}
+  
+  sinPermiso = signal(false);
 
   ngOnInit() {
+    if (this.auth.currentUser()?.rol !== 'ADMINISTRADOR') {
+      this.sinPermiso.set(true);
+      this.cargando.set(false);
+      return; // no llamamos al backend, evitamos el error 403 feo
+    }
     this.cargar();
   }
 

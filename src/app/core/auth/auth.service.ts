@@ -26,9 +26,7 @@ export class AuthService {
   }
 
   logout() {
-    localStorage.removeItem(TOKEN_KEY);
-    localStorage.removeItem(USER_KEY);
-    this.currentUser.set(null);
+    this.clearSession();
     this.router.navigate(['/login']);
   }
 
@@ -43,5 +41,11 @@ export class AuthService {
   private leerUsuarioGuardado() {
     const raw = localStorage.getItem(USER_KEY);
     return raw ? JSON.parse(raw) : null;
+  }
+
+  clearSession() {
+    localStorage.removeItem(TOKEN_KEY);
+    localStorage.removeItem(USER_KEY);
+    this.currentUser.set(null);
   }
 }

@@ -20,17 +20,17 @@
           <input matInput type="password" formControlName="password" />
         </mat-form-field>
 
-        <p class="error" *ngIf="error">{{ error }}</p>
+        <p class="error" *ngIf="error()">{{ error() }}</p>
 
         <button
           mat-flat-button
           color="primary"
           type="submit"
           class="full-width"
-          [disabled]="form.invalid || cargando"
+          [disabled]="form.invalid || cargando()"
         >
-          <mat-spinner *ngIf="cargando" diameter="20"></mat-spinner>
-          <span *ngIf="!cargando">Ingresar</span>
+          <mat-spinner *ngIf="cargando()" diameter="20"></mat-spinner>
+          <span *ngIf="!cargando()">Ingresar</span>
         </button>
       </form>
     </mat-card-content>
