@@ -9,9 +9,13 @@
   <span class="spacer"></span>
 
   <button mat-icon-button [matMenuTriggerFor]="userMenu">
-    <mat-icon>account_circle</mat-icon>
+    <mat-icon class="color-icono">account_circle</mat-icon>
   </button>
   <mat-menu #userMenu="matMenu">
+    <button mat-menu-item disabled>
+      <mat-icon>account_circle</mat-icon>
+      <span>{{ auth.currentUser()?.nombre }}</span>
+    </button>
     <button mat-menu-item (click)="logout()">
       <mat-icon>logout</mat-icon>
       <span>Cerrar sesión</span>

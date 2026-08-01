@@ -34,7 +34,8 @@ export class ClienteProveedorService {
     return this.http.put<void>(`${this.baseUrl}/${id}/reactivar`, {});
   }
 
-  listarPaginado(page: number, size: number): Observable<PageResponse<ClienteProveedorResponse>> {
-    return this.http.get<PageResponse<ClienteProveedorResponse>>(`${this.baseUrl}/pagina?page=${page}&size=${size}`);
+  listarPaginado(page: number, size: number, sortBy: string, sortDir: string, activo: boolean, busqueda: string): Observable<PageResponse<ClienteProveedorResponse>> {
+    const params = new URLSearchParams({ page: String(page), size: String(size), sortBy, sortDir, activo: String(activo), busqueda });
+    return this.http.get<PageResponse<ClienteProveedorResponse>>(`${this.baseUrl}/pagina?${params}`);
   }
 }

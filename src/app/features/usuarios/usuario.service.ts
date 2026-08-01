@@ -15,9 +15,14 @@ export class UsuarioService {
     return this.http.get<UsuarioResponse[]>(this.base);
   }
 
-  listarPaginado(page: number, size: number): Observable<PageResponse<UsuarioResponse>> {
-  return this.http.get<PageResponse<UsuarioResponse>>(`${this.base}/pagina?page=${page}&size=${size}`);
-}
+ listarPaginado(
+    page: number, size: number, sortBy: string, sortDir: string, activo: boolean, busqueda: string
+  ): Observable<PageResponse<UsuarioResponse>> {
+    const params = new URLSearchParams({
+      page: String(page), size: String(size), sortBy, sortDir, activo: String(activo), busqueda
+    });
+    return this.http.get<PageResponse<UsuarioResponse>>(`${this.base}/pagina?${params}`);
+  }
 
   buscarPorId(id: number) {
     return this.http.get<UsuarioResponse>(`${this.base}/${id}`);

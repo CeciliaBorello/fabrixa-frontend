@@ -34,7 +34,8 @@ export class PedidoService {
     return this.http.put<PedidoResponse>(`${this.baseUrl}/${id}/cancelar`, {});
   }
 
-  listarPaginado(page: number, size: number): Observable<PageResponse<PedidoResponse>> {
-    return this.http.get<PageResponse<PedidoResponse>>(`${this.baseUrl}/pagina?page=${page}&size=${size}`);
+  listarPaginado(page: number, size: number, sortBy: string, sortDir: string, soloCancelados: boolean, busqueda: string): Observable<PageResponse<PedidoResponse>> {
+    const params = new URLSearchParams({ page: String(page), size: String(size), sortBy, sortDir, soloCancelados: String(soloCancelados), busqueda });
+    return this.http.get<PageResponse<PedidoResponse>>(`${this.baseUrl}/pagina?${params}`);
   }
 }

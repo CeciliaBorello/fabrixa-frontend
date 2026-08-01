@@ -34,7 +34,8 @@ export class ProductoService {
     return this.http.put<void>(`${this.baseUrl}/${id}/reactivar`, {});
   }
 
-  listarPaginado(page: number, size: number, grupo: 'terminados' | 'insumos'): Observable<PageResponse<ProductoResponse>> {
-    return this.http.get<PageResponse<ProductoResponse>>(`${this.baseUrl}/pagina?page=${page}&size=${size}&grupo=${grupo}`);
+  listarPaginado(page: number, size: number, sortBy: string, sortDir: string, activo: boolean, busqueda: string, grupo: 'terminados' | 'insumos'): Observable<PageResponse<ProductoResponse>> {
+    const params = new URLSearchParams({ page: String(page), size: String(size), sortBy, sortDir, activo: String(activo), busqueda, grupo });
+    return this.http.get<PageResponse<ProductoResponse>>(`${this.baseUrl}/pagina?${params}`);
   }
 }
