@@ -1,13 +1,17 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { debounceTime, filter as rxFilter } from 'rxjs';
 import { MatTableModule } from '@angular/material/table';
+import { MatSortModule, Sort } from '@angular/material/sort';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { FormulaService } from '../formula.service';
 import { FormulaResponse } from '../formula.model';
@@ -18,9 +22,9 @@ import { BackButtonComponent } from '../../../shared/back-button/back-button.com
   selector: 'app-formulas-list',
   standalone: true,
   imports: [
-    CommonModule, RouterLink, MatTableModule, MatPaginatorModule, MatButtonModule,
-    MatIconModule, MatChipsModule, MatProgressSpinnerModule, MatTooltipModule, MatDialogModule,
-    BackButtonComponent
+    CommonModule, RouterLink, ReactiveFormsModule, MatTableModule, MatSortModule, MatPaginatorModule,
+    MatButtonModule, MatIconModule, MatChipsModule, MatProgressSpinnerModule, MatTooltipModule,
+    MatSlideToggleModule, MatDialogModule, BackButtonComponent
   ],
   templateUrl: './formulas-list.component.html',
   styleUrl: './formulas-list.component.scss'
@@ -30,12 +34,26 @@ export class FormulasListComponent implements OnInit {
   totalItems = signal(0);
   pageIndex = signal(0);
   pageSize = signal(10);
+  sortBy = signal('fechaModificacion');
+  sortDir = signal<'asc' | 'desc'>('desc');
+  mostrarInactivos = signal(false);
+  busqueda = signal('');
   cargando = signal(true);
   error = signal('');
 
+  busquedaControl = new FormControl('');
+
   columnas = ['producto', 'nombre', 'version', 'insumos', 'estado', 'acciones'];
 
-  constructor(private service: FormulaService, private dialog: MatDialog) {}
+  constructor(private service: FormulaService, private dialog: MatDialog) {
+    this.busquedaControl.valueChanges
+      .pipe(debounceTime(500), rxFilter((v) => (v?.length ?? 0) === 0 || (v?.length ?? 0) >= 3))
+      .subscribe((valor) => {
+        this.busqueda.set(valor || '');
+        this.pageIndex.set(0);
+        this.cargar();
+      });
+  }
 
   ngOnInit() {
     this.cargar();
@@ -43,22 +61,42 @@ export class FormulasListComponent implements OnInit {
 
   cargar() {
     this.cargando.set(true);
-    this.service.listarPaginado(this.pageIndex(), this.pageSize()).subscribe({
-      next: (pagina) => {
-        this.items.set(pagina.content);
-        this.totalItems.set(pagina.totalElements);
-        this.cargando.set(false);
-      },
-      error: () => {
-        this.error.set('No se pudieron cargar las fórmulas');
-        this.cargando.set(false);
-      }
-    });
+    this.service
+      .listarPaginado(this.pageIndex(), this.pageSize(), this.sortBy(), this.sortDir(), !this.mostrarInactivos(), this.busqueda())
+      .subscribe({
+        next: (pagina) => {
+          this.items.set(pagina.content);
+          this.totalItems.set(pagina.totalElements);
+          this.cargando.set(false);
+        },
+        error: () => {
+          this.error.set('No se pudieron cargar las fórmulas');
+          this.cargando.set(false);
+        }
+      });
   }
 
   onPageChange(event: PageEvent) {
     this.pageIndex.set(event.pageIndex);
     this.pageSize.set(event.pageSize);
+    this.cargar();
+  }
+
+  onSortChange(sort: Sort) {
+    if (!sort.direction) {
+      this.sortBy.set('fechaModificacion');
+      this.sortDir.set('desc');
+    } else {
+      this.sortBy.set(sort.active);
+      this.sortDir.set(sort.direction as 'asc' | 'desc');
+    }
+    this.pageIndex.set(0);
+    this.cargar();
+  }
+
+  toggleMostrarInactivos() {
+    this.mostrarInactivos.update((v) => !v);
+    this.pageIndex.set(0);
     this.cargar();
   }
 
@@ -71,7 +109,6 @@ export class FormulasListComponent implements OnInit {
         peligroso: true
       }
     });
-
     ref.afterClosed().subscribe((confirmado) => {
       if (confirmado) {
         this.service.desactivar(item.id).subscribe({
@@ -91,7 +128,6 @@ export class FormulasListComponent implements OnInit {
         peligroso: false
       }
     });
-
     ref.afterClosed().subscribe((confirmado) => {
       if (confirmado) {
         this.service.reactivar(item.id).subscribe({

@@ -14,6 +14,11 @@ export class OrdenFabricacionService {
     return this.http.get<OrdenFabricacionResponse[]>(this.baseUrl);
   }
 
+  listarPaginado(page: number, size: number, sortBy: string, sortDir: string, soloCanceladas: boolean, busqueda: string): Observable<PageResponse<OrdenFabricacionResponse>> {
+    const params = new URLSearchParams({ page: String(page), size: String(size), sortBy, sortDir, soloCanceladas: String(soloCanceladas), busqueda });
+    return this.http.get<PageResponse<OrdenFabricacionResponse>>(`${this.baseUrl}/pagina?${params}`);
+  }
+
   crear(request: OrdenFabricacionRequest): Observable<OrdenFabricacionResponse> {
     return this.http.post<OrdenFabricacionResponse>(this.baseUrl, request);
   }
@@ -32,9 +37,5 @@ export class OrdenFabricacionService {
 
   historialPorProducto(productoId: number): Observable<OrdenFabricacionResponse[]> {
     return this.http.get<OrdenFabricacionResponse[]>(`${this.baseUrl}/por-producto/${productoId}`);
-  }
-
-  listarPaginado(page: number, size: number): Observable<PageResponse<OrdenFabricacionResponse>> {
-    return this.http.get<PageResponse<OrdenFabricacionResponse>>(`${this.baseUrl}/pagina?page=${page}&size=${size}`);
   }
 }

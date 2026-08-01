@@ -46,9 +46,7 @@ export class LoginComponent {
       next: () => this.router.navigate(['/']),
       error: (err) => {
         this.cargando.set(false);
-        this.error.set(
-          err.status === 401 ? 'Email o contraseña incorrectos' : 'No se pudo conectar con el servidor'
-        );
+        this.error.set(err.error || 'No se pudo conectar con el servidor');
       }
     });
   }

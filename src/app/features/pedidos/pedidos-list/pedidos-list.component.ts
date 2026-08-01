@@ -47,7 +47,7 @@ export class PedidosListComponent implements OnInit {
 
   constructor(private service: PedidoService, private dialog: MatDialog) {
     this.busquedaControl.valueChanges
-      .pipe(debounceTime(2000), rxFilter((v) => (v?.length ?? 0) === 0 || (v?.length ?? 0) >= 3))
+      .pipe(debounceTime(500), rxFilter((v) => (v?.length ?? 0) === 0 || (v?.length ?? 0) >= 3))
       .subscribe((valor) => {
         this.busqueda.set(valor || '');
         this.pageIndex.set(0);

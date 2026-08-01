@@ -17,7 +17,8 @@ import { UsuarioService } from '../usuario.service';
 import { UsuarioResponse } from '../usuario.model';
 import { AuthService } from '../../../core/auth/auth.service';
 import { BackButtonComponent } from '../../../shared/back-button/back-button.component';
-import { debounceTime, filter as rxFilter } from 'rxjs';
+import { debounceTime, filter as rxFilter } from 'rxjs';import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { ConfirmDialogComponent } from '../../../shared/confirm-dialog/confirm-dialog.component';
 
 @Component({
   selector: 'app-usuarios-list',
@@ -47,18 +48,22 @@ export class UsuariosListComponent implements OnInit {
 
   columnas = ['avatar', 'nombre', 'email', 'rol', 'estado', 'acciones'];
 
-  constructor(private usuarioService: UsuarioService, private auth: AuthService) {
-    this.busquedaControl.valueChanges
-      .pipe(
-        debounceTime(500), // espera medio segundo de inactividad
-        rxFilter((valor) => (valor?.length ?? 0) === 0 || (valor?.length ?? 0) >= 3) // pero solo busca con 3+ letras, o si se vació el campo
-      )
-      .subscribe((valor) => {
-        this.busqueda.set(valor || '');
-        this.pageIndex.set(0);
-        this.cargar();
-      });
-  }
+constructor(
+  private usuarioService: UsuarioService,
+  public auth: AuthService,
+  private dialog: MatDialog
+) {
+  this.busquedaControl.valueChanges
+    .pipe(
+      debounceTime(2000),
+      rxFilter((v) => (v?.length ?? 0) === 0 || (v?.length ?? 0) >= 3)
+    )
+    .subscribe((valor) => {
+      this.busqueda.set(valor || '');
+      this.pageIndex.set(0);
+      this.cargar();
+    });
+}
 
   ngOnInit() {
     if (this.auth.currentUser()?.rol !== 'ADMINISTRADOR') {
@@ -115,15 +120,37 @@ export class UsuariosListComponent implements OnInit {
   }
 
   toggleEstado(usuario: UsuarioResponse) {
-    const accion = usuario.activo
-      ? this.usuarioService.desactivar(usuario.id)
-      : this.usuarioService.reactivar(usuario.id);
+  const ref = this.dialog.open(ConfirmDialogComponent, {
+    data: usuario.activo
+      ? {
+          titulo: 'Desactivar usuario',
+          mensaje: `¿Seguro que querés desactivar a ${usuario.nombre}? No va a poder iniciar sesión hasta que lo reactives.`,
+          textoConfirmar: 'Desactivar',
+          peligroso: true
+        }
+      : {
+          titulo: 'Reactivar usuario',
+          mensaje: `¿Reactivar a ${usuario.nombre}?`,
+          textoConfirmar: 'Reactivar',
+          peligroso: false
+        }
+  });
 
-    accion.subscribe({
-      next: () => this.cargar(),
-      error: () => this.error.set('No se pudo cambiar el estado del usuario')
-    });
-  }
+  ref.afterClosed().subscribe((confirmado) => {
+    if (confirmado) this.ejecutarToggle(usuario);
+  });
+}
+
+private ejecutarToggle(usuario: UsuarioResponse) {
+  const accion = usuario.activo
+    ? this.usuarioService.desactivar(usuario.id)
+    : this.usuarioService.reactivar(usuario.id);
+
+  accion.subscribe({
+    next: () => this.cargar(),
+    error: () => this.error.set('No se pudo cambiar el estado del usuario')
+  });
+}
 
   iniciales(nombre: string): string {
     return nombre.split(' ').map((p) => p[0]).slice(0, 2).join('').toUpperCase();

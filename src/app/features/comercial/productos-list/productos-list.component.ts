@@ -158,14 +158,25 @@ export class ProductosListComponent implements OnInit {
   }
 
   toggleEstado(item: ProductoResponse) {
-    if (item.activo) {
-      const ref = this.dialog.open(ConfirmDialogComponent, {
-        data: { titulo: 'Desactivar producto', mensaje: `¿Seguro que querés desactivar ${item.nombre}?`, textoConfirmar: 'Desactivar', peligroso: true }
-      });
-      ref.afterClosed().subscribe((confirmado) => { if (confirmado) this.ejecutarToggle(item); });
-    } else {
-      this.ejecutarToggle(item);
-    }
+    const ref = this.dialog.open(ConfirmDialogComponent, {
+      data: item.activo
+        ? {
+            titulo: 'Desactivar producto',
+            mensaje: `¿Seguro que querés desactivar ${item.nombre}?`,
+            textoConfirmar: 'Desactivar',
+            peligroso: true
+          }
+        : {
+            titulo: 'Reactivar producto',
+            mensaje: `¿Reactivar ${item.nombre}?`,
+            textoConfirmar: 'Reactivar',
+            peligroso: false
+          }
+    });
+
+    ref.afterClosed().subscribe((confirmado) => {
+      if (confirmado) this.ejecutarToggle(item);
+    });
   }
 
   private ejecutarToggle(item: ProductoResponse) {
@@ -183,5 +194,18 @@ export class ProductosListComponent implements OnInit {
 
   verHistorialPrecio(item: ProductoResponse) {
     this.router.navigate(['/productos', item.id, 'precios']);
+  }
+
+  etiquetaCategoria(categoria: string | null): string {
+    const mapa: Record<string, string> = {
+      MATERIA_PRIMA: 'Materia Prima',
+      ENVASES_Y_EMPAQUES: 'Envases y Empaques',
+      ADITIVOS_Y_CONSERVANTES: 'Aditivos y Conservantes',
+      LIMPIEZA_E_HIGIENE: 'Limpieza e Higiene',
+      REPUESTOS_Y_MANTENIMIENTO: 'Repuestos y Mantenimiento',
+      PRODUCTO_PARA_VENTA: 'Producto para la Venta',
+      OTROS: 'Otros'
+    };
+    return categoria ? (mapa[categoria] ?? categoria) : '-';
   }
 }

@@ -14,6 +14,11 @@ export class FormulaService {
     return this.http.get<FormulaResponse[]>(this.baseUrl);
   }
 
+  listarPaginado(page: number, size: number, sortBy: string, sortDir: string, activo: boolean, busqueda: string): Observable<PageResponse<FormulaResponse>> {
+    const params = new URLSearchParams({ page: String(page), size: String(size), sortBy, sortDir, activo: String(activo), busqueda });
+    return this.http.get<PageResponse<FormulaResponse>>(`${this.baseUrl}/pagina?${params}`);
+  }
+
   buscarPorId(id: number): Observable<FormulaResponse> {
     return this.http.get<FormulaResponse>(`${this.baseUrl}/${id}`);
   }
@@ -28,9 +33,5 @@ export class FormulaService {
 
   reactivar(id: number): Observable<void> {
     return this.http.put<void>(`${this.baseUrl}/${id}/reactivar`, {});
-  }
-
-  listarPaginado(page: number, size: number): Observable<PageResponse<FormulaResponse>> {
-    return this.http.get<PageResponse<FormulaResponse>>(`${this.baseUrl}/pagina?page=${page}&size=${size}`);
   }
 }

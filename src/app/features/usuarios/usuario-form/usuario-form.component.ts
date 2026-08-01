@@ -1,7 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
@@ -9,7 +9,6 @@ import { MatButtonModule } from '@angular/material/button';
 import { UsuarioService } from '../usuario.service';
 import { Rol } from '../usuario.model';
 import { BackButtonComponent } from '../../../shared/back-button/back-button.component';
-import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-usuario-form',
@@ -30,8 +29,8 @@ import { RouterLink } from '@angular/router';
 export class UsuarioFormComponent implements OnInit {
   roles: Rol[] = [];
   usuarioId: number | null = null;
-  cargando = false;
-  error = '';
+  cargando = signal(false);
+  error = signal('');
 
   form;
 
@@ -78,8 +77,8 @@ export class UsuarioFormComponent implements OnInit {
   onSubmit() {
     if (this.form.invalid) return;
 
-    this.cargando = true;
-    this.error = '';
+    this.cargando.set(true);
+    this.error.set('');
     const valores = this.form.getRawValue();
 
     const request = {
@@ -96,8 +95,8 @@ export class UsuarioFormComponent implements OnInit {
     accion.subscribe({
       next: () => this.router.navigate(['/usuarios']),
       error: (err) => {
-        this.cargando = false;
-        this.error = err.error ?? 'Ocurrió un error al guardar';
+        this.cargando.set(false);
+        this.error.set(err.error ?? 'Ocurrió un error al guardar');
       }
     });
   }

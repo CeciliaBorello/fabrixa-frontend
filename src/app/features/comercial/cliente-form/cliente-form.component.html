@@ -25,17 +25,21 @@
 
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>CUIT</mat-label>
-        <input matInput formControlName="cuit" />
+        <input matInput formControlName="cuit" placeholder="20304050607" maxlength="13" />
+        <mat-hint>Sin guiones, 11 dígitos</mat-hint>
+        <mat-error *ngIf="form.get('cuit')?.hasError('required')">El CUIT es obligatorio</mat-error>
+        <mat-error *ngIf="form.get('cuit')?.hasError('cuitFormato')">Tiene que tener 11 dígitos</mat-error>
+        <mat-error *ngIf="form.get('cuit')?.hasError('cuitInvalido')">Ese CUIT no es válido (dígito verificador incorrecto)</mat-error>
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Condición frente al IVA</mat-label>
-        <input matInput formControlName="condicionIva" />
-      </mat-form-field>
-
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Dirección</mat-label>
-        <input matInput formControlName="direccion" />
+        <mat-select formControlName="condicionIva">
+          <mat-option value="RESPONSABLE_INSCRIPTO">Responsable Inscripto</mat-option>
+          <mat-option value="MONOTRIBUTISTA">Monotributista</mat-option>
+          <mat-option value="EXENTO">Exento</mat-option>
+          <mat-option value="CONSUMIDOR_FINAL">Consumidor Final</mat-option>
+        </mat-select>
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="full-width">
@@ -46,12 +50,49 @@
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Email</mat-label>
         <input matInput type="email" formControlName="email" />
+        <mat-error *ngIf="form.get('email')?.hasError('email')">Ingresá un email válido</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Provincia</mat-label>
+        <input
+          matInput
+          [value]="nombreProvinciaSeleccionada()"
+          (input)="onProvinciaInput($any($event.target).value)"
+          [matAutocomplete]="autoProvincia"
+          placeholder="Escribí para buscar..."
+        />
+        <mat-autocomplete #autoProvincia="matAutocomplete" (optionSelected)="onProvinciaSeleccionada($event.option.value)">
+          <mat-option *ngFor="let p of provinciasFiltradas()" [value]="p.id">{{ p.nombre }}</mat-option>
+        </mat-autocomplete>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Ciudad</mat-label>
+        <input
+          matInput
+          [value]="nombreCiudadSeleccionada()"
+          (input)="onCiudadInput($any($event.target).value)"
+          [matAutocomplete]="autoCiudad"
+          [disabled]="!form.get('provinciaId')?.value"
+          placeholder="Escribí para buscar..."
+        />
+        <mat-autocomplete #autoCiudad="matAutocomplete" (optionSelected)="onCiudadSeleccionada($event.option.value)">
+          <mat-option *ngFor="let c of ciudadesFiltradas()" [value]="c.id">{{ c.nombre }}</mat-option>
+        </mat-autocomplete>
+        <mat-hint *ngIf="!form.get('provinciaId')?.value">Elegí una provincia primero</mat-hint>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Dirección (calle y número)</mat-label>
+        <input matInput formControlName="direccion" placeholder="Av. Siempre Viva 742" />
       </mat-form-field>
 
       <p class="error" *ngIf="error()">{{ error() }}</p>
 
       <div class="form-actions">
-        <button mat-flat-button color="primary" type="submit" [disabled]="guardando()">
+        <button mat-button type="button" (click)="cancelar()">Cancelar</button>
+        <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid || guardando()">
           {{ guardando() ? 'Guardando...' : 'Guardar' }}
         </button>
       </div>

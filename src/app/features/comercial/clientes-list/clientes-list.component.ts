@@ -104,22 +104,51 @@ export class ClientesListComponent implements OnInit {
   }
 
   toggleEstado(item: ClienteProveedorResponse) {
-    if (item.activo) {
-      const ref = this.dialog.open(ConfirmDialogComponent, {
-        data: { titulo: 'Desactivar registro', mensaje: `¿Seguro que querés desactivar a ${item.razonSocial}?`, textoConfirmar: 'Desactivar', peligroso: true }
-      });
-      ref.afterClosed().subscribe((confirmado) => { if (confirmado) this.ejecutarToggle(item); });
-    } else {
-      this.ejecutarToggle(item);
-    }
+    const ref = this.dialog.open(ConfirmDialogComponent, {
+      data: item.activo
+        ? {
+            titulo: 'Desactivar registro',
+            mensaje: `¿Seguro que querés desactivar a ${item.razonSocial}?`,
+            textoConfirmar: 'Desactivar',
+            peligroso: true
+          }
+        : {
+            titulo: 'Reactivar registro',
+            mensaje: `¿Reactivar a ${item.razonSocial}?`,
+            textoConfirmar: 'Reactivar',
+            peligroso: false
+          }
+    });
+
+    ref.afterClosed().subscribe((confirmado) => {
+      if (confirmado) this.ejecutarToggle(item);
+    });
   }
 
   private ejecutarToggle(item: ClienteProveedorResponse) {
     const accion = item.activo ? this.service.desactivar(item.id) : this.service.reactivar(item.id);
-    accion.subscribe({ next: () => this.cargar(), error: () => this.error.set('No se pudo cambiar el estado') });
+    accion.subscribe({
+      next: () => this.cargar(),
+      error: () => this.error.set('No se pudo cambiar el estado')
+    });
   }
-
+ 
   etiquetaTipo(tipo: string): string {
     return tipo === 'CLIENTE' ? 'Cliente' : tipo === 'PROVEEDOR' ? 'Proveedor' : 'Cliente y proveedor';
+  }
+
+  etiquetaCondicionIva(condicion: string | null): string {
+    const mapa: Record<string, string> = {
+      RESPONSABLE_INSCRIPTO: 'Responsable Inscripto',
+      MONOTRIBUTISTA: 'Monotributista',
+      EXENTO: 'Exento',
+      CONSUMIDOR_FINAL: 'Consumidor Final'
+    };
+    return condicion ? (mapa[condicion] ?? condicion) : '-';
+  }
+
+  ubicacionCompleta(item: ClienteProveedorResponse): string {
+    if (item.ciudadNombre && item.provinciaNombre) return `${item.ciudadNombre}, ${item.provinciaNombre}`;
+    return item.provinciaNombre || '-';
   }
 }

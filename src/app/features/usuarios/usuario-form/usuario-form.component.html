@@ -16,6 +16,8 @@
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Email</mat-label>
         <input matInput type="email" formControlName="email" />
+        <mat-error *ngIf="form.get('email')?.hasError('required')">El email es obligatorio</mat-error>
+        <mat-error *ngIf="form.get('email')?.hasError('email')">Ingresá un email válido</mat-error>
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="full-width">
@@ -31,12 +33,12 @@
         <mat-hint *ngIf="esEdicion">Dejalo vacío para no cambiarla</mat-hint>
       </mat-form-field>
 
-      <p class="error" *ngIf="error">{{ error }}</p>
+      <p class="error" *ngIf="error()">{{ error() }}</p>
 
       <div class="form-actions">
         <a mat-button routerLink="/usuarios">Cancelar</a>
-        <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid || cargando">
-          {{ cargando ? 'Guardando...' : 'Guardar' }}
+        <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid || cargando()">
+          {{ cargando() ? 'Guardando...' : 'Guardar' }}
         </button>
       </div>
     </form>

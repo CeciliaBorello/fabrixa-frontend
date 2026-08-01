@@ -38,4 +38,8 @@ export class ProductoService {
     const params = new URLSearchParams({ page: String(page), size: String(size), sortBy, sortDir, activo: String(activo), busqueda, grupo });
     return this.http.get<PageResponse<ProductoResponse>>(`${this.baseUrl}/pagina?${params}`);
   }
+
+  listarProductosBase(): Observable<ProductoResponse[]> {
+    return this.http.get<ProductoResponse[]>(`${this.baseUrl}/base`);
+  }
 }

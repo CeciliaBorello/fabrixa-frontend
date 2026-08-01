@@ -90,10 +90,30 @@ th, td {
 .estado-dot.activo { background-color: #2AAE7E; }
 .estado-dot.inactivo { background-color: #c0392b; }
 
+.actions-cell {
+  width: 220px;
+  min-width: 220px;
+  padding: 0 12px !important;
+}
+
 .actions {
   display: flex;
-  gap: 0.15rem;
+  align-items: center;
   justify-content: flex-end;
+  gap: 0;
+  flex-wrap: nowrap; // fuerza que los botones queden en una sola fila, sin importar el ancho
+}
+
+.actions button,
+.actions a {
+  width: 32px;
+  height: 32px;
+  line-height: 32px;
+  flex-shrink: 0;
+}
+
+.actions .mat-mdc-icon-button {
+  padding: 4px;
 }
 
 .loading-container, .empty-state {

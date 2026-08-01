@@ -10,6 +10,7 @@ export interface OrdenFabricacionResponse {
   estado: EstadoOrdenFabricacion;
   fechaInicio: string | null;
   fechaFin: string | null;
+  fechaModificacion: string | null;
   usuarioNombre: string;
   costoTotalInsumos: number | null;
   costoUnitarioProducido: number | null;
