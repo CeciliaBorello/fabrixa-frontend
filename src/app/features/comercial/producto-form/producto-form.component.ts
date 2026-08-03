@@ -33,7 +33,7 @@ export class ProductoFormComponent implements OnInit {
   // solo tiene sentido elegir como "base" algo que también se vende (terminado o ambos),
   // un insumo puro no puede ser la base de una presentación de venta
   productosBaseFiltrados = computed(() =>
-    this.productosBase().filter((p) => p.tipo === 'TERMINADO' || p.tipo === 'AMBOS')
+    this.productosBase().filter((p) => (p.tipo === 'TERMINADO' || p.tipo === 'AMBOS') && p.id !== this.itemId)
   );
 
   // el campo de presentación/producto base solo aplica si el producto en sí se vende

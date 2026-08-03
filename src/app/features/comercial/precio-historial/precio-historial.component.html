@@ -1,10 +1,12 @@
 <div class="page">
-      <div class="titulo-con-volver">
-        <app-back-button ruta="/"></app-back-button>
-<div> 
   <div class="page-header">
-    <h1>Historial de precios</h1>
-    <p class="subtitle" *ngIf="nombreProducto()">{{ nombreProducto() }}</p>
+    <div class="titulo-con-volver">
+      <app-back-button ruta="/productos"></app-back-button>
+      <div>
+        <h1>Historial de precios</h1>
+        <p class="subtitle" *ngIf="nombreProducto()">{{ nombreProducto() }}</p>
+      </div>
+    </div>
   </div>
 
   <div class="content-card">
@@ -20,7 +22,7 @@
 
       <ng-container matColumnDef="precio">
         <th mat-header-cell *matHeaderCellDef>Precio</th>
-        <td mat-cell *matCellDef="let r">{{ r.precio | currency:'ARS' }}</td>
+        <td mat-cell *matCellDef="let r" class="precio-valor">{{ r.precio | currency:'ARS' }}</td>
       </ng-container>
 
       <ng-container matColumnDef="usuario">
@@ -37,8 +39,9 @@
       <tr mat-row *matRowDef="let row; columns: columnas;"></tr>
     </table>
 
-    <p class="empty-msg" *ngIf="!cargando() && !registros().length">
-      Este producto todavía no tiene precios cargados.
-    </p>
+    <div class="empty-state" *ngIf="!cargando() && !registros().length">
+      <mat-icon>payments</mat-icon>
+      <p>Este producto todavía no tiene precios cargados.</p>
+    </div>
   </div>
 </div>

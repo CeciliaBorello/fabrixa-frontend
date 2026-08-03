@@ -17,6 +17,7 @@ import { FormulaFormComponent } from './features/fabricacion/formula-form/formul
 import { OrdenesListComponent } from './features/fabricacion/ordenes-list/ordenes-list.component';
 import { OrdenFormComponent } from './features/fabricacion/orden-form/orden-form.component';
 import { PrecioHistorialComponent } from './features/comercial/precio-historial/precio-historial.component';
+import { CostoHistorialComponent } from './features/fabricacion/costo-historial/costo-historial.component';
 
 
 
@@ -69,15 +70,16 @@ export const routes: Routes = [
     ]
   },
   {
-  path: 'fabricacion',
-  canActivate: [authGuard],
-  children: [
-    { path: '', redirectTo: 'ordenes', pathMatch: 'full' },
-    { path: 'ordenes', component: OrdenesListComponent },
-    { path: 'ordenes/nueva', component: OrdenFormComponent },
-    { path: 'formulas', component: FormulasListComponent },
-    { path: 'formulas/nueva', component: FormulaFormComponent }
-  ]
+    path: 'fabricacion',
+    canActivate: [authGuard],
+    children: [
+      { path: '', redirectTo: 'ordenes', pathMatch: 'full' },
+      { path: 'ordenes', component: OrdenesListComponent },
+      { path: 'ordenes/nueva', component: OrdenFormComponent },
+      { path: 'formulas', component: FormulasListComponent },
+      { path: 'formulas/nueva', component: FormulaFormComponent },
+      { path: 'costos/:id', component: CostoHistorialComponent }
+    ]
   },
   { path: '**', redirectTo: '' }
 ];

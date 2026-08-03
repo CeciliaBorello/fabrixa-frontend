@@ -1,11 +1,15 @@
 <div class="page">
-      <div class="titulo-con-volver">
-        <app-back-button ruta="/"></app-back-button>
-<div> 
   <div class="page-header">
-    <h1>Historial de costo de fabricación</h1>
-    <p class="subtitle" *ngIf="nombreProducto()">{{ nombreProducto() }}</p>
+    <div class="titulo-con-volver">
+      <app-back-button ruta="/fabricacion/ordenes"></app-back-button>
+      <div>
+        <h1>Historial de costo de fabricación</h1>
+        <p class="subtitle" *ngIf="nombreProducto()">{{ nombreProducto() }}</p>
+      </div>
+    </div>
   </div>
+
+  <div class="error-banner" *ngIf="error()">{{ error() }}</div>
 
   <div class="costo-actual-card" *ngIf="costoMasReciente() != null">
     <span class="label">Costo unitario más reciente</span>
@@ -23,7 +27,7 @@
         <td mat-cell *matCellDef="let o">{{ o.fechaFin | date:'dd/MM/yyyy' }}</td>
       </ng-container>
 
-      <ng-container matColumnDef="lote">
+      <ng-container matColumnDef="orden">
         <th mat-header-cell *matHeaderCellDef>Orden</th>
         <td mat-cell *matCellDef="let o">#{{ o.id }}</td>
       </ng-container>
@@ -35,20 +39,25 @@
 
       <ng-container matColumnDef="costoTotal">
         <th mat-header-cell *matHeaderCellDef>Costo total insumos</th>
-        <td mat-cell *matCellDef="let o">{{ o.costoTotalInsumos | currency:'ARS' }}</td>
+        <td mat-cell *matCellDef="let o">
+          {{ o.costoTotalInsumos != null ? (o.costoTotalInsumos | currency:'ARS') : '—' }}
+        </td>
       </ng-container>
 
       <ng-container matColumnDef="costoUnitario">
         <th mat-header-cell *matHeaderCellDef>Costo unitario</th>
-        <td mat-cell *matCellDef="let o" class="costo-unitario">{{ o.costoUnitarioProducido | currency:'ARS' }}</td>
+        <td mat-cell *matCellDef="let o" class="costo-unitario">
+          {{ o.costoUnitarioProducido != null ? (o.costoUnitarioProducido | currency:'ARS') : '—' }}
+        </td>
       </ng-container>
 
       <tr mat-header-row *matHeaderRowDef="columnas"></tr>
       <tr mat-row *matRowDef="let row; columns: columnas;"></tr>
     </table>
 
-    <p class="empty-msg" *ngIf="!cargando() && !ordenes().length">
-      Este producto todavía no tiene órdenes de fabricación finalizadas.
-    </p>
+    <div class="empty-state" *ngIf="!cargando() && !ordenes().length && !error()">
+      <mat-icon>trending_up</mat-icon>
+      <p>Este producto todavía no tiene órdenes de fabricación finalizadas.</p>
+    </div>
   </div>
 </div>

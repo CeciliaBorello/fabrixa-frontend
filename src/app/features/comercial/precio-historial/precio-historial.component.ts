@@ -6,11 +6,12 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { PrecioService } from '../precio.service';
 import { PrecioResponse } from '../precio.model';
 import { BackButtonComponent } from '../../../shared/back-button/back-button.component';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-precio-historial',
   standalone: true,
-  imports: [CommonModule, MatTableModule, MatProgressSpinnerModule, BackButtonComponent],
+  imports: [CommonModule, MatTableModule, MatProgressSpinnerModule, BackButtonComponent, MatIconModule],
   templateUrl: './precio-historial.component.html',
   styleUrl: './precio-historial.component.scss'
 })
