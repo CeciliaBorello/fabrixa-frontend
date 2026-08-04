@@ -1,13 +1,20 @@
 .page {
   padding: 2rem;
-  max-width: 900px;
+  max-width: 1050px;
   margin: 0 auto;
 }
 
 .page-header {
   display: flex;
-  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-start;
   margin-bottom: 1.5rem;
+}
+
+.titulo-con-volver {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
 }
 
 .page-header h1 {
@@ -20,22 +27,6 @@
   margin: 4px 0 0;
   color: #6b7280;
   font-size: 14px;
-}
-
-.page-header-top {
-  display: flex;
-  justify-content: flex-end;
-  margin-bottom: 1rem;
-}
-
-.page-header a[mat-flat-button] {
-  margin: 0;
-}
-
-.titulo-con-volver {
-  display: flex;
-  align-items: flex-start;
-  gap: 8px;
 }
 
 .error-banner {
@@ -68,15 +59,140 @@ th, td {
   font-size: 14px;
 }
 
-.mat-column-nombre { width: 200px; }
-.mat-column-categoria { width: 140px; }
-.mat-column-codigoBarra { width: 150px; }
-.mat-column-precio { width: 110px; }
-.mat-column-estado { width: 110px; }
+/* ---- Anchos de columna de la tabla PRINCIPAL ---- */
+.mat-column-nombre { width: 220px; }
+.mat-column-categoria { width: 150px; }
+.mat-column-codigoBarra { width: 130px; }
+.mat-column-precio { width: 90px; }
+.mat-column-estado { width: 90px; }
 .mat-column-acciones {
-  width: 170px;
+  width: 200px;
   text-align: right;
-  padding-right: 12px !important;
+  padding-right: 8px !important;
+}
+
+.nombre-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.expand-btn {
+  width: 24px;
+  height: 24px;
+  line-height: 24px;
+  flex-shrink: 0;
+  color: #6b7280;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.expand-btn mat-icon {
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.fila-principal {
+  cursor: default;
+}
+
+tr.fila-detalle {
+  height: 0 !important;
+}
+
+tr.fila-detalle > td {
+  height: 0 !important;
+  padding: 0 !important;
+  border-bottom: none !important;
+}
+
+::ng-deep tr.fila-detalle.mat-mdc-row {
+  height: 0 !important;
+}
+
+.detail-wrapper {
+  overflow: hidden;
+}
+
+.detail-loading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 24px;
+  color: #6b7280;
+  font-size: 13px;
+}
+
+/* ---- Tabla de DETALLE (presentaciones) — mismos anchos que la principal ---- */
+.detail-table {
+  width: 100%;
+  table-layout: fixed;
+  background: #f9fafb;
+}
+
+.detail-table tr {
+  border-bottom: 1px solid #eef1f5;
+}
+
+.detail-table tr:last-child {
+  border-bottom: none;
+}
+
+/* padding base, igual que la tabla principal (12px horizontal) */
+.detail-table td {
+  padding: 8px 12px !important;
+  font-size: 13px;
+  color: #374151;
+}
+
+/* solo la primera columna lleva indentación extra, para "meterse" bajo el ícono de expandir */
+.detail-table td.detail-nombre {
+  width: 220px;
+  padding-left: 44px !important;
+  font-weight: 500;
+}
+
+.detail-table td.detail-categoria {
+  width: 150px;
+  color: #9ca3af;
+}
+
+.detail-table td.detail-codigo { width: 130px; }
+.detail-table td.detail-precio { width: 90px; }
+.detail-table td.detail-estado { width: 90px; }
+.detail-table td.detail-acciones {
+  width: 200px;
+  text-align: right;
+  padding-right: 8px !important;
+}
+
+.detail-empty {
+  padding: 14px 24px 14px 44px;
+  background: #f9fafb;
+  color: #6b7280;
+  font-size: 13px;
+  margin: 0;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0;
+}
+
+.actions button,
+.actions a {
+  width: 32px;
+  height: 32px;
+  line-height: 32px;
+  flex-shrink: 0;
 }
 
 .estado-dot {
@@ -90,39 +206,15 @@ th, td {
 .estado-dot.activo { background-color: #2AAE7E; }
 .estado-dot.inactivo { background-color: #c0392b; }
 
-.actions-cell {
-  width: 220px;
-  min-width: 220px;
-  padding: 0 12px !important;
-}
-
-.actions {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 0;
-  flex-wrap: nowrap; // fuerza que los botones queden en una sola fila, sin importar el ancho
-}
-
-.actions button,
-.actions a {
-  width: 32px;
-  height: 32px;
-  line-height: 32px;
-  flex-shrink: 0;
-}
-
-.actions .mat-mdc-icon-button {
-  padding: 4px;
-}
-
 .loading-container, .empty-state {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   gap: 12px;
   padding: 4rem 2rem;
   color: #6b7280;
+  text-align: center;
 }
 
 .empty-state mat-icon {
@@ -130,44 +222,6 @@ th, td {
   width: 40px;
   height: 40px;
   color: #cbd0d6;
-}
-
-::ng-deep .mat-mdc-tab-body-content {
-  padding-top: 1rem;
-}
-
-::ng-deep .mat-mdc-tab-label-container {
-  padding: 0 1rem;
-}
-
-::ng-deep .mat-mdc-tab-body-content {
-  overflow: hidden !important;
-}
-
-::ng-deep .mat-mdc-tab-body-wrapper {
-  overflow: visible !important;
-}
-
-.titulo-con-volver {
-  display: flex;
-  align-items: flex-start;
-  gap: 8px;
-}
-
-.permiso-banner {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background: #fdecea;
-  color: #c0392b;
-  padding: 14px 18px;
-  border-radius: 8px;
-  font-size: 14px;
-  font-weight: 500;
-}
-
-.permiso-banner mat-icon {
-  color: #c0392b;
 }
 
 .toolbar-lista {
@@ -179,7 +233,7 @@ th, td {
   border: 1px solid #e5e7eb;
   border-radius: 999px;
   height: 46px;
-  padding: 0 16px; // antes tenía "0 6px 0 16px" — ahora simétrico en ambos lados
+  padding: 0 16px;
 }
 
 .search-wrapper {
@@ -275,4 +329,8 @@ th, td {
 
 ::ng-deep .mat-mdc-slide-toggle.mat-checked .mdc-switch__handle::after {
   background-color: #ffffff !important;
+}
+
+::ng-deep .mat-mdc-tab-body-content {
+  overflow: hidden !important;
 }

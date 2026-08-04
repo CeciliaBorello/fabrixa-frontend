@@ -27,6 +27,10 @@ export class ProductoFormComponent implements OnInit {
   guardando = signal(false);
   error = signal('');
 
+  presentacionTexto = signal('');
+
+  productoBaseIdSignal = signal<number | null>(null);
+
   productosBase = signal<ProductoResponse[]>([]);
   tipoSeleccionado = signal<TipoProducto>('TERMINADO');
 
@@ -58,7 +62,7 @@ export class ProductoFormComponent implements OnInit {
       rnpa: [''],
       valorNutricional: [''],
       unidadMedida: ['KG', Validators.required],
-      categoria: [''],
+      categoria: ['', Validators.required],
       productoBaseId: [null as number | null],
       presentacion: ['']
     });
@@ -75,6 +79,19 @@ export class ProductoFormComponent implements OnInit {
         this.form.get('productoBaseId')?.setValue(null);
         this.form.get('presentacion')?.setValue('');
       }
+    });
+
+    this.form.get('productoBaseId')?.valueChanges.subscribe((valor) => {
+      this.productoBaseIdSignal.set(valor);
+    });
+
+    this.form.get('presentacion')?.valueChanges.subscribe((valor) => {
+      this.presentacionTexto.set(valor || '');
+    });
+
+    this.form.get('productoBaseId')?.valueChanges.subscribe((valor) => {
+      this.productoBaseIdSignal.set(valor);
+      this.actualizarValidadorNombre(!!valor);
     });
 
     const idParam = this.route.snapshot.paramMap.get('id');
@@ -105,6 +122,8 @@ export class ProductoFormComponent implements OnInit {
     } else {
       this.tipoSeleccionado.set('TERMINADO'); // valor inicial del form
     }
+
+    this.actualizarValidadorNombre(!!this.form.get('productoBaseId')?.value);
   }
 
   cancelar() {
@@ -144,5 +163,23 @@ export class ProductoFormComponent implements OnInit {
         this.error.set(err.error ?? 'No se pudo guardar');
       }
     });
+  }
+
+  nombreCalculado = computed(() => {
+    const baseId = this.productoBaseIdSignal();
+    const base = this.productosBase().find((p) => p.id === baseId);
+    const presentacion = this.presentacionTexto().trim();
+    if (!base) return '';
+    return presentacion ? `${base.nombre} ${presentacion}` : base.nombre;
+  });
+
+  private actualizarValidadorNombre(hayProductoBase: boolean) {
+    const control = this.form.get('nombre');
+    if (hayProductoBase) {
+      control?.clearValidators();
+    } else {
+      control?.setValidators(Validators.required);
+    }
+    control?.updateValueAndValidity();
   }
 }

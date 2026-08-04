@@ -70,12 +70,6 @@ th, td {
   padding-right: 12px !important;
 }
 
-.actions {
-  display: flex;
-  gap: 0.15rem;
-  justify-content: flex-end;
-}
-
 .planificada-hint {
   color: #9ca3af;
   font-size: 11px;
@@ -231,4 +225,18 @@ mat-chip {
 
 ::ng-deep .mat-mdc-slide-toggle.mat-checked .mdc-switch__handle::after {
   background-color: #ffffff !important;
+}
+
+.actions-cell {
+  width: 130px;
+  min-width: 130px;
+  padding: 0 12px !important;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 2px;
+  width: 100%;
 }

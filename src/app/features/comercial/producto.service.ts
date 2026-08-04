@@ -42,4 +42,8 @@ export class ProductoService {
   listarProductosBase(): Observable<ProductoResponse[]> {
     return this.http.get<ProductoResponse[]>(`${this.baseUrl}/base`);
   }
+
+  listarPresentaciones(productoId: number): Observable<ProductoResponse[]> {
+    return this.http.get<ProductoResponse[]>(`${this.baseUrl}/${productoId}/presentaciones`);
+  }
 }

@@ -15,23 +15,44 @@
       <h3>Productos</h3>
 
       <div formArrayName="items" class="items-list">
-        <div class="item-row" *ngFor="let item of itemsArray.controls; let i = index" [formGroupName]="i">
-          <mat-form-field appearance="outline" class="item-producto">
-            <mat-label>Producto</mat-label>
-            <mat-select formControlName="productoId">
-              <mat-option *ngFor="let p of productos()" [value]="p.id">{{ p.nombre }}</mat-option>
-            </mat-select>
-          </mat-form-field>
+        <div class="item-card" *ngFor="let item of itemsArray.controls; let i = index" [formGroupName]="i">
+          <div class="item-row-top">
+            <mat-form-field appearance="outline" class="item-producto">
+              <mat-label>Producto</mat-label>
+              <input
+                matInput
+                [value]="nombreProductoElegido(i)"
+                (input)="onFiltroProductoInput(i, $any($event.target).value)"
+                [matAutocomplete]="autoProducto"
+                placeholder="Escribí para buscar..."
+              />
+              <mat-autocomplete #autoProducto="matAutocomplete" (optionSelected)="onProductoSeleccionado(i, $event.option.value)">
+                <mat-option *ngFor="let p of productosFiltrados(i)" [value]="p.id">{{ p.nombre }}</mat-option>
+              </mat-autocomplete>
+            </mat-form-field>
 
-          <mat-form-field appearance="outline" class="item-cantidad">
-            <mat-label>Cantidad</mat-label>
-            <input matInput type="number" formControlName="cantidad" min="1" />
-          </mat-form-field>
+            <mat-form-field appearance="outline" class="item-cantidad">
+              <mat-label>Cantidad</mat-label>
+              <input matInput type="number" formControlName="cantidad" min="1" />
+            </mat-form-field>
 
-          <button mat-icon-button type="button" (click)="quitarItem(i)"
-                  [disabled]="itemsArray.length === 1" matTooltip="Quitar">
-            <mat-icon>delete</mat-icon>
-          </button>
+            <button mat-icon-button type="button" (click)="quitarItem(i)"
+                    [disabled]="itemsArray.length === 1" matTooltip="Quitar">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+
+          <div class="presentaciones-wrapper" *ngIf="presentacionesDe(item.get('productoId')?.value).length > 0">
+            <span class="presentaciones-label">Presentación:</span>
+            <mat-chip-listbox>
+              <mat-chip-option
+                *ngFor="let pres of presentacionesDe(item.get('productoId')?.value)"
+                [selected]="item.get('presentacionId')?.value === pres.id"
+                (click)="onPresentacionClick(i, pres.id)">
+                {{ pres.presentacion || pres.nombre }}
+              </mat-chip-option>
+            </mat-chip-listbox>
+          </div>
         </div>
       </div>
 

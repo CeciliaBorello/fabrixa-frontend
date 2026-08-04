@@ -23,6 +23,8 @@
     </div>
 
     <mat-tab-group *ngIf="!cargando()" [dynamicHeight]="true">
+
+      <!-- ===================== PRODUCTOS TERMINADOS (con filas expandibles) ===================== -->
       <mat-tab label="Productos terminados">
         <div class="toolbar-lista">
           <div class="search-wrapper">
@@ -56,6 +58,7 @@
 
         <table
           mat-table
+          multiTemplateDataRows
           [dataSource]="itemsTerminados()"
           matSort
           [matSortActive]="sortByTerminados()"
@@ -65,7 +68,18 @@
 
           <ng-container matColumnDef="nombre">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>Nombre</th>
-            <td mat-cell *matCellDef="let p">{{ p.nombre }}</td>
+            <td mat-cell *matCellDef="let p">
+              <div class="nombre-cell">
+                <button
+                  mat-icon-button
+                  class="expand-btn"
+                  (click)="toggleExpandir(p)"
+                  matTooltip="Ver presentaciones">
+                  <mat-icon>{{ estaExpandida(p.id) ? 'expand_less' : 'expand_more' }}</mat-icon>
+                </button>
+                {{ p.nombre }}
+              </div>
+            </td>
           </ng-container>
 
           <ng-container matColumnDef="categoria">
@@ -116,8 +130,58 @@
             </td>
           </ng-container>
 
+          <!-- fila expandida: presentaciones del producto -->
+          <ng-container matColumnDef="expandedDetail">
+            <td mat-cell *matCellDef="let p" [attr.colspan]="columnas.length">
+              <div class="detail-wrapper" [@detailExpand]="estaExpandida(p.id) ? 'expanded' : 'collapsed'">
+                <div class="detail-loading" *ngIf="estaCargandoPresentaciones(p.id)">
+                  <mat-spinner diameter="20"></mat-spinner>
+                  <span>Cargando presentaciones...</span>
+                </div>
+
+                <table class="detail-table" *ngIf="!estaCargandoPresentaciones(p.id) && presentacionesDe(p.id).length">
+                  <tr *ngFor="let pres of presentacionesDe(p.id)">
+                    <td class="detail-nombre">{{ pres.presentacion || pres.nombre }}</td>
+                    <td class="detail-categoria">-</td>
+                    <td class="detail-codigo">{{ pres.codigoBarra || '-' }}</td>
+                    <td class="detail-precio">{{ pres.precioActual != null ? (pres.precioActual | currency:'ARS') : '—' }}</td>
+                    <td class="detail-estado">
+                      <span class="estado-dot" [class.activo]="pres.activo" [class.inactivo]="!pres.activo"></span>
+                      {{ pres.activo ? 'Activo' : 'Inactivo' }}
+                    </td>
+                    <td class="detail-acciones">
+                      <div class="actions">
+                        <a mat-icon-button [routerLink]="[pres.id, 'editar']" matTooltip="Editar">
+                          <mat-icon>edit</mat-icon>
+                        </a>
+                        <button mat-icon-button (click)="actualizarPrecio(pres)" matTooltip="Actualizar precio">
+                          <mat-icon>attach_money</mat-icon>
+                        </button>
+                        <button mat-icon-button (click)="verHistorialPrecio(pres)" matTooltip="Historial de precios">
+                          <mat-icon>history</mat-icon>
+                        </button>
+                        <a mat-icon-button [routerLink]="['/fabricacion/costos', pres.id]" matTooltip="Costo de fabricación">
+                          <mat-icon>trending_up</mat-icon>
+                        </a>
+                        <button mat-icon-button (click)="toggleEstado(pres)" [matTooltip]="pres.activo ? 'Desactivar' : 'Reactivar'">
+                          <mat-icon>{{ pres.activo ? 'block' : 'check_circle' }}</mat-icon>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                </table>
+
+                <p class="detail-empty" *ngIf="!estaCargandoPresentaciones(p.id) && !presentacionesDe(p.id).length">
+                  Este producto no tiene presentaciones cargadas.
+                  <a [routerLink]="['nuevo']" [queryParams]="{ base: p.id }">Agregar una</a>
+                </p>
+              </div>
+            </td>
+          </ng-container>
+
           <tr mat-header-row *matHeaderRowDef="columnas"></tr>
-          <tr mat-row *matRowDef="let row; columns: columnas;"></tr>
+          <tr mat-row *matRowDef="let row; columns: columnas;" class="fila-principal"></tr>
+          <tr mat-row *matRowDef="let row; columns: ['expandedDetail']" class="fila-detalle"></tr>
         </table>
 
         <mat-paginator
@@ -137,6 +201,7 @@
         </div>
       </mat-tab>
 
+      <!-- ===================== INSUMOS (sin cambios, listado simple) ===================== -->
       <mat-tab label="Insumos">
         <div class="toolbar-lista">
           <div class="search-wrapper">
@@ -220,9 +285,6 @@
                 <button mat-icon-button (click)="verHistorialPrecio(p)" matTooltip="Historial de precios">
                   <mat-icon>history</mat-icon>
                 </button>
-                <a mat-icon-button [routerLink]="['/fabricacion/costos', p.id]" matTooltip="Costo de fabricación">
-                  <mat-icon>trending_up</mat-icon>
-                </a>
                 <button mat-icon-button (click)="toggleEstado(p)" [matTooltip]="p.activo ? 'Desactivar' : 'Reactivar'">
                   <mat-icon>{{ p.activo ? 'block' : 'check_circle' }}</mat-icon>
                 </button>

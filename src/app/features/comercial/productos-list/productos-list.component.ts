@@ -13,6 +13,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { animate, state, style, transition, trigger } from '@angular/animations';
 import { ProductoService } from '../producto.service';
 import { ProductoResponse } from '../producto.model';
 import { PrecioService } from '../precio.service';
@@ -29,15 +30,22 @@ import { BackButtonComponent } from '../../../shared/back-button/back-button.com
     MatSlideToggleModule, MatDialogModule, BackButtonComponent
   ],
   templateUrl: './productos-list.component.html',
-  styleUrl: './productos-list.component.scss'
+  styleUrl: './productos-list.component.scss',
+  animations: [
+    trigger('detailExpand', [
+      state('collapsed', style({ height: '0px', minHeight: '0' })),
+      state('expanded', style({ height: '*' })),
+      transition('expanded <=> collapsed', animate('180ms cubic-bezier(0.4, 0.0, 0.2, 1)'))
+    ])
+  ]
 })
 export class ProductosListComponent implements OnInit {
   itemsTerminados = signal<ProductoResponse[]>([]);
   totalTerminados = signal(0);
   pageIndexTerminados = signal(0);
   pageSizeTerminados = signal(10);
-  sortByTerminados = signal('fechaModificacion');
-  sortDirTerminados = signal<'asc' | 'desc'>('desc');
+  sortByTerminados = signal('nombre');
+  sortDirTerminados = signal<'asc' | 'desc'>('asc');
   mostrarInactivosTerminados = signal(false);
   busquedaTerminados = signal('');
   busquedaControlTerminados = new FormControl('');
@@ -46,14 +54,20 @@ export class ProductosListComponent implements OnInit {
   totalInsumos = signal(0);
   pageIndexInsumos = signal(0);
   pageSizeInsumos = signal(10);
-  sortByInsumos = signal('fechaModificacion');
-  sortDirInsumos = signal<'asc' | 'desc'>('desc');
+  sortByInsumos = signal('nombre');
+  sortDirInsumos = signal<'asc' | 'desc'>('asc');
   mostrarInactivosInsumos = signal(false);
   busquedaInsumos = signal('');
   busquedaControlInsumos = new FormControl('');
 
   cargando = signal(true);
   error = signal('');
+
+  // ids de productos base actualmente expandidos en la tabla de Terminados
+  filasExpandidas = signal<Set<number>>(new Set());
+  // cache de presentaciones ya cargadas por producto base, para no repetir el request al volver a expandir
+  presentacionesPorProducto = signal<Record<number, ProductoResponse[]>>({});
+  cargandoPresentaciones = signal<Set<number>>(new Set());
 
   columnas = ['nombre', 'categoria', 'codigoBarra', 'precio', 'estado', 'acciones'];
 
@@ -87,6 +101,7 @@ export class ProductosListComponent implements OnInit {
 
   cargarTerminados() {
     this.cargando.set(true);
+    this.filasExpandidas.set(new Set());
     this.service
       .listarPaginado(this.pageIndexTerminados(), this.pageSizeTerminados(), this.sortByTerminados(), this.sortDirTerminados(), !this.mostrarInactivosTerminados(), this.busquedaTerminados(), 'terminados')
       .subscribe({
@@ -127,14 +142,14 @@ export class ProductosListComponent implements OnInit {
   }
 
   onSortChangeTerminados(sort: Sort) {
-    if (!sort.direction) { this.sortByTerminados.set('fechaModificacion'); this.sortDirTerminados.set('desc'); }
+    if (!sort.direction) { this.sortByTerminados.set('nombre'); this.sortDirTerminados.set('asc'); }
     else { this.sortByTerminados.set(sort.active); this.sortDirTerminados.set(sort.direction as 'asc' | 'desc'); }
     this.pageIndexTerminados.set(0);
     this.cargarTerminados();
   }
 
   onSortChangeInsumos(sort: Sort) {
-    if (!sort.direction) { this.sortByInsumos.set('fechaModificacion'); this.sortDirInsumos.set('desc'); }
+    if (!sort.direction) { this.sortByInsumos.set('nombre'); this.sortDirInsumos.set('asc'); }
     else { this.sortByInsumos.set(sort.active); this.sortDirInsumos.set(sort.direction as 'asc' | 'desc'); }
     this.pageIndexInsumos.set(0);
     this.cargarInsumos();
@@ -155,6 +170,52 @@ export class ProductosListComponent implements OnInit {
   private recargarTodo() {
     this.cargarTerminados();
     this.cargarInsumos();
+  }
+
+  estaExpandida(id: number): boolean {
+    return this.filasExpandidas().has(id);
+  }
+
+  presentacionesDe(id: number): ProductoResponse[] {
+    return this.presentacionesPorProducto()[id] || [];
+  }
+
+  estaCargandoPresentaciones(id: number): boolean {
+    return this.cargandoPresentaciones().has(id);
+  }
+
+  toggleExpandir(producto: ProductoResponse) {
+    const expandidas = new Set(this.filasExpandidas());
+
+    if (expandidas.has(producto.id)) {
+      expandidas.delete(producto.id);
+      this.filasExpandidas.set(expandidas);
+      return;
+    }
+
+    expandidas.add(producto.id);
+    this.filasExpandidas.set(expandidas);
+
+    // si ya la cacheamos antes, no volvemos a pedirla al backend
+    if (this.presentacionesPorProducto()[producto.id]) return;
+
+    const cargando = new Set(this.cargandoPresentaciones());
+    cargando.add(producto.id);
+    this.cargandoPresentaciones.set(cargando);
+
+    this.service.listarPresentaciones(producto.id).subscribe({
+      next: (data) => {
+        this.presentacionesPorProducto.update((mapa) => ({ ...mapa, [producto.id]: data }));
+        const c = new Set(this.cargandoPresentaciones());
+        c.delete(producto.id);
+        this.cargandoPresentaciones.set(c);
+      },
+      error: () => {
+        const c = new Set(this.cargandoPresentaciones());
+        c.delete(producto.id);
+        this.cargandoPresentaciones.set(c);
+      }
+    });
   }
 
   toggleEstado(item: ProductoResponse) {
@@ -181,14 +242,27 @@ export class ProductosListComponent implements OnInit {
 
   private ejecutarToggle(item: ProductoResponse) {
     const accion = item.activo ? this.service.desactivar(item.id) : this.service.reactivar(item.id);
-    accion.subscribe({ next: () => this.recargarTodo(), error: () => this.error.set('No se pudo cambiar el estado') });
+    accion.subscribe({
+      next: () => {
+        // invalidamos el cache de presentaciones de su base (si es una) y recargamos todo
+        this.presentacionesPorProducto.set({});
+        this.recargarTodo();
+      },
+      error: () => this.error.set('No se pudo cambiar el estado')
+    });
   }
 
   actualizarPrecio(item: ProductoResponse) {
     const ref = this.dialog.open(PrecioDialogComponent, { data: { productoNombre: item.nombre, precioActual: item.precioActual } });
     ref.afterClosed().subscribe((resultado) => {
       if (!resultado) return;
-      this.precioService.registrar(item.id, resultado).subscribe({ next: () => this.recargarTodo(), error: () => this.error.set('No se pudo actualizar el precio') });
+      this.precioService.registrar(item.id, resultado).subscribe({
+        next: () => {
+          this.presentacionesPorProducto.set({});
+          this.recargarTodo();
+        },
+        error: () => this.error.set('No se pudo actualizar el precio')
+      });
     });
   }
 
