@@ -38,4 +38,9 @@ export class OrdenFabricacionService {
   historialPorProducto(productoId: number): Observable<OrdenFabricacionResponse[]> {
     return this.http.get<OrdenFabricacionResponse[]>(`${this.baseUrl}/por-producto/${productoId}`);
   }
+
+  ultimoCostoPorProductos(ids: number[]): Observable<Record<number, number>> {
+    const params = ids.map((id) => `ids=${id}`).join('&');
+    return this.http.get<Record<number, number>>(`${this.baseUrl}/ultimo-costo?${params}`);
+  }
 }

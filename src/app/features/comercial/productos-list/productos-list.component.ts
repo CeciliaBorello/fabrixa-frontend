@@ -20,6 +20,7 @@ import { PrecioService } from '../precio.service';
 import { PrecioDialogComponent } from '../precio-dialog/precio-dialog.component';
 import { ConfirmDialogComponent } from '../../../shared/confirm-dialog/confirm-dialog.component';
 import { BackButtonComponent } from '../../../shared/back-button/back-button.component';
+import { OrdenFabricacionService } from '../../fabricacion/orden-fabricacion.service';
 
 @Component({
   selector: 'app-productos-list',
@@ -59,6 +60,7 @@ export class ProductosListComponent implements OnInit {
   mostrarInactivosInsumos = signal(false);
   busquedaInsumos = signal('');
   busquedaControlInsumos = new FormControl('');
+  costoFabricacionPorProducto = signal<Record<number, number>>({});
 
   cargando = signal(true);
   error = signal('');
@@ -69,13 +71,16 @@ export class ProductosListComponent implements OnInit {
   presentacionesPorProducto = signal<Record<number, ProductoResponse[]>>({});
   cargandoPresentaciones = signal<Set<number>>(new Set());
 
-  columnas = ['nombre', 'categoria', 'codigoBarra', 'precio', 'estado', 'acciones'];
+  // arrays de columnas SEPARADOS: Terminados tiene "costoFabricacion", Insumos no
+  columnasTerminados = ['nombre', 'categoria', 'codigoBarra', 'precio', 'costoFabricacion', 'estado', 'acciones'];
+  columnasInsumos = ['nombre', 'categoria', 'codigoBarra', 'precio', 'estado', 'acciones'];
 
   constructor(
     private service: ProductoService,
     private precioService: PrecioService,
     private dialog: MatDialog,
-    private router: Router
+    private router: Router,
+    private ordenService: OrdenFabricacionService
   ) {
     this.busquedaControlTerminados.valueChanges
       .pipe(debounceTime(500), rxFilter((v) => (v?.length ?? 0) === 0 || (v?.length ?? 0) >= 3))
@@ -109,12 +114,24 @@ export class ProductosListComponent implements OnInit {
           this.itemsTerminados.set(pagina.content);
           this.totalTerminados.set(pagina.totalElements);
           this.cargando.set(false);
+
+          const ids = pagina.content.map((p) => p.id);
+          if (ids.length) {
+            this.ordenService.ultimoCostoPorProductos(ids).subscribe((costos) => {
+              this.costoFabricacionPorProducto.set(costos);
+            });
+          }
         },
         error: () => {
           this.error.set('No se pudieron cargar los productos');
           this.cargando.set(false);
         }
       });
+  }
+
+  costoFabricacionDe(productoId: number): number | null {
+    const valor = this.costoFabricacionPorProducto()[productoId];
+    return valor !== undefined ? valor : null;
   }
 
   cargarInsumos() {

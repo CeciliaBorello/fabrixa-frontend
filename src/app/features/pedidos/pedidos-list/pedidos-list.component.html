@@ -40,10 +40,26 @@
       <mat-spinner diameter="36"></mat-spinner>
     </div>
 
-    <table mat-table [dataSource]="items()" matSort [matSortActive]="sortBy()" [matSortDirection]="sortDir()" (matSortChange)="onSortChange($event)" *ngIf="!cargando() && items().length">
+    <table
+      mat-table
+      multiTemplateDataRows
+      [dataSource]="items()"
+      matSort
+      [matSortActive]="sortBy()"
+      [matSortDirection]="sortDir()"
+      (matSortChange)="onSortChange($event)"
+      *ngIf="!cargando() && items().length">
+
       <ng-container matColumnDef="id">
         <th mat-header-cell *matHeaderCellDef>#</th>
-        <td mat-cell *matCellDef="let p">{{ p.id }}</td>
+        <td mat-cell *matCellDef="let p">
+          <div class="nombre-cell">
+            <button mat-icon-button class="expand-btn" (click)="toggleExpandir(p)" matTooltip="Ver detalle">
+              <mat-icon>{{ estaExpandida(p.id) ? 'expand_less' : 'expand_more' }}</mat-icon>
+            </button>
+            {{ p.id }}
+          </div>
+        </td>
       </ng-container>
 
       <ng-container matColumnDef="cliente">
@@ -65,9 +81,14 @@
         </td>
       </ng-container>
 
-      <ng-container matColumnDef="fecha">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header="fechaPedido">Fecha</th>
+      <ng-container matColumnDef="fechaPedido">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header="fechaPedido">Fecha del pedido</th>
         <td mat-cell *matCellDef="let p">{{ p.fechaPedido | date:'dd/MM/yyyy HH:mm' }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="fechaModificacion">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header="fechaModificacion">Última modificación</th>
+        <td mat-cell *matCellDef="let p">{{ p.fechaModificacion | date:'dd/MM/yyyy HH:mm' }}</td>
       </ng-container>
 
       <ng-container matColumnDef="acciones">
@@ -93,8 +114,28 @@
         </td>
       </ng-container>
 
+      <!-- fila expandida: detalle de ítems del pedido -->
+      <ng-container matColumnDef="expandedDetail">
+        <td mat-cell *matCellDef="let p" [attr.colspan]="columnas.length">
+          <div class="detail-wrapper" [@detailExpand]="estaExpandida(p.id) ? 'expanded' : 'collapsed'">
+            <table class="detail-table" *ngIf="p.items && p.items.length">
+              <tr class="detail-header-row">
+                <td class="detail-nombre detail-header">Producto</td>
+                <td class="detail-cantidad detail-header">Cantidad</td>
+              </tr>
+              <tr *ngFor="let item of p.items">
+                <td class="detail-nombre">{{ item.productoNombre }}</td>
+                <td class="detail-cantidad">{{ item.cantidad }}</td>
+              </tr>
+            </table>
+            <p class="detail-empty" *ngIf="!p.items || !p.items.length">Este pedido no tiene ítems cargados.</p>
+          </div>
+        </td>
+      </ng-container>
+
       <tr mat-header-row *matHeaderRowDef="columnas"></tr>
-      <tr mat-row *matRowDef="let row; columns: columnas;"></tr>
+      <tr mat-row *matRowDef="let row; columns: columnas;" class="fila-principal"></tr>
+      <tr mat-row *matRowDef="let row; columns: ['expandedDetail']" class="fila-detalle"></tr>
     </table>
 
     <mat-paginator

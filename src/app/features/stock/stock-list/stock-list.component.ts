@@ -1,9 +1,10 @@
-import { Component, OnInit, signal, computed } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { forkJoin, debounceTime, filter as rxFilter } from 'rxjs';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { debounceTime, filter as rxFilter } from 'rxjs';
 import { MatTableModule } from '@angular/material/table';
+import { MatTabsModule } from '@angular/material/tabs';
 import { MatSortModule, Sort } from '@angular/material/sort';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatButtonModule } from '@angular/material/button';
@@ -11,9 +12,9 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { animate, state, style, transition, trigger } from '@angular/animations';
 import { StockService } from '../stock.service';
-import { StockFila } from '../stock.model';
-import { ProductoService } from '../../comercial/producto.service';
+import { StockFilaResponse } from '../stock.model';
 import { AjusteDialogComponent } from '../ajuste-dialog/ajuste-dialog.component';
 import { BackButtonComponent } from '../../../shared/back-button/back-button.component';
 
@@ -21,126 +22,178 @@ import { BackButtonComponent } from '../../../shared/back-button/back-button.com
   selector: 'app-stock-list',
   standalone: true,
   imports: [
-    CommonModule, ReactiveFormsModule, MatTableModule, MatSortModule, MatPaginatorModule, MatButtonModule,
-    MatIconModule, MatProgressSpinnerModule, MatTooltipModule, MatDialogModule, BackButtonComponent
+    CommonModule, ReactiveFormsModule, MatTableModule, MatTabsModule, MatSortModule, MatPaginatorModule,
+    MatButtonModule, MatIconModule, MatProgressSpinnerModule, MatTooltipModule, MatDialogModule, BackButtonComponent
   ],
   templateUrl: './stock-list.component.html',
-  styleUrl: './stock-list.component.scss'
+  styleUrl: './stock-list.component.scss',
+  animations: [
+    trigger('detailExpand', [
+      state('collapsed', style({ height: '0px', minHeight: '0' })),
+      state('expanded', style({ height: '*' })),
+      transition('expanded <=> collapsed', animate('180ms cubic-bezier(0.4, 0.0, 0.2, 1)'))
+    ])
+  ]
 })
 export class StockListComponent implements OnInit {
-  todasLasFilas = signal<StockFila[]>([]);
   cargando = signal(true);
   error = signal('');
 
-  busquedaControl = new FormControl('');
-  textoBusqueda = signal('');
+  // ---- Productos para la venta ----
+  itemsVenta = signal<StockFilaResponse[]>([]);
+  totalVenta = signal(0);
+  pageIndexVenta = signal(0);
+  pageSizeVenta = signal(10);
+  busquedaVenta = signal('');
+  busquedaControlVenta = new FormControl('');
 
-  sortActive = signal('');
-  sortDir = signal<'asc' | 'desc' | ''>('');
-  pageIndex = signal(0);
-  pageSize = signal(10);
+  // ---- Insumos ----
+  itemsInsumos = signal<StockFilaResponse[]>([]);
+  totalInsumos = signal(0);
+  pageIndexInsumos = signal(0);
+  pageSizeInsumos = signal(10);
+  busquedaInsumos = signal('');
+  busquedaControlInsumos = new FormControl('');
+
+  // ---- presentaciones, cargadas y cacheadas por producto base ----
+  filasExpandidas = signal<Set<number>>(new Set());
+  presentacionesPorProducto = signal<Record<number, StockFilaResponse[]>>({});
+  cargandoPresentaciones = signal<Set<number>>(new Set());
 
   columnas = ['nombre', 'cantidad', 'unidad', 'acciones'];
 
-  filtradas = computed(() => {
-    const termino = this.textoBusqueda().toLowerCase().trim();
-    if (!termino) return this.todasLasFilas();
-    return this.todasLasFilas().filter((f) => f.productoNombre.toLowerCase().includes(termino));
-  });
-
-  ordenadas = computed(() => {
-    const filas = [...this.filtradas()];
-    const activo = this.sortActive();
-    const dir = this.sortDir();
-    if (!activo || !dir) return filas;
-
-    return filas.sort((a: any, b: any) => {
-      const valA = a[activo];
-      const valB = b[activo];
-      const cmp = typeof valA === 'string' ? valA.localeCompare(valB) : valA - valB;
-      return dir === 'asc' ? cmp : -cmp;
-    });
-  });
-
-  filas = computed(() => {
-    const inicio = this.pageIndex() * this.pageSize();
-    return this.ordenadas().slice(inicio, inicio + this.pageSize());
-  });
-
-  totalItems = computed(() => this.filtradas().length);
-
   constructor(
     private stockService: StockService,
-    private productoService: ProductoService,
     private dialog: MatDialog,
     private router: Router
   ) {
-    this.busquedaControl.valueChanges
-      .pipe(
-        debounceTime(500), // acá pediste medio segundo, no 2 — distinto a los demás módulos
-        rxFilter((v) => (v?.length ?? 0) === 0 || (v?.length ?? 0) >= 3)
-      )
+    this.busquedaControlVenta.valueChanges
+      .pipe(debounceTime(500), rxFilter((v) => (v?.length ?? 0) === 0 || (v?.length ?? 0) >= 3))
       .subscribe((valor) => {
-        this.textoBusqueda.set(valor || '');
-        this.pageIndex.set(0);
+        this.busquedaVenta.set(valor || '');
+        this.pageIndexVenta.set(0);
+        this.cargarVenta();
+      });
+
+    this.busquedaControlInsumos.valueChanges
+      .pipe(debounceTime(500), rxFilter((v) => (v?.length ?? 0) === 0 || (v?.length ?? 0) >= 3))
+      .subscribe((valor) => {
+        this.busquedaInsumos.set(valor || '');
+        this.pageIndexInsumos.set(0);
+        this.cargarInsumos();
       });
   }
 
   ngOnInit() {
-    this.cargar();
+    this.cargarVenta();
+    this.cargarInsumos();
   }
 
-  cargar() {
+  cargarVenta() {
     this.cargando.set(true);
-    forkJoin({
-      productos: this.productoService.listar(),
-      stock: this.stockService.listar()
-    }).subscribe({
-      next: ({ productos, stock }) => {
-        const stockPorProducto = new Map(stock.map((s) => [s.productoId, s.cantidad]));
-        const filas: StockFila[] = productos
-          .filter((p) => p.activo)
-          .map((p) => ({
-            productoId: p.id,
-            productoNombre: p.nombre,
-            cantidad: stockPorProducto.get(p.id) ?? 0,
-            unidadMedida: p.unidadMedida
-          }));
-        this.todasLasFilas.set(filas);
-        this.cargando.set(false);
+    this.filasExpandidas.set(new Set());
+    this.stockService
+      .listarPaginado(this.pageIndexVenta(), this.pageSizeVenta(), 'nombre', 'asc', this.busquedaVenta(), 'venta')
+      .subscribe({
+        next: (pagina) => {
+          this.itemsVenta.set(pagina.content);
+          this.totalVenta.set(pagina.totalElements);
+          this.cargando.set(false);
+        },
+        error: () => {
+          this.error.set('No se pudo cargar el stock');
+          this.cargando.set(false);
+        }
+      });
+  }
+
+  cargarInsumos() {
+    this.stockService
+      .listarPaginado(this.pageIndexInsumos(), this.pageSizeInsumos(), 'nombre', 'asc', this.busquedaInsumos(), 'insumos')
+      .subscribe({
+        next: (pagina) => {
+          this.itemsInsumos.set(pagina.content);
+          this.totalInsumos.set(pagina.totalElements);
+        },
+        error: () => this.error.set('No se pudo cargar los insumos')
+      });
+  }
+
+  onPageChangeVenta(event: PageEvent) {
+    this.pageIndexVenta.set(event.pageIndex);
+    this.pageSizeVenta.set(event.pageSize);
+    this.cargarVenta();
+  }
+
+  onPageChangeInsumos(event: PageEvent) {
+    this.pageIndexInsumos.set(event.pageIndex);
+    this.pageSizeInsumos.set(event.pageSize);
+    this.cargarInsumos();
+  }
+
+  estaExpandida(id: number): boolean {
+    return this.filasExpandidas().has(id);
+  }
+
+  presentacionesDe(id: number): StockFilaResponse[] {
+    return this.presentacionesPorProducto()[id] || [];
+  }
+
+  estaCargandoPresentaciones(id: number): boolean {
+    return this.cargandoPresentaciones().has(id);
+  }
+
+  toggleExpandir(fila: StockFilaResponse) {
+    const expandidas = new Set(this.filasExpandidas());
+
+    if (expandidas.has(fila.productoId)) {
+      expandidas.delete(fila.productoId);
+      this.filasExpandidas.set(expandidas);
+      return;
+    }
+
+    expandidas.add(fila.productoId);
+    this.filasExpandidas.set(expandidas);
+
+    if (this.presentacionesPorProducto()[fila.productoId]) return;
+
+    const cargando = new Set(this.cargandoPresentaciones());
+    cargando.add(fila.productoId);
+    this.cargandoPresentaciones.set(cargando);
+
+    this.stockService.presentacionesConStock(fila.productoId).subscribe({
+      next: (data) => {
+        this.presentacionesPorProducto.update((mapa) => ({ ...mapa, [fila.productoId]: data }));
+        const c = new Set(this.cargandoPresentaciones());
+        c.delete(fila.productoId);
+        this.cargandoPresentaciones.set(c);
       },
       error: () => {
-        this.error.set('No se pudo cargar el stock');
-        this.cargando.set(false);
+        const c = new Set(this.cargandoPresentaciones());
+        c.delete(fila.productoId);
+        this.cargandoPresentaciones.set(c);
       }
     });
   }
 
-  onPageChange(event: PageEvent) {
-    this.pageIndex.set(event.pageIndex);
-    this.pageSize.set(event.pageSize);
-  }
-
-  onSortChange(sort: Sort) {
-    this.sortActive.set(sort.direction ? sort.active : '');
-    this.sortDir.set(sort.direction as 'asc' | 'desc' | '');
-    this.pageIndex.set(0);
-  }
-
-  ajustar(fila: StockFila) {
+  ajustar(fila: StockFilaResponse) {
     const ref = this.dialog.open(AjusteDialogComponent, {
       data: { productoId: fila.productoId, productoNombre: fila.productoNombre, cantidadActual: fila.cantidad }
     });
     ref.afterClosed().subscribe((resultado) => {
       if (!resultado) return;
       this.stockService.ajustar({ productoId: fila.productoId, delta: resultado.delta, motivo: resultado.motivo }).subscribe({
-        next: () => this.cargar(),
+        next: () => {
+          this.presentacionesPorProducto.set({});
+          this.cargarVenta();
+          this.cargarInsumos();
+        },
         error: (err) => this.error.set(err.error ?? 'No se pudo ajustar el stock')
       });
     });
   }
 
-  verHistorial(fila: StockFila) {
+  verHistorial(fila: StockFilaResponse) {
     this.router.navigate(['/stock', fila.productoId, 'historial']);
   }
 }

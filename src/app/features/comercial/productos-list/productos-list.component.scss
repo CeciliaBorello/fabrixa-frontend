@@ -1,6 +1,6 @@
 .page {
   padding: 2rem;
-  max-width: 1050px;
+  max-width: 1200px;
   margin: 0 auto;
 }
 
@@ -64,6 +64,8 @@ th, td {
 .mat-column-categoria { width: 150px; }
 .mat-column-codigoBarra { width: 130px; }
 .mat-column-precio { width: 90px; }
+.mat-column-costoFabricacion { width: 150px; }
+.detail-table td.detail-costo { width: 150px; }
 .mat-column-estado { width: 90px; }
 .mat-column-acciones {
   width: 200px;

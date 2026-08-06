@@ -13,6 +13,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { animate, state, style, transition, trigger } from '@angular/animations';
 import { PedidoService } from '../pedido.service';
 import { PedidoResponse } from '../pedido.model';
 import { ConfirmDialogComponent } from '../../../shared/confirm-dialog/confirm-dialog.component';
@@ -27,7 +28,14 @@ import { BackButtonComponent } from '../../../shared/back-button/back-button.com
     MatSlideToggleModule, MatDialogModule, BackButtonComponent
   ],
   templateUrl: './pedidos-list.component.html',
-  styleUrl: './pedidos-list.component.scss'
+  styleUrl: './pedidos-list.component.scss',
+  animations: [
+    trigger('detailExpand', [
+      state('collapsed', style({ height: '0px', minHeight: '0' })),
+      state('expanded', style({ height: '*' })),
+      transition('expanded <=> collapsed', animate('180ms cubic-bezier(0.4, 0.0, 0.2, 1)'))
+    ])
+  ]
 })
 export class PedidosListComponent implements OnInit {
   items = signal<PedidoResponse[]>([]);
@@ -43,7 +51,10 @@ export class PedidosListComponent implements OnInit {
 
   busquedaControl = new FormControl('');
 
-  columnas = ['id', 'cliente', 'usuario', 'estado', 'fecha', 'acciones'];
+  // id del pedido cuya fila de detalle está expandida (solo uno a la vez, simple)
+  filaExpandida = signal<number | null>(null);
+
+  columnas = ['id', 'cliente', 'usuario', 'estado', 'fechaPedido', 'fechaModificacion', 'acciones'];
 
   constructor(private service: PedidoService, private dialog: MatDialog) {
     this.busquedaControl.valueChanges
@@ -95,6 +106,14 @@ export class PedidosListComponent implements OnInit {
     this.cargar();
   }
 
+  estaExpandida(id: number): boolean {
+    return this.filaExpandida() === id;
+  }
+
+  toggleExpandir(pedido: PedidoResponse) {
+    this.filaExpandida.set(this.filaExpandida() === pedido.id ? null : pedido.id);
+  }
+
   etiquetaEstado(estado: string): string {
     const mapa: Record<string, string> = {
       NUEVO: 'Nuevo', PENDIENTE_ENTREGA: 'Pendiente de entrega', ENTREGADO: 'Entregado', CANCELADO: 'Cancelado'
@@ -103,20 +122,58 @@ export class PedidosListComponent implements OnInit {
   }
 
   pasarAPendiente(pedido: PedidoResponse) {
-    this.service.marcarPendienteEntrega(pedido.id).subscribe({ next: () => this.cargar(), error: () => this.error.set('No se pudo actualizar el pedido') });
+    const ref = this.dialog.open(ConfirmDialogComponent, {
+      data: {
+        titulo: 'Pasar a pendiente de entrega',
+        mensaje: `¿Confirmás que el pedido #${pedido.id} de ${pedido.clienteNombre} ya se facturó y pasa a pendiente de entrega?`,
+        textoConfirmar: 'Confirmar',
+        peligroso: false
+      }
+    });
+    ref.afterClosed().subscribe((confirmado) => {
+      if (confirmado) {
+        this.service.marcarPendienteEntrega(pedido.id).subscribe({
+          next: () => this.cargar(),
+          error: () => this.error.set('No se pudo actualizar el pedido')
+        });
+      }
+    });
   }
 
   marcarEntregado(pedido: PedidoResponse) {
-    this.service.marcarEntregado(pedido.id).subscribe({ next: () => this.cargar(), error: () => this.error.set('No se pudo actualizar el pedido') });
+    const ref = this.dialog.open(ConfirmDialogComponent, {
+      data: {
+        titulo: 'Marcar como entregado',
+        mensaje: `¿Confirmás que el pedido #${pedido.id} de ${pedido.clienteNombre} ya fue despachado?`,
+        textoConfirmar: 'Confirmar',
+        peligroso: false
+      }
+    });
+    ref.afterClosed().subscribe((confirmado) => {
+      if (confirmado) {
+        this.service.marcarEntregado(pedido.id).subscribe({
+          next: () => this.cargar(),
+          error: () => this.error.set('No se pudo actualizar el pedido')
+        });
+      }
+    });
   }
 
   cancelar(pedido: PedidoResponse) {
     const ref = this.dialog.open(ConfirmDialogComponent, {
-      data: { titulo: 'Cancelar pedido', mensaje: `¿Seguro que querés cancelar el pedido #${pedido.id} de ${pedido.clienteNombre}?`, textoConfirmar: 'Cancelar pedido', peligroso: true }
+      data: {
+        titulo: 'Cancelar pedido',
+        mensaje: `¿Seguro que querés cancelar el pedido #${pedido.id} de ${pedido.clienteNombre}?`,
+        textoConfirmar: 'Cancelar pedido',
+        peligroso: true
+      }
     });
     ref.afterClosed().subscribe((confirmado) => {
       if (confirmado) {
-        this.service.cancelar(pedido.id).subscribe({ next: () => this.cargar(), error: () => this.error.set('No se pudo cancelar el pedido') });
+        this.service.cancelar(pedido.id).subscribe({
+          next: () => this.cargar(),
+          error: () => this.error.set('No se pudo cancelar el pedido')
+        });
       }
     });
   }

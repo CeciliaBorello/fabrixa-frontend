@@ -14,6 +14,7 @@ export interface PedidoResponse {
   usuarioNombre: string;
   estado: EstadoPedido;
   fechaPedido: string;
+  fechaModificacion: string;
   fechaEntrega: string | null;
   items: ItemPedidoResponse[];
 }

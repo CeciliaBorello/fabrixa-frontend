@@ -53,13 +53,109 @@ th, td {
   font-size: 14px;
 }
 
-.mat-column-nombre { width: 260px; }
-.mat-column-cantidad { width: 120px; }
-.mat-column-unidad { width: 120px; }
+.mat-column-nombre { width: 320px; }
+.mat-column-cantidad { width: 140px; }
+.mat-column-unidad { width: 140px; }
 .mat-column-acciones {
   width: 100px;
   text-align: right;
-  padding-right: 12px !important;
+  padding-right: 8px !important;
+}
+
+.nombre-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.nombre-sin-flecha {
+  width: 24px;
+  flex-shrink: 0;
+}
+
+.expand-btn {
+  width: 24px;
+  height: 24px;
+  line-height: 24px;
+  flex-shrink: 0;
+  color: #6b7280;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.expand-btn mat-icon {
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.fila-principal {
+  cursor: default;
+}
+
+tr.fila-detalle {
+  height: 0 !important;
+}
+
+tr.fila-detalle > td {
+  height: 0 !important;
+  padding: 0 !important;
+  border-bottom: none !important;
+}
+
+::ng-deep tr.fila-detalle.mat-mdc-row {
+  height: 0 !important;
+}
+
+.detail-wrapper {
+  overflow: hidden;
+}
+
+.detail-loading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 24px;
+  color: #6b7280;
+  font-size: 13px;
+}
+
+.detail-table {
+  width: 100%;
+  table-layout: fixed;
+  background: #f9fafb;
+}
+
+.detail-table tr {
+  border-bottom: 1px solid #eef1f5;
+}
+
+.detail-table tr:last-child {
+  border-bottom: none;
+}
+
+.detail-table td {
+  padding: 8px 12px !important;
+  font-size: 13px;
+  color: #374151;
+}
+
+.detail-table td.detail-nombre {
+  width: 320px;
+  padding-left: 44px !important;
+}
+
+.detail-table td.detail-cantidad { width: 140px; }
+.detail-table td.detail-unidad { width: 140px; }
+.detail-table td.detail-acciones {
+  width: 100px;
+  text-align: right;
+  padding-right: 8px !important;
 }
 
 .stock-bajo {
@@ -69,8 +165,16 @@ th, td {
 
 .actions {
   display: flex;
-  gap: 0.15rem;
+  align-items: center;
   justify-content: flex-end;
+  gap: 0;
+}
+
+.actions button {
+  width: 32px;
+  height: 32px;
+  line-height: 32px;
+  flex-shrink: 0;
 }
 
 .loading-container, .empty-state {
@@ -154,4 +258,8 @@ th, td {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+::ng-deep .mat-mdc-tab-body-content {
+  overflow: hidden !important;
 }
