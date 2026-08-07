@@ -1,0 +1,98 @@
+.page {
+  padding: 2rem;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.page-header {
+  margin-bottom: 1.5rem;
+}
+
+.titulo-con-volver {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.page-header h1 {
+  margin: 0;
+  color: #101A2E;
+  font-size: 24px;
+}
+
+.error {
+  color: #c0392b;
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  padding: 3rem;
+}
+
+.content-card {
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  padding: 1.5rem 2rem 2rem;
+}
+
+.resumen {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem 1.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid #eef1f5;
+  margin-bottom: 1.5rem;
+}
+
+.resumen-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.label {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.valor {
+  font-size: 14px;
+  color: #101A2E;
+  font-weight: 500;
+}
+
+.valor.total {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.seccion {
+  margin-bottom: 1.5rem;
+}
+
+.seccion h3 {
+  font-size: 15px;
+  color: #101A2E;
+  margin: 0 0 0.75rem;
+}
+
+.detalle-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.detalle-table th {
+  text-align: left;
+  font-size: 12px;
+  color: #6b7280;
+  padding: 6px 10px;
+  border-bottom: 1px solid #eef1f5;
+}
+
+.detalle-table td {
+  font-size: 14px;
+  padding: 8px 10px;
+  border-bottom: 1px solid #f5f6f8;
+}

@@ -1,0 +1,94 @@
+<div class="page">
+  <div class="page-header">
+    <div class="titulo-con-volver">
+      <app-back-button ruta="/facturacion"></app-back-button>
+      <div>
+        <h1>Detalle del comprobante</h1>
+      </div>
+    </div>
+  </div>
+
+  <div class="loading-container" *ngIf="cargando()">
+    <mat-spinner diameter="36"></mat-spinner>
+  </div>
+
+  <p class="error" *ngIf="error()">{{ error() }}</p>
+
+  <div class="content-card" *ngIf="!cargando() && comprobante() as c">
+    <div class="resumen">
+      <div class="resumen-item">
+        <span class="label">Tipo</span>
+        <span class="valor">{{ c.tipo }}</span>
+      </div>
+      <div class="resumen-item">
+        <span class="label">Cliente / Proveedor</span>
+        <span class="valor">{{ c.clienteProveedorNombre }}</span>
+      </div>
+      <div class="resumen-item">
+        <span class="label">Fecha</span>
+        <span class="valor">{{ c.fechaEmision | date:'dd/MM/yyyy' }}</span>
+      </div>
+      <div class="resumen-item">
+        <span class="label">Total</span>
+        <span class="valor total">{{ c.total | currency:'ARS' }}</span>
+      </div>
+      <div class="resumen-item">
+        <span class="label">Estado</span>
+        <span class="valor"><mat-chip>{{ c.estado }}</mat-chip></span>
+      </div>
+      <div class="resumen-item" *ngIf="c.estadoCobro">
+        <span class="label">Cobro</span>
+        <span class="valor"><mat-chip>{{ c.estadoCobro }}</mat-chip></span>
+      </div>
+      <div class="resumen-item" *ngIf="c.estadoPago">
+        <span class="label">Pago</span>
+        <span class="valor"><mat-chip>{{ c.estadoPago }}</mat-chip></span>
+      </div>
+      <div class="resumen-item" *ngIf="c.fechaVencimiento">
+        <span class="label">Vencimiento</span>
+        <span class="valor">{{ c.fechaVencimiento | date:'dd/MM/yyyy' }}</span>
+      </div>
+      <div class="resumen-item">
+        <span class="label">Generado por</span>
+        <span class="valor">{{ c.usuarioNombre }}</span>
+      </div>
+      <div class="resumen-item" *ngIf="c.comprobanteAfectadoId">
+        <span class="label">Afecta a</span>
+        <span class="valor">Comprobante #{{ c.comprobanteAfectadoId }}</span>
+      </div>
+    </div>
+
+    <div class="seccion" *ngIf="c.items && c.items.length">
+      <h3>Productos</h3>
+      <table class="detalle-table">
+        <tr><th>Producto</th><th>Cantidad</th><th>Precio unitario</th><th>Subtotal</th></tr>
+        <tr *ngFor="let item of c.items">
+          <td>{{ item.productoNombre }}</td>
+          <td>{{ item.cantidad }}</td>
+          <td>{{ item.precioUnitario | currency:'ARS' }}</td>
+          <td>{{ item.subtotal | currency:'ARS' }}</td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="seccion" *ngIf="c.remitoViaje">
+      <h3>Remito de viaje</h3>
+      <p><strong>Número:</strong> {{ c.remitoViaje.numero || '-' }}</p>
+      <p><strong>Transportista:</strong> {{ c.remitoViaje.transportista || '-' }}</p>
+      <p><strong>Chofer:</strong> {{ c.remitoViaje.chofer || '-' }}</p>
+      <p><strong>Patente:</strong> {{ c.remitoViaje.patente || '-' }}</p>
+    </div>
+
+    <div class="seccion" *ngIf="c.formasPago && c.formasPago.length">
+      <h3>Formas de pago</h3>
+      <table class="detalle-table">
+        <tr><th>Tipo</th><th>Monto</th><th>Cheque</th></tr>
+        <tr *ngFor="let fp of c.formasPago">
+          <td>{{ etiquetaTipoFormaPago(fp.tipo) }}</td>
+          <td>{{ fp.monto | currency:'ARS' }}</td>
+          <td>{{ fp.chequeNumero || '-' }}</td>
+        </tr>
+      </table>
+    </div>
+  </div>
+</div>

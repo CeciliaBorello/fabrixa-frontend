@@ -1,0 +1,95 @@
+<div class="page">
+  <div class="page-header">
+    <div class="titulo-con-volver">
+      <app-back-button ruta="/"></app-back-button>
+      <div>
+        <h1>Cheques</h1>
+        <p class="subtitle">Cartera de cheques recibidos y entregados</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="error-banner" *ngIf="error()">{{ error() }}</div>
+
+  <div class="toolbar-lista">
+    <div class="search-wrapper">
+      <mat-icon class="search-icon">search</mat-icon>
+      <input [formControl]="busquedaControl" placeholder="Buscar por número o banco..." class="search-input" />
+      <button *ngIf="busquedaControl.value" mat-icon-button class="clear-btn" (click)="busquedaControl.setValue('')">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+  </div>
+
+  <div class="content-card">
+    <mat-tab-group (selectedIndexChange)="onTabChange($event)">
+      <mat-tab *ngFor="let t of pestanas" [label]="t.label"></mat-tab>
+    </mat-tab-group>
+
+    <div class="loading-container" *ngIf="cargando()">
+      <mat-spinner diameter="36"></mat-spinner>
+    </div>
+
+    <table mat-table [dataSource]="items()" *ngIf="!cargando() && items().length">
+      <ng-container matColumnDef="numero">
+        <th mat-header-cell *matHeaderCellDef>Número</th>
+        <td mat-cell *matCellDef="let ch">{{ ch.numero }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="banco">
+        <th mat-header-cell *matHeaderCellDef>Banco</th>
+        <td mat-cell *matCellDef="let ch">{{ ch.banco }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="tercero">
+        <th mat-header-cell *matHeaderCellDef>Cliente / Proveedor</th>
+        <td mat-cell *matCellDef="let ch">{{ ch.terceroNombre }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="monto">
+        <th mat-header-cell *matHeaderCellDef>Monto</th>
+        <td mat-cell *matCellDef="let ch">{{ ch.monto | currency:'ARS' }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="fechaCobro">
+        <th mat-header-cell *matHeaderCellDef>Fecha de cobro</th>
+        <td mat-cell *matCellDef="let ch">{{ ch.fechaCobro | date:'dd/MM/yyyy' }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="acciones">
+        <th mat-header-cell *matHeaderCellDef></th>
+        <td mat-cell *matCellDef="let ch" class="actions-cell">
+          <div class="actions">
+            <button mat-icon-button *ngIf="estadoActivo() === 'ENTREGADO'" (click)="cobrar(ch)" matTooltip="Marcar como cobrado">
+              <mat-icon>check_circle</mat-icon>
+            </button>
+            <button mat-icon-button *ngIf="estadoActivo() === 'ENTREGADO' || estadoActivo() === 'EN_CARTERA'" (click)="rechazar(ch)" matTooltip="Marcar como rechazado">
+              <mat-icon>cancel</mat-icon>
+            </button>
+            <button mat-icon-button disabled *ngIf="estadoActivo() === 'COBRADO' || estadoActivo() === 'RECHAZADO'">
+              <mat-icon>remove</mat-icon>
+            </button>
+          </div>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="columnas"></tr>
+      <tr mat-row *matRowDef="let row; columns: columnas;"></tr>
+    </table>
+
+    <mat-paginator
+      *ngIf="totalItems() > 0"
+      [length]="totalItems()"
+      [pageSize]="pageSize()"
+      [pageIndex]="pageIndex()"
+      [pageSizeOptions]="[10, 25, 50]"
+      showFirstLastButtons
+      (page)="onPageChange($event)">
+    </mat-paginator>
+
+    <div class="empty-state" *ngIf="!cargando() && !items().length">
+      <mat-icon>payments</mat-icon>
+      <p>No hay cheques en este estado.</p>
+    </div>
+  </div>
+</div>

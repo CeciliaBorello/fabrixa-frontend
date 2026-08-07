@@ -18,7 +18,10 @@ import { OrdenesListComponent } from './features/fabricacion/ordenes-list/ordene
 import { OrdenFormComponent } from './features/fabricacion/orden-form/orden-form.component';
 import { PrecioHistorialComponent } from './features/comercial/precio-historial/precio-historial.component';
 import { CostoHistorialComponent } from './features/fabricacion/costo-historial/costo-historial.component';
-
+import { ComprobantesListComponent } from './features/facturacion/comprobante/comprobantes-list/comprobantes-list.component';
+import { ComprobanteFormComponent } from './features/facturacion/comprobante/comprobante-form/comprobante-form.component';
+import { ComprobanteDetalleComponent } from './features/facturacion/comprobante/comprobante-detalle/comprobante-detalle.component';
+import { ChequesListComponent } from './features/facturacion/cheque/cheques-list/cheques-list.component';
 
 
 
@@ -81,5 +84,23 @@ export const routes: Routes = [
       { path: 'costos/:id', component: CostoHistorialComponent }
     ]
   },
+
+  {
+    path: 'facturacion',
+    canActivate: [authGuard],
+    children: [
+      { path: '', component: ComprobantesListComponent },
+      { path: 'nuevo', component: ComprobanteFormComponent },
+      { path: ':id', component: ComprobanteDetalleComponent }
+    ]
+  },
+  {
+    path: 'cheques',
+    canActivate: [authGuard],
+    children: [
+      { path: '', component: ChequesListComponent }
+    ]
+  },
+
   { path: '**', redirectTo: '' }
 ];

@@ -13,6 +13,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { animate, state, style, transition, trigger } from '@angular/animations';
 import { FormulaService } from '../formula.service';
 import { FormulaResponse } from '../formula.model';
 import { ConfirmDialogComponent } from '../../../shared/confirm-dialog/confirm-dialog.component';
@@ -27,7 +28,14 @@ import { BackButtonComponent } from '../../../shared/back-button/back-button.com
     MatSlideToggleModule, MatDialogModule, BackButtonComponent
   ],
   templateUrl: './formulas-list.component.html',
-  styleUrl: './formulas-list.component.scss'
+  styleUrl: './formulas-list.component.scss',
+  animations: [
+    trigger('detailExpand', [
+      state('collapsed', style({ height: '0px', minHeight: '0' })),
+      state('expanded', style({ height: '*' })),
+      transition('expanded <=> collapsed', animate('180ms cubic-bezier(0.4, 0.0, 0.2, 1)'))
+    ])
+  ]
 })
 export class FormulasListComponent implements OnInit {
   items = signal<FormulaResponse[]>([]);
@@ -43,11 +51,14 @@ export class FormulasListComponent implements OnInit {
 
   busquedaControl = new FormControl('');
 
+  // solo una fila expandida a la vez — los insumos ya vienen en la respuesta, sin carga extra
+  filaExpandida = signal<number | null>(null);
+
   columnas = ['producto', 'nombre', 'version', 'insumos', 'estado', 'acciones'];
 
   constructor(private service: FormulaService, private dialog: MatDialog) {
     this.busquedaControl.valueChanges
-      .pipe(debounceTime(500), rxFilter((v) => (v?.length ?? 0) === 0 || (v?.length ?? 0) >= 3))
+      .pipe(debounceTime(2000), rxFilter((v) => (v?.length ?? 0) === 0 || (v?.length ?? 0) >= 3))
       .subscribe((valor) => {
         this.busqueda.set(valor || '');
         this.pageIndex.set(0);
@@ -98,6 +109,14 @@ export class FormulasListComponent implements OnInit {
     this.mostrarInactivos.update((v) => !v);
     this.pageIndex.set(0);
     this.cargar();
+  }
+
+  estaExpandida(id: number): boolean {
+    return this.filaExpandida() === id;
+  }
+
+  toggleExpandir(item: FormulaResponse) {
+    this.filaExpandida.set(this.filaExpandida() === item.id ? null : item.id);
   }
 
   desactivar(item: FormulaResponse) {

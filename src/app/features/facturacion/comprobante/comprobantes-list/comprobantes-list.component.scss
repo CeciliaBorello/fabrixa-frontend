@@ -1,6 +1,6 @@
 .page {
   padding: 2rem;
-  max-width: 950px;
+  max-width: 1250px;
   margin: 0 auto;
 }
 
@@ -56,101 +56,17 @@ th, td {
   font-size: 14px;
 }
 
-.mat-column-producto { width: 220px; }
-.mat-column-nombre { width: 200px; }
-.mat-column-version { width: 90px; }
-.mat-column-insumos { width: 90px; }
-.mat-column-estado { width: 120px; }
+.mat-column-id { width: 60px; }
+.mat-column-tipo { width: 170px; }
+.mat-column-cliente { width: 220px; }
+.mat-column-fecha { width: 110px; }
+.mat-column-total { width: 110px; }
+.mat-column-estado { width: 110px; }
+.mat-column-estadoCobroPago { width: 130px; }
 .mat-column-acciones {
-  width: 130px;
+  width: 150px;
   text-align: right;
   padding-right: 8px !important;
-}
-
-.nombre-cell {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.expand-btn {
-  width: 24px;
-  height: 24px;
-  line-height: 24px;
-  flex-shrink: 0;
-  color: #6b7280;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-}
-
-.expand-btn mat-icon {
-  font-size: 20px;
-  width: 20px;
-  height: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.fila-principal {
-  cursor: default;
-}
-
-tr.fila-detalle {
-  height: 0 !important;
-}
-
-tr.fila-detalle > td {
-  height: 0 !important;
-  padding: 0 !important;
-  border-bottom: none !important;
-}
-
-::ng-deep tr.fila-detalle.mat-mdc-row {
-  height: 0 !important;
-}
-
-.detail-wrapper {
-  overflow: hidden;
-}
-
-.detail-table {
-  width: 100%;
-  max-width: 480px;
-  background: #f9fafb;
-  margin-left: 44px;
-}
-
-.detail-header-row {
-  font-weight: 600;
-  color: #101A2E;
-}
-
-.detail-table tr {
-  border-bottom: 1px solid #eef1f5;
-}
-
-.detail-table tr:last-child {
-  border-bottom: none;
-}
-
-.detail-table td {
-  padding: 8px 12px !important;
-  font-size: 13px;
-  color: #374151;
-}
-
-.detail-nombre { width: 65%; }
-.detail-cantidad { width: 35%; }
-
-.detail-empty {
-  padding: 14px 24px 14px 44px;
-  background: #f9fafb;
-  color: #6b7280;
-  font-size: 13px;
-  margin: 0;
 }
 
 .actions {
@@ -160,13 +76,22 @@ tr.fila-detalle > td {
   gap: 0;
 }
 
-.actions button,
-.actions a {
+.actions button {
   width: 32px;
   height: 32px;
   line-height: 32px;
   flex-shrink: 0;
 }
+
+mat-chip {
+  font-size: 11px !important;
+  min-height: 22px !important;
+}
+
+.estado-comprobante-borrador { background-color: #eef1f5 !important; color: #101A2E !important; }
+.estado-comprobante-emitido { background-color: #d4e8f7 !important; color: #1a4971 !important; }
+.estado-comprobante-anulado { background-color: #f5d5d0 !important; color: #7a2418 !important; }
+.estado-comprobante-asentada { background-color: #d4f2e5 !important; color: #0d3d2c !important; }
 
 .estado-dot {
   display: inline-block;
@@ -176,8 +101,9 @@ tr.fila-detalle > td {
   margin-right: 6px;
 }
 
-.estado-dot.activo { background-color: #2AAE7E; }
-.estado-dot.inactivo { background-color: #c0392b; }
+.estado-dot.estado-ok { background-color: #2AAE7E; }
+.estado-dot.estado-parcial { background-color: #d99a1f; }
+.estado-dot.estado-pendiente { background-color: #c0392b; }
 
 .loading-container, .empty-state {
   display: flex;
@@ -260,6 +186,11 @@ tr.fila-detalle > td {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.filtro-tipo {
+  width: 190px;
+  font-size: 14px;
 }
 
 .divider {

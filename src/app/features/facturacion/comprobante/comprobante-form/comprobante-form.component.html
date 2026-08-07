@@ -1,0 +1,188 @@
+<div class="form-page">
+  <app-back-button texto="Volver a facturación" ruta="/facturacion"></app-back-button>
+
+  <div class="form-card">
+    <h1>Nuevo comprobante</h1>
+
+    <form [formGroup]="form" (ngSubmit)="guardar()">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Tipo de comprobante</mat-label>
+        <mat-select formControlName="tipo">
+          <mat-option *ngFor="let t of tipos" [value]="t.value">{{ t.label }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width" *ngIf="esNotaFinanciera()">
+        <mat-label>Origen</mat-label>
+        <mat-select formControlName="origen">
+          <mat-option value="GENERADO">Generada por nosotros</mat-option>
+          <mat-option value="RECIBIDO">Recibida de un proveedor</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Cliente / Proveedor</mat-label>
+        <mat-select formControlName="clienteProveedorId">
+          <mat-option *ngFor="let c of clientes()" [value]="c.id">{{ c.razonSocial }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width" *ngIf="llevaItems()">
+        <mat-label>Fecha de vencimiento (opcional)</mat-label>
+        <input matInput [matDatepicker]="pickerVto" formControlName="fechaVencimiento" />
+        <mat-datepicker-toggle matIconSuffix [for]="pickerVto"></mat-datepicker-toggle>
+        <mat-datepicker #pickerVto></mat-datepicker>
+      </mat-form-field>
+
+      <!-- ===================== ítems (facturas y remitos) ===================== -->
+      <ng-container *ngIf="llevaItems()">
+        <h3>Productos</h3>
+        <div formArrayName="items" class="items-list">
+          <div class="item-row" *ngFor="let item of itemsArray.controls; let i = index" [formGroupName]="i">
+            <mat-form-field appearance="outline" class="item-producto">
+              <mat-label>Producto</mat-label>
+              <mat-select formControlName="productoId">
+                <mat-option *ngFor="let p of productos()" [value]="p.id">{{ p.nombre }}</mat-option>
+              </mat-select>
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="item-cantidad">
+              <mat-label>Cantidad</mat-label>
+              <input matInput type="number" formControlName="cantidad" min="0.001" step="0.001" />
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="item-precio">
+              <mat-label>Precio unitario</mat-label>
+              <input matInput type="number" formControlName="precioUnitario" min="0.01" step="0.01" />
+            </mat-form-field>
+            <button mat-icon-button type="button" (click)="quitarItem(i)" [disabled]="itemsArray.length === 1" matTooltip="Quitar">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+        </div>
+        <button mat-stroked-button type="button" (click)="agregarItem()" class="add-item-btn">
+          <mat-icon>add</mat-icon>
+          Agregar producto
+        </button>
+      </ng-container>
+
+      <!-- ===================== remito de viaje (Factura A / Remito B) ===================== -->
+      <ng-container *ngIf="llevaRemito()">
+        <h3>Remito de viaje</h3>
+        <div class="remito-grid">
+          <mat-form-field appearance="outline">
+            <mat-label>Número de remito</mat-label>
+            <input matInput formControlName="remitoNumero" />
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Transportista</mat-label>
+            <input matInput formControlName="remitoTransportista" />
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Chofer</mat-label>
+            <input matInput formControlName="remitoChofer" />
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Patente</mat-label>
+            <input matInput formControlName="remitoPatente" />
+          </mat-form-field>
+        </div>
+      </ng-container>
+
+      <!-- ===================== nota de crédito / débito ===================== -->
+      <ng-container *ngIf="esNotaFinanciera()">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Monto</mat-label>
+          <input matInput type="number" formControlName="montoNotaFinanciera" min="0.01" step="0.01" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Comprobante que corrige (opcional)</mat-label>
+          <mat-select formControlName="comprobanteAfectadoId">
+            <mat-option [value]="null">No corrige un comprobante puntual</mat-option>
+            <mat-option *ngFor="let c of comprobantesPendientes()" [value]="c.id">
+              {{ c.tipo }} #{{ c.id }} — {{ c.total | currency:'ARS' }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </ng-container>
+
+      <!-- ===================== recibo de cobro / pago / pago contado ===================== -->
+      <ng-container *ngIf="llevaComprobanteAfectado()">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Comprobante a {{ esCobro() ? 'cobrar' : 'pagar' }}</mat-label>
+          <mat-select formControlName="comprobanteAfectadoId">
+            <mat-option *ngFor="let c of comprobantesPendientes()" [value]="c.id">
+              {{ c.tipo }} #{{ c.id }} — Pendiente: {{ c.total | currency:'ARS' }}
+            </mat-option>
+          </mat-select>
+          <mat-hint *ngIf="!comprobantesPendientes().length">Elegí un cliente/proveedor con comprobantes pendientes</mat-hint>
+        </mat-form-field>
+      </ng-container>
+
+      <ng-container *ngIf="llevaFormasPago()">
+        <h3>Forma{{ formasPagoArray.length > 1 ? 's' : '' }} de pago</h3>
+        <div formArrayName="formasPago" class="items-list">
+          <div class="forma-pago-block" *ngFor="let fp of formasPagoArray.controls; let i = index" [formGroupName]="i">
+            <div class="forma-pago-top">
+              <mat-form-field appearance="outline" class="fp-tipo">
+                <mat-label>Tipo</mat-label>
+                <mat-select formControlName="tipo" (selectionChange)="onFormaPagoTipoChange(i)">
+                  <mat-option value="EFECTIVO">Efectivo</mat-option>
+                  <mat-option value="TRANSFERENCIA">Transferencia</mat-option>
+                  <mat-option value="CHEQUE">Cheque</mat-option>
+                </mat-select>
+              </mat-form-field>
+              <mat-form-field appearance="outline" class="fp-monto">
+                <mat-label>Monto</mat-label>
+                <input matInput type="number" formControlName="monto" min="0.01" step="0.01" />
+              </mat-form-field>
+              <button mat-icon-button type="button" (click)="quitarFormaPago(i)" [disabled]="formasPagoArray.length === 1" matTooltip="Quitar">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+
+            <!-- cobro con cheque: cargamos los datos del cheque nuevo -->
+            <div class="cheque-grid" *ngIf="fp.get('tipo')?.value === 'CHEQUE' && esCobro()">
+              <mat-form-field appearance="outline">
+                <mat-label>Número de cheque</mat-label>
+                <input matInput formControlName="chequeNumero" />
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Banco</mat-label>
+                <input matInput formControlName="chequeBanco" />
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Fecha de cobro</mat-label>
+                <input matInput [matDatepicker]="pickerCheque" formControlName="chequeFechaCobro" />
+                <mat-datepicker-toggle matIconSuffix [for]="pickerCheque"></mat-datepicker-toggle>
+                <mat-datepicker #pickerCheque></mat-datepicker>
+              </mat-form-field>
+            </div>
+
+            <!-- pago con cheque: elegimos uno que ya está en cartera -->
+            <mat-form-field appearance="outline" class="full-width" *ngIf="fp.get('tipo')?.value === 'CHEQUE' && !esCobro()">
+              <mat-label>Cheque en cartera a entregar</mat-label>
+              <mat-select formControlName="chequeId">
+                <mat-option *ngFor="let ch of chequesEnCartera()" [value]="ch.id">
+                  #{{ ch.numero }} — {{ ch.banco }} — {{ ch.monto | currency:'ARS' }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+        </div>
+        <button mat-stroked-button type="button" (click)="agregarFormaPago()" class="add-item-btn">
+          <mat-icon>add</mat-icon>
+          Agregar forma de pago
+        </button>
+      </ng-container>
+
+      <p class="error" *ngIf="error()">{{ error() }}</p>
+
+      <div class="form-actions">
+        <button mat-button type="button" (click)="cancelar()">Cancelar</button>
+        <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid || guardando()">
+          {{ guardando() ? 'Guardando...' : 'Guardar' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

@@ -28,7 +28,8 @@ export class HomeComponent {
     { titulo: 'Stock', descripcion: 'Cantidad disponible y movimientos por producto', icono: '📊', ruta: '/stock', disponible: true },
     { titulo: 'Fórmulas de producción', descripcion: 'Recetas de fabricación por producto', icono: '🧪', ruta: '/fabricacion/formulas', disponible: true },
     { titulo: 'Órdenes de fabricación', descripcion: 'Planificación y seguimiento de producción', icono: '🏭', ruta: '/fabricacion/ordenes', disponible: true },
-    { titulo: 'Facturación', descripcion: 'Comprobantes, remitos y cobros', icono: '💵', ruta: '/facturacion', disponible: false }
+    { titulo: 'Facturación', descripcion: 'Comprobantes, remitos y cobros', icono: '💵', ruta: '/facturacion', disponible: true },
+    { titulo: 'Cheques', descripcion: 'Cartera de cheques recibidos y entregados', icono: '📄', ruta: '/cheques', disponible: true }
   ];
 
   constructor(public auth: AuthService) {}

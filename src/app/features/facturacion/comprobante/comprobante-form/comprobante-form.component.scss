@@ -1,0 +1,93 @@
+.form-page {
+  padding: 2rem;
+  max-width: 750px;
+  margin: 0 auto;
+}
+
+.form-card {
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  padding: 2rem;
+}
+
+h1 {
+  margin: 0 0 1.5rem;
+  color: #101A2E;
+  font-size: 22px;
+}
+
+h3 {
+  color: #101A2E;
+  font-size: 15px;
+  margin: 1.5rem 0 0.75rem;
+}
+
+.full-width {
+  width: 100%;
+  margin-bottom: 0.5rem;
+}
+
+.items-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.item-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.item-producto { flex: 2; min-width: 200px; }
+.item-cantidad { flex: 1; min-width: 100px; }
+.item-precio { flex: 1; min-width: 120px; }
+
+.remito-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem 1rem;
+  margin-bottom: 1rem;
+}
+
+.forma-pago-block {
+  background: #f9fafb;
+  border: 1px solid #eef1f5;
+  border-radius: 10px;
+  padding: 12px;
+}
+
+.forma-pago-top {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.fp-tipo { flex: 1; min-width: 150px; }
+.fp-monto { flex: 1; min-width: 120px; }
+
+.cheque-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 0.5rem;
+  margin-top: 4px;
+}
+
+.add-item-btn {
+  margin: 0.5rem 0 1rem;
+}
+
+.error {
+  color: #c0392b;
+  font-size: 0.85rem;
+  margin: 0 0 0.8rem;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 1rem;
+}
