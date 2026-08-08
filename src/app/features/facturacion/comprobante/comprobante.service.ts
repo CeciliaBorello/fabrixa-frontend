@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { ComprobanteRequest, ComprobanteResponse, DireccionComprobante, TipoComprobante } from './comprobante.model';
+import { ComprobanteRequest, ComprobanteResponse, DireccionComprobante, EstadoComprobante, TipoComprobante } from './comprobante.model';
 import { PageResponse } from '../../../shared/page-response.model';
 
 @Injectable({ providedIn: 'root' })
@@ -10,11 +10,13 @@ export class ComprobanteService {
 
   constructor(private http: HttpClient) {}
 
-  listarPaginado(page: number, size: number, tipos: TipoComprobante[] | null, soloAnulados: boolean, busqueda: string): Observable<PageResponse<ComprobanteResponse>> {
-    const params = new URLSearchParams({ page: String(page), size: String(size), soloAnulados: String(soloAnulados), busqueda });
-    if (tipos && tipos.length) {
-      tipos.forEach((t) => params.append('tipos', t));
-    }
+  listarPaginado(
+    page: number, size: number, sortBy: string, sortDir: string,
+    tipos: TipoComprobante[] | null, estado: EstadoComprobante | null, busqueda: string
+  ): Observable<PageResponse<ComprobanteResponse>> {
+    const params = new URLSearchParams({ page: String(page), size: String(size), sortBy, sortDir, busqueda });
+    if (tipos && tipos.length) tipos.forEach((t) => params.append('tipos', t));
+    if (estado) params.append('estado', estado);
     return this.http.get<PageResponse<ComprobanteResponse>>(`${this.baseUrl}/pagina?${params}`);
   }
 
@@ -36,5 +38,9 @@ export class ComprobanteService {
 
   asentar(id: number): Observable<ComprobanteResponse> {
     return this.http.put<ComprobanteResponse>(`${this.baseUrl}/${id}/asentar`, {});
+  }
+
+  generarArca(id: number): Observable<ComprobanteResponse> {
+    return this.http.post<ComprobanteResponse>(`${this.baseUrl}/${id}/generar-arca`, {});
   }
 }

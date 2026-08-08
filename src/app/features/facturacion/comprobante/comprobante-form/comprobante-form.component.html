@@ -41,8 +41,8 @@
           <div class="item-row" *ngFor="let item of itemsArray.controls; let i = index" [formGroupName]="i">
             <mat-form-field appearance="outline" class="item-producto">
               <mat-label>Producto</mat-label>
-              <mat-select formControlName="productoId">
-                <mat-option *ngFor="let p of productos()" [value]="p.id">{{ p.nombre }}</mat-option>
+              <mat-select formControlName="productoId" (selectionChange)="onProductoItemChange(i, $event.value)">
+                <mat-option *ngFor="let p of productosFiltrados()" [value]="p.id">{{ etiquetaProducto(p) }}</mat-option>
               </mat-select>
             </mat-form-field>
             <mat-form-field appearance="outline" class="item-cantidad">
@@ -53,6 +53,12 @@
               <mat-label>Precio unitario</mat-label>
               <input matInput type="number" formControlName="precioUnitario" min="0.01" step="0.01" />
             </mat-form-field>
+            <mat-form-field appearance="outline" class="item-iva">
+              <mat-label>IVA</mat-label>
+              <mat-select formControlName="porcentajeIva">
+                <mat-option *ngFor="let op of opcionesIva" [value]="op">{{ op }}%</mat-option>
+              </mat-select>
+            </mat-form-field>
             <button mat-icon-button type="button" (click)="quitarItem(i)" [disabled]="itemsArray.length === 1" matTooltip="Quitar">
               <mat-icon>delete</mat-icon>
             </button>
@@ -62,16 +68,30 @@
           <mat-icon>add</mat-icon>
           Agregar producto
         </button>
+
+        <div class="totales-preview">
+          <div class="totales-row">
+            <span>Subtotal (neto)</span>
+            <span>{{ subtotalCalculado() | currency:'ARS' }}</span>
+          </div>
+          <div class="totales-row">
+            <span>IVA</span>
+            <span>{{ ivaCalculado() | currency:'ARS' }}</span>
+          </div>
+          <div class="totales-row total-final">
+            <span>Total</span>
+            <span>{{ totalCalculado() | currency:'ARS' }}</span>
+          </div>
+        </div>
       </ng-container>
 
-      <!-- ===================== remito de viaje (Factura A / Remito B) ===================== -->
-      <ng-container *ngIf="llevaRemito()">
-        <h3>Remito de viaje</h3>
-        <div class="remito-grid">
-          <mat-form-field appearance="outline">
-            <mat-label>Número de remito</mat-label>
-            <input matInput formControlName="remitoNumero" />
-          </mat-form-field>
+      <!-- ===================== remito de viaje (opcional) ===================== -->
+      <ng-container *ngIf="puedeLlevarRemito()">
+        <mat-checkbox formControlName="llevaRemito" class="remito-checkbox">
+          ¿Este comprobante lleva remito de viaje?
+        </mat-checkbox>
+
+        <div class="remito-grid" *ngIf="form.get('llevaRemito')?.value">
           <mat-form-field appearance="outline">
             <mat-label>Transportista</mat-label>
             <input matInput formControlName="remitoTransportista" />
@@ -103,6 +123,13 @@
             </mat-option>
           </mat-select>
         </mat-form-field>
+
+        <div class="totales-preview">
+          <div class="totales-row total-final">
+            <span>Total</span>
+            <span>{{ totalCalculado() | currency:'ARS' }}</span>
+          </div>
+        </div>
       </ng-container>
 
       <!-- ===================== recibo de cobro / pago / pago contado ===================== -->
@@ -140,7 +167,6 @@
               </button>
             </div>
 
-            <!-- cobro con cheque: cargamos los datos del cheque nuevo -->
             <div class="cheque-grid" *ngIf="fp.get('tipo')?.value === 'CHEQUE' && esCobro()">
               <mat-form-field appearance="outline">
                 <mat-label>Número de cheque</mat-label>
@@ -158,7 +184,6 @@
               </mat-form-field>
             </div>
 
-            <!-- pago con cheque: elegimos uno que ya está en cartera -->
             <mat-form-field appearance="outline" class="full-width" *ngIf="fp.get('tipo')?.value === 'CHEQUE' && !esCobro()">
               <mat-label>Cheque en cartera a entregar</mat-label>
               <mat-select formControlName="chequeId">
@@ -173,6 +198,13 @@
           <mat-icon>add</mat-icon>
           Agregar forma de pago
         </button>
+
+        <div class="totales-preview">
+          <div class="totales-row total-final">
+            <span>Total</span>
+            <span>{{ totalCalculado() | currency:'ARS' }}</span>
+          </div>
+        </div>
       </ng-container>
 
       <p class="error" *ngIf="error()">{{ error() }}</p>

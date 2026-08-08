@@ -27,7 +27,7 @@
     </div>
     <div class="divider"></div>
     <mat-select
-      class="filtro-tipo"
+      class="filtro-select"
       placeholder="Todos los tipos"
       [value]="filtroTipo()"
       (selectionChange)="onFiltroTipoChange($event.value)">
@@ -35,13 +35,14 @@
       <mat-option *ngFor="let t of tipos" [value]="t.value">{{ t.label }}</mat-option>
     </mat-select>
     <div class="divider"></div>
-    <label class="toggle-wrapper">
-      <mat-slide-toggle [checked]="soloAnulados()" (change)="toggleSoloAnulados()"></mat-slide-toggle>
-      <span class="toggle-label">
-        <mat-icon>{{ soloAnulados() ? 'visibility' : 'visibility_off' }}</mat-icon>
-        Ver anulados
-      </span>
-    </label>
+    <mat-select
+      class="filtro-select"
+      placeholder="Todos los estados"
+      [value]="filtroEstado()"
+      (selectionChange)="onFiltroEstadoChange($event.value)">
+      <mat-option [value]="null">Todos los estados</mat-option>
+      <mat-option *ngFor="let e of estados" [value]="e.value">{{ e.label }}</mat-option>
+    </mat-select>
   </div>
 
   <div class="content-card">
@@ -49,9 +50,17 @@
       <mat-spinner diameter="36"></mat-spinner>
     </div>
 
-    <table mat-table [dataSource]="items()" *ngIf="!cargando() && items().length">
+    <table
+      mat-table
+      [dataSource]="items()"
+      matSort
+      [matSortActive]="sortBy()"
+      [matSortDirection]="sortDir()"
+      (matSortChange)="onSortChange($event)"
+      *ngIf="!cargando() && items().length">
+
       <ng-container matColumnDef="id">
-        <th mat-header-cell *matHeaderCellDef>#</th>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>#</th>
         <td mat-cell *matCellDef="let c">{{ c.id }}</td>
       </ng-container>
 
@@ -61,17 +70,22 @@
       </ng-container>
 
       <ng-container matColumnDef="cliente">
-        <th mat-header-cell *matHeaderCellDef>Cliente / Proveedor</th>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header="clienteProveedor.razonSocial">Cliente / Proveedor</th>
         <td mat-cell *matCellDef="let c">{{ c.clienteProveedorNombre }}</td>
       </ng-container>
 
-      <ng-container matColumnDef="fecha">
-        <th mat-header-cell *matHeaderCellDef>Fecha</th>
+      <ng-container matColumnDef="fechaEmision">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Fecha</th>
         <td mat-cell *matCellDef="let c">{{ c.fechaEmision | date:'dd/MM/yyyy' }}</td>
       </ng-container>
 
+      <ng-container matColumnDef="fechaModificacion">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Última modificación</th>
+        <td mat-cell *matCellDef="let c">{{ c.fechaModificacion | date:'dd/MM/yyyy HH:mm' }}</td>
+      </ng-container>
+
       <ng-container matColumnDef="total">
-        <th mat-header-cell *matHeaderCellDef>Total</th>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Total</th>
         <td mat-cell *matCellDef="let c">{{ c.total | currency:'ARS' }}</td>
       </ng-container>
 
@@ -115,7 +129,7 @@
     </table>
 
     <mat-paginator
-      *ngIf="totalItems() > 0"
+      *ngIf="!cargando() && totalItems() > 0"
       [length]="totalItems()"
       [pageSize]="pageSize()"
       [pageIndex]="pageIndex()"

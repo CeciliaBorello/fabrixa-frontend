@@ -20,6 +20,10 @@
         <span class="label">Tipo</span>
         <span class="valor">{{ c.tipo }}</span>
       </div>
+      <div class="resumen-item" *ngIf="c.numero">
+        <span class="label">Número</span>
+        <span class="valor">{{ c.puntoVenta }}-{{ c.numero }}</span>
+      </div>
       <div class="resumen-item">
         <span class="label">Cliente / Proveedor</span>
         <span class="valor">{{ c.clienteProveedorNombre }}</span>
@@ -29,12 +33,16 @@
         <span class="valor">{{ c.fechaEmision | date:'dd/MM/yyyy' }}</span>
       </div>
       <div class="resumen-item">
-        <span class="label">Total</span>
-        <span class="valor total">{{ c.total | currency:'ARS' }}</span>
-      </div>
-      <div class="resumen-item">
         <span class="label">Estado</span>
         <span class="valor"><mat-chip>{{ c.estado }}</mat-chip></span>
+      </div>
+      <div class="resumen-item" *ngIf="c.estadoArca !== 'NO_GENERADO'">
+        <span class="label">ARCA</span>
+        <span class="valor"><mat-chip>{{ c.estadoArca }}</mat-chip></span>
+      </div>
+      <div class="resumen-item" *ngIf="c.cae">
+        <span class="label">CAE</span>
+        <span class="valor">{{ c.cae }}</span>
       </div>
       <div class="resumen-item" *ngIf="c.estadoCobro">
         <span class="label">Cobro</span>
@@ -61,14 +69,28 @@
     <div class="seccion" *ngIf="c.items && c.items.length">
       <h3>Productos</h3>
       <table class="detalle-table">
-        <tr><th>Producto</th><th>Cantidad</th><th>Precio unitario</th><th>Subtotal</th></tr>
+        <tr><th>Producto</th><th>Cantidad</th><th>Precio unit.</th><th>IVA</th><th>Subtotal</th><th>Total ítem</th></tr>
         <tr *ngFor="let item of c.items">
           <td>{{ item.productoNombre }}</td>
           <td>{{ item.cantidad }}</td>
           <td>{{ item.precioUnitario | currency:'ARS' }}</td>
+          <td>{{ item.porcentajeIva }}%</td>
           <td>{{ item.subtotal | currency:'ARS' }}</td>
+          <td>{{ item.totalItem | currency:'ARS' }}</td>
         </tr>
       </table>
+
+      <div class="totales-resumen">
+        <div class="totales-row"><span>Subtotal</span><span>{{ c.subtotal | currency:'ARS' }}</span></div>
+        <div class="totales-row"><span>IVA</span><span>{{ c.ivaTotal | currency:'ARS' }}</span></div>
+        <div class="totales-row total-final"><span>Total</span><span>{{ c.total | currency:'ARS' }}</span></div>
+      </div>
+    </div>
+
+    <div class="seccion" *ngIf="!c.items || !c.items.length">
+      <div class="totales-resumen">
+        <div class="totales-row total-final"><span>Total</span><span>{{ c.total | currency:'ARS' }}</span></div>
+      </div>
     </div>
 
     <div class="seccion" *ngIf="c.remitoViaje">
@@ -89,6 +111,13 @@
           <td>{{ fp.chequeNumero || '-' }}</td>
         </tr>
       </table>
+    </div>
+
+    <div class="seccion arca-seccion" *ngIf="esElegibleParaArca()">
+      <button mat-flat-button color="primary" class="arca-btn" (click)="generarArca()">
+        <mat-icon>send</mat-icon>
+        Generar factura ARCA
+      </button>
     </div>
   </div>
 </div>

@@ -96,3 +96,49 @@
   padding: 8px 10px;
   border-bottom: 1px solid #f5f6f8;
 }
+
+.totales-resumen {
+  max-width: 280px;
+  margin-left: auto;
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid #eef1f5;
+}
+
+.totales-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  color: #6b7280;
+  padding: 3px 0;
+}
+
+.totales-row.total-final {
+  border-top: 1px solid #e5e7eb;
+  margin-top: 4px;
+  padding-top: 8px;
+  font-size: 16px;
+  font-weight: 700;
+  color: #101A2E;
+}
+
+.arca-seccion {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #eef1f5;
+}
+
+::ng-deep .arca-btn {
+  display: inline-flex !important;
+  align-items: center;
+  gap: 8px;
+}
+
+.arca-btn mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

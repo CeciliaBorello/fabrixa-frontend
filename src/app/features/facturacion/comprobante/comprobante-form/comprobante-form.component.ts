@@ -1,12 +1,13 @@
 import { Component, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormArray, FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { ComprobanteService } from '../comprobante.service';
@@ -24,7 +25,7 @@ import { BackButtonComponent } from '../../../../shared/back-button/back-button.
   standalone: true,
   imports: [
     CommonModule, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatSelectModule,
-    MatButtonModule, MatIconModule, MatDatepickerModule, MatNativeDateModule, BackButtonComponent
+    MatButtonModule, MatIconModule, MatCheckboxModule, MatDatepickerModule, MatNativeDateModule, BackButtonComponent
   ],
   templateUrl: './comprobante-form.component.html',
   styleUrl: './comprobante-form.component.scss'
@@ -49,7 +50,12 @@ export class ComprobanteFormComponent implements OnInit {
     { value: 'RECIBO_PAGO', label: 'Recibo de Pago' }
   ];
 
-  form;
+  opcionesIva = [21, 10.5, 27, 0];
+
+  // se declara sin inicializar acá — se arma en el constructor, DESPUÉS de que
+  // Angular ya asignó this.fb (si se inicializa como propiedad de clase, "this.fb"
+  // todavía no existe en ese momento y explota con TS2729)
+  form: FormGroup;
 
   get itemsArray() {
     return this.form.get('items') as FormArray;
@@ -61,9 +67,8 @@ export class ComprobanteFormComponent implements OnInit {
 
   tipoSeleccionado = signal<TipoComprobante>('FACTURA_A');
 
-  // grupos de comportamiento según el tipo elegido
   llevaItems = computed(() => ['FACTURA_A', 'FACTURA_B_REMITO', 'FACTURA_COMPRA'].includes(this.tipoSeleccionado()));
-  llevaRemito = computed(() => ['FACTURA_A', 'FACTURA_B_REMITO'].includes(this.tipoSeleccionado()));
+  puedeLlevarRemito = computed(() => ['FACTURA_A', 'FACTURA_B_REMITO'].includes(this.tipoSeleccionado()));
   llevaFormasPago = computed(() => ['RECIBO_COBRO', 'RECIBO_PAGO', 'PAGO_CONTADO'].includes(this.tipoSeleccionado()));
   llevaComprobanteAfectado = computed(() => ['RECIBO_COBRO', 'RECIBO_PAGO'].includes(this.tipoSeleccionado()));
   esNotaFinanciera = computed(() => ['NOTA_CREDITO', 'NOTA_DEBITO'].includes(this.tipoSeleccionado()));
@@ -71,6 +76,16 @@ export class ComprobanteFormComponent implements OnInit {
   direccionActual = computed<DireccionComprobante>(() =>
     ['FACTURA_COMPRA', 'RECIBO_PAGO'].includes(this.tipoSeleccionado()) ? 'COMPRA' : 'VENTA'
   );
+
+  productosFiltrados = computed(() => {
+    const todos = this.productos();
+
+    if (this.direccionActual() === 'VENTA') {
+      return todos.filter((p) => p.tipo === 'TERMINADO' || p.tipo === 'AMBOS');
+    }
+
+    return todos.filter((p) => p.tipo === 'INSUMO' || p.tipo === 'AMBOS');
+  });
 
   constructor(
     private fb: FormBuilder,
@@ -80,22 +95,21 @@ export class ComprobanteFormComponent implements OnInit {
     private chequeService: ChequeService,
     private router: Router
   ) {
-
+    // acá adentro "this.fb" ya está asignado, así que es seguro usarlo
     this.form = this.fb.group({
-    tipo: ['FACTURA_A' as TipoComprobante, Validators.required],
-    origen: ['GENERADO'],
-    clienteProveedorId: [null as number | null, Validators.required],
-    fechaVencimiento: [null as Date | null],
-    comprobanteAfectadoId: [null as number | null],
-    montoNotaFinanciera: [0],
-    items: this.fb.array([this.crearItemForm()]),
-    formasPago: this.fb.array([this.crearFormaPagoForm()]),
-    remitoNumero: [''],
-    remitoTransportista: [''],
-    remitoChofer: [''],
-    remitoPatente: ['']
-  });
-
+      tipo: ['FACTURA_A' as TipoComprobante, Validators.required],
+      origen: ['GENERADO'],
+      clienteProveedorId: [null as number | null, Validators.required],
+      fechaVencimiento: [null as Date | null],
+      comprobanteAfectadoId: [null as number | null],
+      montoNotaFinanciera: [0],
+      items: this.fb.array([this.crearItemForm()]),
+      formasPago: this.fb.array([this.crearFormaPagoForm()]),
+      llevaRemito: [false],
+      remitoTransportista: [''],
+      remitoChofer: [''],
+      remitoPatente: ['']
+    });
   }
 
   ngOnInit() {
@@ -106,16 +120,27 @@ export class ComprobanteFormComponent implements OnInit {
       this.tipoSeleccionado.set(tipo as TipoComprobante);
       this.comprobantesPendientes.set([]);
       this.form.get('comprobanteAfectadoId')?.setValue(null);
+      this.form.get('llevaRemito')?.setValue(false);
       this.recargarPendientesSiCorresponde();
 
       if (this.llevaFormasPago() && this.tieneChequeSeleccionado()) {
         this.cargarChequesEnCartera();
       }
+
+      this.actualizarControlesHabilitados();
     });
 
     this.form.get('clienteProveedorId')?.valueChanges.subscribe(() => {
       this.recargarPendientesSiCorresponde();
     });
+
+    this.actualizarControlesHabilitados();
+  }
+
+  etiquetaProducto(p: ProductoResponse): string {
+    // si no tiene presentacion propia (campo "presentacion" vacío) pero es tipo AMBOS/base de otros,
+    // es un producto "a granel" — lo aclaramos en el texto
+    return p.presentacion ? p.nombre : `${p.nombre} (a granel)`;
   }
 
   private recargarPendientesSiCorresponde() {
@@ -146,7 +171,8 @@ export class ComprobanteFormComponent implements OnInit {
     return this.fb.group({
       productoId: [null as number | null, Validators.required],
       cantidad: [1, [Validators.required, Validators.min(0.001)]],
-      precioUnitario: [0, [Validators.required, Validators.min(0.01)]]
+      precioUnitario: [0, [Validators.required, Validators.min(0.01)]],
+      porcentajeIva: [21, Validators.required]
     });
   }
 
@@ -186,6 +212,62 @@ export class ComprobanteFormComponent implements OnInit {
     return d.toISOString().split('T')[0];
   }
 
+  subtotalCalculado(): number {
+    if (!this.llevaItems()) return 0;
+    return this.itemsArray.controls.reduce((acc, ctrl) => {
+      const cantidad = ctrl.get('cantidad')?.value || 0;
+      const precio = ctrl.get('precioUnitario')?.value || 0;
+      return acc + cantidad * precio;
+    }, 0);
+  }
+
+  ivaCalculado(): number {
+    if (!this.llevaItems()) return 0;
+    return this.itemsArray.controls.reduce((acc, ctrl) => {
+      const cantidad = ctrl.get('cantidad')?.value || 0;
+      const precio = ctrl.get('precioUnitario')?.value || 0;
+      const iva = ctrl.get('porcentajeIva')?.value || 0;
+      return acc + (cantidad * precio * iva) / 100;
+    }, 0);
+  }
+
+  totalCalculado(): number {
+    if (this.llevaItems()) return this.subtotalCalculado() + this.ivaCalculado();
+    if (this.llevaFormasPago()) {
+      return this.formasPagoArray.controls.reduce((acc, ctrl) => acc + (ctrl.get('monto')?.value || 0), 0);
+    }
+    if (this.esNotaFinanciera()) return this.form.get('montoNotaFinanciera')?.value || 0;
+    return 0;
+  }
+
+  onProductoItemChange(index: number, productoId: number) {
+    const producto = this.productos().find((p) => p.id === productoId);
+    if (producto?.precioActual != null) {
+      this.itemsArray.at(index).get('precioUnitario')?.setValue(producto.precioActual);
+    }
+  }
+
+  private actualizarControlesHabilitados() {
+    if (this.llevaItems()) {
+      this.itemsArray.enable({ emitEvent: false });
+    } else {
+      this.itemsArray.disable({ emitEvent: false });
+    }
+
+    if (this.llevaFormasPago()) {
+      this.formasPagoArray.enable({ emitEvent: false });
+    } else {
+      this.formasPagoArray.disable({ emitEvent: false });
+    }
+
+    const montoControl = this.form.get('montoNotaFinanciera');
+    if (this.esNotaFinanciera()) {
+      montoControl?.enable({ emitEvent: false });
+    } else {
+      montoControl?.disable({ emitEvent: false });
+    }
+  }
+
   guardar() {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
@@ -209,16 +291,23 @@ export class ComprobanteFormComponent implements OnInit {
     }
 
     if (this.llevaItems()) {
-      request.items = v.items!.map((i) => ({ productoId: i.productoId!, cantidad: i.cantidad!, precioUnitario: i.precioUnitario! }));
+      request.items = v.items!.map((i: any) => ({
+        productoId: i.productoId!,
+        cantidad: i.cantidad!,
+        precioUnitario: i.precioUnitario!,
+        porcentajeIva: i.porcentajeIva!
+      }));
     }
 
-    if (this.llevaRemito()) {
+    if (this.puedeLlevarRemito() && v.llevaRemito) {
+      request.llevaRemito = true;
       request.remitoViaje = {
-        numero: v.remitoNumero || '',
         transportista: v.remitoTransportista || '',
         chofer: v.remitoChofer || '',
         patente: v.remitoPatente || ''
       };
+    } else {
+      request.llevaRemito = false;
     }
 
     if (this.llevaComprobanteAfectado()) {
@@ -231,7 +320,7 @@ export class ComprobanteFormComponent implements OnInit {
     }
 
     if (this.llevaFormasPago()) {
-      request.formasPago = v.formasPago!.map((fp) => ({
+      request.formasPago = v.formasPago!.map((fp: any) => ({
         tipo: fp.tipo!,
         monto: fp.monto!,
         chequeId: fp.chequeId || undefined,

@@ -1,6 +1,6 @@
 .page {
   padding: 2rem;
-  max-width: 1250px;
+  max-width: 1400px;
   margin: 0 auto;
 }
 
@@ -56,13 +56,14 @@ th, td {
   font-size: 14px;
 }
 
-.mat-column-id { width: 60px; }
-.mat-column-tipo { width: 170px; }
-.mat-column-cliente { width: 220px; }
-.mat-column-fecha { width: 110px; }
+.mat-column-id { width: 50px; }
+.mat-column-tipo { width: 150px; }
+.mat-column-cliente { width: 200px; }
+.mat-column-fechaEmision { width: 100px; }
+.mat-column-fechaModificacion { width: 150px; }
 .mat-column-total { width: 110px; }
-.mat-column-estado { width: 110px; }
-.mat-column-estadoCobroPago { width: 130px; }
+.mat-column-estado { width: 100px; }
+.mat-column-estadoCobroPago { width: 120px; }
 .mat-column-acciones {
   width: 150px;
   text-align: right;
@@ -188,9 +189,33 @@ mat-chip {
   justify-content: center;
 }
 
-.filtro-tipo {
-  width: 190px;
+.filtro-select {
+  width: 170px;
   font-size: 14px;
+  flex-shrink: 0;
+}
+
+::ng-deep .filtro-select .mat-mdc-text-field-wrapper {
+  background: transparent !important;
+  padding: 0 !important;
+  height: 100% !important;
+}
+
+::ng-deep .filtro-select .mdc-text-field {
+  padding: 0 !important;
+}
+
+::ng-deep .filtro-select .mdc-line-ripple {
+  display: none !important;
+}
+
+::ng-deep .filtro-select .mat-mdc-select-value,
+::ng-deep .filtro-select .mat-mdc-select-arrow {
+  color: #101A2E;
+}
+
+::ng-deep .filtro-select .mat-mdc-select-placeholder {
+  color: #9ca3af;
 }
 
 .divider {
@@ -199,38 +224,4 @@ mat-chip {
   background: #e5e7eb;
   margin: 0 12px;
   flex-shrink: 0;
-}
-
-.toggle-wrapper {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  cursor: pointer;
-  flex-shrink: 0;
-  padding-right: 6px;
-}
-
-.toggle-label {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 13px;
-  color: #6b7280;
-  font-weight: 500;
-  white-space: nowrap;
-}
-
-.toggle-label mat-icon {
-  font-size: 18px;
-  width: 18px;
-  height: 18px;
-  color: #9ca3af;
-}
-
-::ng-deep .mat-mdc-slide-toggle.mat-checked .mdc-switch__track::after {
-  background-color: #2AAE7E !important;
-}
-
-::ng-deep .mat-mdc-slide-toggle.mat-checked .mdc-switch__handle::after {
-  background-color: #ffffff !important;
 }

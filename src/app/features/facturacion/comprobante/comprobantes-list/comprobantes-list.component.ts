@@ -4,6 +4,7 @@ import { Router, RouterLink } from '@angular/router';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { debounceTime, filter as rxFilter } from 'rxjs';
 import { MatTableModule } from '@angular/material/table';
+import { MatSortModule, Sort } from '@angular/material/sort';
 import { MatSelectModule } from '@angular/material/select';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatButtonModule } from '@angular/material/button';
@@ -11,21 +12,18 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { ComprobanteService } from '../comprobante.service';
-import { ComprobanteResponse, TipoComprobante } from '../comprobante.model';
+import { ComprobanteResponse, EstadoComprobante, TipoComprobante } from '../comprobante.model';
 import { ConfirmDialogComponent } from '../../../../shared/confirm-dialog/confirm-dialog.component';
 import { BackButtonComponent } from '../../../../shared/back-button/back-button.component';
-
 
 @Component({
   selector: 'app-comprobantes-list',
   standalone: true,
   imports: [
-    CommonModule, RouterLink, ReactiveFormsModule, MatTableModule, MatSelectModule, MatPaginatorModule,
-    MatButtonModule, MatIconModule, MatChipsModule, MatProgressSpinnerModule, MatTooltipModule,
-    MatSlideToggleModule, MatDialogModule, BackButtonComponent
+    CommonModule, RouterLink, ReactiveFormsModule, MatTableModule, MatSortModule, MatSelectModule, MatPaginatorModule,
+    MatButtonModule, MatIconModule, MatChipsModule, MatProgressSpinnerModule, MatTooltipModule, MatDialogModule, BackButtonComponent
   ],
   templateUrl: './comprobantes-list.component.html',
   styleUrl: './comprobantes-list.component.scss'
@@ -35,15 +33,17 @@ export class ComprobantesListComponent implements OnInit {
   totalItems = signal(0);
   pageIndex = signal(0);
   pageSize = signal(10);
-  soloAnulados = signal(false);
+  sortBy = signal('fechaModificacion');
+  sortDir = signal<'asc' | 'desc'>('desc');
   busqueda = signal('');
   filtroTipo = signal<TipoComprobante | null>(null);
+  filtroEstado = signal<EstadoComprobante | null>(null);
   cargando = signal(true);
   error = signal('');
 
   busquedaControl = new FormControl('');
 
-  columnas = ['id', 'tipo', 'cliente', 'fecha', 'total', 'estado', 'estadoCobroPago', 'acciones'];
+  columnas = ['id', 'tipo', 'cliente', 'fechaEmision', 'fechaModificacion', 'total', 'estado', 'estadoCobroPago', 'acciones'];
 
   tipos: { value: TipoComprobante; label: string }[] = [
     { value: 'FACTURA_A', label: 'Factura A' },
@@ -54,6 +54,13 @@ export class ComprobantesListComponent implements OnInit {
     { value: 'RECIBO_COBRO', label: 'Recibo de Cobro' },
     { value: 'RECIBO_PAGO', label: 'Recibo de Pago' },
     { value: 'PAGO_CONTADO', label: 'Pago Contado' }
+  ];
+
+  estados: { value: EstadoComprobante; label: string }[] = [
+    { value: 'EMITIDO', label: 'Emitido' },
+    { value: 'ANULADO', label: 'Anulado' },
+    { value: 'ASENTADA', label: 'Asentada' },
+    { value: 'BORRADOR', label: 'Borrador' }
   ];
 
   constructor(private service: ComprobanteService, private dialog: MatDialog, private router: Router) {
@@ -73,21 +80,29 @@ export class ComprobantesListComponent implements OnInit {
   cargar() {
     this.cargando.set(true);
     const tipos = this.filtroTipo() ? [this.filtroTipo() as TipoComprobante] : null;
-    this.service.listarPaginado(this.pageIndex(), this.pageSize(), tipos, this.soloAnulados(), this.busqueda()).subscribe({
-      next: (pagina) => {
-        this.items.set(pagina.content);
-        this.totalItems.set(pagina.totalElements);
-        this.cargando.set(false);
-      },
-      error: () => {
-        this.error.set('No se pudieron cargar los comprobantes');
-        this.cargando.set(false);
-      }
-    });
+    this.service
+      .listarPaginado(this.pageIndex(), this.pageSize(), this.sortBy(), this.sortDir(), tipos, this.filtroEstado(), this.busqueda())
+      .subscribe({
+        next: (pagina) => {
+          this.items.set(pagina.content);
+          this.totalItems.set(pagina.totalElements);
+          this.cargando.set(false);
+        },
+        error: () => {
+          this.error.set('No se pudieron cargar los comprobantes');
+          this.cargando.set(false);
+        }
+      });
   }
 
   onFiltroTipoChange(tipo: TipoComprobante | null) {
     this.filtroTipo.set(tipo);
+    this.pageIndex.set(0);
+    this.cargar();
+  }
+
+  onFiltroEstadoChange(estado: EstadoComprobante | null) {
+    this.filtroEstado.set(estado);
     this.pageIndex.set(0);
     this.cargar();
   }
@@ -98,8 +113,14 @@ export class ComprobantesListComponent implements OnInit {
     this.cargar();
   }
 
-  toggleSoloAnulados() {
-    this.soloAnulados.update((v) => !v);
+  onSortChange(sort: Sort) {
+    if (!sort.direction) {
+      this.sortBy.set('fechaModificacion');
+      this.sortDir.set('desc');
+    } else {
+      this.sortBy.set(sort.active);
+      this.sortDir.set(sort.direction as 'asc' | 'desc');
+    }
     this.pageIndex.set(0);
     this.cargar();
   }

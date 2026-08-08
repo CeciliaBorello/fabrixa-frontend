@@ -13,6 +13,7 @@ export interface ItemComprobanteRequest {
   productoId: number;
   cantidad: number;
   precioUnitario: number;
+  porcentajeIva: number;
 }
 
 export interface ItemComprobanteResponse {
@@ -21,11 +22,13 @@ export interface ItemComprobanteResponse {
   productoNombre: string;
   cantidad: number;
   precioUnitario: number;
+  porcentajeIva: number;
   subtotal: number;
+  ivaItem: number;
+  totalItem: number;
 }
 
 export interface RemitoViajeRequest {
-  numero: string;
   transportista: string;
   chofer: string;
   patente: string;
@@ -65,6 +68,7 @@ export interface ComprobanteRequest {
   items?: ItemComprobanteRequest[];
   formasPago?: FormaPagoRequest[];
   comprobanteAfectadoId?: number;
+  llevaRemito?: boolean;
   remitoViaje?: RemitoViajeRequest;
 }
 
@@ -82,6 +86,8 @@ export interface ComprobanteResponse {
   estado: EstadoComprobante;
   estadoCobro: EstadoCobro | null;
   estadoPago: EstadoPago | null;
+  subtotal: number;
+  ivaTotal: number;
   total: number;
   usuarioNombre: string;
   comprobanteAfectadoId: number | null;
@@ -89,4 +95,7 @@ export interface ComprobanteResponse {
   items: ItemComprobanteResponse[];
   remitoViaje: RemitoViajeResponse | null;
   formasPago: FormaPagoResponse[];
+  cae: string | null;
+  caeVencimiento: string | null;
+  estadoArca: 'NO_GENERADO' | 'PENDIENTE' | 'ENVIADO' | 'ERROR';
 }
