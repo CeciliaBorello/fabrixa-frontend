@@ -1,0 +1,56 @@
+<div class="page">
+  <div class="page-header">
+    <div class="titulo-con-volver">
+      <app-back-button ruta="/cuentas-corrientes"></app-back-button>
+      <div>
+        <h1>{{ razonSocial() || 'Estado de cuenta' }}</h1>
+        <p class="subtitle">Historial de movimientos y saldo</p>
+      </div>
+    </div>
+    <div class="page-header-top">
+      <button mat-flat-button color="primary" (click)="abrirAjuste()">
+        <mat-icon>tune</mat-icon>
+        Ajuste manual
+      </button>
+    </div>
+  </div>
+
+  <div class="error-banner" *ngIf="error()">{{ error() }}</div>
+
+  <div class="saldo-card" [class]="claseSaldo(saldoActual())">
+    <span class="label">Saldo actual</span>
+    <span class="valor">{{ saldoActual() | currency:'ARS' }}</span>
+    <span class="hint">{{ saldoActual() > 0 ? 'A favor nuestro' : saldoActual() < 0 ? 'A favor del tercero' : 'Sin saldo pendiente' }}</span>
+  </div>
+
+  <div class="content-card">
+    <div class="loading-container" *ngIf="cargando()">
+      <mat-spinner diameter="36"></mat-spinner>
+    </div>
+
+    <table class="movimientos-table" *ngIf="!cargando() && movimientos().length">
+      <tr>
+        <th>Fecha</th>
+        <th>Concepto</th>
+        <th>Debe</th>
+        <th>Haber</th>
+        <th>Saldo</th>
+      </tr>
+      <tr *ngFor="let m of movimientos()">
+        <td>{{ m.fecha | date:'dd/MM/yyyy' }}</td>
+        <td>
+          <a *ngIf="m.comprobanteId" [routerLink]="['/facturacion', m.comprobanteId]">{{ m.concepto }}</a>
+          <span *ngIf="!m.comprobanteId">{{ m.concepto }}<span class="motivo" *ngIf="m.motivo"> — {{ m.motivo }}</span></span>
+        </td>
+        <td class="debe">{{ m.debe > 0 ? (m.debe | currency:'ARS') : '-' }}</td>
+        <td class="haber">{{ m.haber > 0 ? (m.haber | currency:'ARS') : '-' }}</td>
+        <td [class]="claseSaldo(m.saldoAcumulado)">{{ m.saldoAcumulado | currency:'ARS' }}</td>
+      </tr>
+    </table>
+
+    <div class="empty-state" *ngIf="!cargando() && !movimientos().length">
+      <mat-icon>receipt_long</mat-icon>
+      <p>Todavía no hay movimientos registrados para este cliente/proveedor.</p>
+    </div>
+  </div>
+</div>

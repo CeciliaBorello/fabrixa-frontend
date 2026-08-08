@@ -22,6 +22,8 @@ import { ComprobantesListComponent } from './features/facturacion/comprobante/co
 import { ComprobanteFormComponent } from './features/facturacion/comprobante/comprobante-form/comprobante-form.component';
 import { ComprobanteDetalleComponent } from './features/facturacion/comprobante/comprobante-detalle/comprobante-detalle.component';
 import { ChequesListComponent } from './features/facturacion/cheque/cheques-list/cheques-list.component';
+import { CuentaCorrienteDetalleComponent } from './features/cuentas-corrientes/cuenta-corriente-detalle/cuenta-corriente-detalle.component';
+
 
 
 
@@ -99,6 +101,14 @@ export const routes: Routes = [
     canActivate: [authGuard],
     children: [
       { path: '', component: ChequesListComponent }
+    ]
+  },
+  
+  {
+    path: 'cuentas-corrientes',
+    canActivate: [authGuard],
+    children: [
+      { path: ':id', component: CuentaCorrienteDetalleComponent }
     ]
   },
 
