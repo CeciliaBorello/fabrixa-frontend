@@ -43,11 +43,12 @@ export class ComprobantesListComponent implements OnInit {
 
   busquedaControl = new FormControl('');
 
-  columnas = ['id', 'tipo', 'cliente', 'fechaEmision', 'fechaModificacion', 'total', 'estado', 'estadoCobroPago', 'acciones'];
+  columnas = ['tipo', 'cliente', 'fechaEmision', 'fechaModificacion', 'total', 'estado', 'estadoCobroPago', 'acciones'];
 
   tipos: { value: TipoComprobante; label: string }[] = [
     { value: 'FACTURA_A', label: 'Factura A' },
     { value: 'FACTURA_B_REMITO', label: 'Remito (Factura B)' },
+    { value: 'FACTURA_C_REMITO', label: 'Factura C' },
     { value: 'NOTA_CREDITO', label: 'Nota de Crédito' },
     { value: 'NOTA_DEBITO', label: 'Nota de Débito' },
     { value: 'FACTURA_COMPRA', label: 'Factura de Compra' },

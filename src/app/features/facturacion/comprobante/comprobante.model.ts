@@ -1,5 +1,5 @@
 export type TipoComprobante =
-  | 'FACTURA_A' | 'FACTURA_B_REMITO' | 'NOTA_CREDITO' | 'NOTA_DEBITO'
+  | 'FACTURA_A' | 'FACTURA_B_REMITO' | 'FACTURA_C_REMITO' | 'NOTA_CREDITO' | 'NOTA_DEBITO'
   | 'FACTURA_COMPRA' | 'RECIBO_COBRO' | 'RECIBO_PAGO' | 'PAGO_CONTADO';
 
 export type DireccionComprobante = 'VENTA' | 'COMPRA';
@@ -41,6 +41,8 @@ export interface RemitoViajeResponse {
   chofer: string;
   patente: string;
   fecha: string;
+  estadoArca: 'NO_GENERADO' | 'PENDIENTE' | 'ENVIADO' | 'ERROR';
+  codigoAutorizacion: string | null;
 }
 
 export interface FormaPagoRequest {
@@ -98,4 +100,5 @@ export interface ComprobanteResponse {
   cae: string | null;
   caeVencimiento: string | null;
   estadoArca: 'NO_GENERADO' | 'PENDIENTE' | 'ENVIADO' | 'ERROR';
+  montoPendiente: number | null;
 }

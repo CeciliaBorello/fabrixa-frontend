@@ -43,4 +43,12 @@ export class ComprobanteService {
   generarArca(id: number): Observable<ComprobanteResponse> {
     return this.http.post<ComprobanteResponse>(`${this.baseUrl}/${id}/generar-arca`, {});
   }
+
+  generarArcaRemito(id: number): Observable<ComprobanteResponse> {
+    return this.http.post<ComprobanteResponse>(`${this.baseUrl}/${id}/generar-arca-remito`, {});
+  }
+
+  relacionados(id: number): Observable<ComprobanteResponse[]> {
+    return this.http.get<ComprobanteResponse[]>(`${this.baseUrl}/${id}/relacionados`);
+  }
 }

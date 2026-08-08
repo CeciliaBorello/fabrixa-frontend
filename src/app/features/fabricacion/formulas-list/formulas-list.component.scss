@@ -1,14 +1,19 @@
 .page {
   padding: 2rem;
-  max-width: 950px;
+  max-width: 1200px;
   margin: 0 auto;
 }
 
 .page-header {
   display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
+  flex-direction: column;
   margin-bottom: 1.5rem;
+}
+
+.page-header-top {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1rem;
 }
 
 .titulo-con-volver {

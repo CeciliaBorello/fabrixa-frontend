@@ -6,6 +6,16 @@
         <h1>Detalle del comprobante</h1>
       </div>
     </div>
+    <div class="page-header-top" *ngIf="comprobante() as c">
+      <button mat-flat-button color="primary" *ngIf="puedeCobrar()" (click)="irACobrar()">
+        <mat-icon>payments</mat-icon>
+        Cobrar
+      </button>
+      <button mat-flat-button color="primary" *ngIf="puedePagar()" (click)="irAPagar()">
+        <mat-icon>payments</mat-icon>
+        Pagar
+      </button>
+    </div>
   </div>
 
   <div class="loading-container" *ngIf="cargando()">
@@ -113,11 +123,39 @@
       </table>
     </div>
 
-    <div class="seccion arca-seccion" *ngIf="esElegibleParaArca()">
-      <button mat-flat-button color="primary" class="arca-btn" (click)="generarArca()">
-        <mat-icon>send</mat-icon>
-        Generar factura ARCA
-      </button>
+    <div class="seccion" *ngIf="relacionados().length">
+      <h3>Comprobantes relacionados</h3>
+      <table class="detalle-table">
+        <tr><th>#</th><th>Tipo</th><th>Fecha</th><th>Total</th><th>Estado</th><th></th></tr>
+        <tr *ngFor="let r of relacionados()">
+          <td>{{ r.puntoVenta }}-{{ r.numero }}</td>
+          <td>{{ etiquetaTipoComprobante(r.tipo) }}</td>
+          <td>{{ r.fechaEmision | date:'dd/MM/yyyy' }}</td>
+          <td>{{ r.total | currency:'ARS' }}</td>
+          <td><mat-chip [class]="'estado-comprobante-' + r.estado.toLowerCase()">{{ r.estado }}</mat-chip></td>
+          <td class="relacionado-acciones">
+            <a mat-icon-button [routerLink]="['/facturacion', r.id]" matTooltip="Ver detalle">
+              <mat-icon>visibility</mat-icon>
+            </a>
+          </td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="seccion arca-seccion">
+      <div class="arca-botones">
+        <button mat-flat-button color="primary" class="arca-btn" (click)="generarArca()" *ngIf="esElegibleParaArca()">
+          <mat-icon>send</mat-icon>
+          Generar factura ARCA
+        </button>
+
+        <ng-container *ngIf="c.remitoViaje as remito">
+          <button mat-flat-button color="primary" class="arca-btn" (click)="generarArcaRemito()" *ngIf="remito.estadoArca !== 'ENVIADO'">
+            <mat-icon>local_shipping</mat-icon>
+            Generar remito ARCA
+          </button>
+        </ng-container>
+      </div>
     </div>
   </div>
 </div>

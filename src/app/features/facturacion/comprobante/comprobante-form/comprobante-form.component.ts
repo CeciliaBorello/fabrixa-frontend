@@ -1,7 +1,7 @@
 import { Component, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
@@ -25,8 +25,7 @@ import { BackButtonComponent } from '../../../../shared/back-button/back-button.
   standalone: true,
   imports: [
     CommonModule, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatSelectModule,
-    MatButtonModule, MatIconModule, MatCheckboxModule, MatDatepickerModule, MatNativeDateModule, BackButtonComponent
-  ],
+    MatButtonModule, MatIconModule, MatCheckboxModule, MatDatepickerModule, MatNativeDateModule, BackButtonComponent],
   templateUrl: './comprobante-form.component.html',
   styleUrl: './comprobante-form.component.scss'
 })
@@ -41,7 +40,8 @@ export class ComprobanteFormComponent implements OnInit {
 
   tipos: { value: TipoComprobante; label: string }[] = [
     { value: 'FACTURA_A', label: 'Factura A' },
-    { value: 'FACTURA_B_REMITO', label: 'Remito (Factura B)' },
+    { value: 'FACTURA_B_REMITO', label: 'Factura B' },
+    { value: 'FACTURA_C_REMITO', label: 'Factura C' },
     { value: 'FACTURA_COMPRA', label: 'Factura de Compra' },
     { value: 'NOTA_CREDITO', label: 'Nota de Crédito' },
     { value: 'NOTA_DEBITO', label: 'Nota de Débito' },
@@ -52,9 +52,6 @@ export class ComprobanteFormComponent implements OnInit {
 
   opcionesIva = [21, 10.5, 27, 0];
 
-  // se declara sin inicializar acá — se arma en el constructor, DESPUÉS de que
-  // Angular ya asignó this.fb (si se inicializa como propiedad de clase, "this.fb"
-  // todavía no existe en ese momento y explota con TS2729)
   form: FormGroup;
 
   get itemsArray() {
@@ -67,8 +64,8 @@ export class ComprobanteFormComponent implements OnInit {
 
   tipoSeleccionado = signal<TipoComprobante>('FACTURA_A');
 
-  llevaItems = computed(() => ['FACTURA_A', 'FACTURA_B_REMITO', 'FACTURA_COMPRA'].includes(this.tipoSeleccionado()));
-  puedeLlevarRemito = computed(() => ['FACTURA_A', 'FACTURA_B_REMITO'].includes(this.tipoSeleccionado()));
+  llevaItems = computed(() => ['FACTURA_A', 'FACTURA_B_REMITO', 'FACTURA_C_REMITO', 'FACTURA_COMPRA'].includes(this.tipoSeleccionado()));
+  puedeLlevarRemito = computed(() => ['FACTURA_A', 'FACTURA_B_REMITO', 'FACTURA_C_REMITO'].includes(this.tipoSeleccionado()));
   llevaFormasPago = computed(() => ['RECIBO_COBRO', 'RECIBO_PAGO', 'PAGO_CONTADO'].includes(this.tipoSeleccionado()));
   llevaComprobanteAfectado = computed(() => ['RECIBO_COBRO', 'RECIBO_PAGO'].includes(this.tipoSeleccionado()));
   esNotaFinanciera = computed(() => ['NOTA_CREDITO', 'NOTA_DEBITO'].includes(this.tipoSeleccionado()));
@@ -93,7 +90,8 @@ export class ComprobanteFormComponent implements OnInit {
     private clienteService: ClienteProveedorService,
     private productoService: ProductoService,
     private chequeService: ChequeService,
-    private router: Router
+    private router: Router,
+    private route: ActivatedRoute
   ) {
     // acá adentro "this.fb" ya está asignado, así que es seguro usarlo
     this.form = this.fb.group({
@@ -108,7 +106,8 @@ export class ComprobanteFormComponent implements OnInit {
       llevaRemito: [false],
       remitoTransportista: [''],
       remitoChofer: [''],
-      remitoPatente: ['']
+      remitoPatente: [''],
+      montoPendiente: ['']
     });
   }
 
@@ -135,6 +134,21 @@ export class ComprobanteFormComponent implements OnInit {
     });
 
     this.actualizarControlesHabilitados();
+
+    this.route.queryParamMap.subscribe((params) => {
+      const comprobanteId = params.get('cobrar') || params.get('pagar');
+      if (!comprobanteId) return;
+
+      const esCobro = !!params.get('cobrar');
+      this.form.get('tipo')?.setValue(esCobro ? 'RECIBO_COBRO' : 'RECIBO_PAGO');
+
+      this.service.buscarPorId(Number(comprobanteId)).subscribe((c) => {
+        this.form.get('clienteProveedorId')?.setValue(c.clienteProveedorId);
+        // recién cuando el cliente ya está seteado, cargamos sus pendientes y preseleccionamos este
+        this.recargarPendientesSiCorresponde();
+        this.form.get('comprobanteAfectadoId')?.setValue(c.id);
+      });
+    });
   }
 
   etiquetaProducto(p: ProductoResponse): string {

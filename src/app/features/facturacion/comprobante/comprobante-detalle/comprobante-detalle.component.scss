@@ -142,3 +142,30 @@
   align-items: center;
   justify-content: center;
 }
+
+.arca-botones {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.relacionado-acciones {
+  text-align: right;
+  padding-right: 8px !important;
+}
+
+.relacionado-acciones a {
+  width: 32px;
+  height: 32px;
+  line-height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #6b7280;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
