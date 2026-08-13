@@ -23,7 +23,6 @@ import { ComprobanteFormComponent } from './features/facturacion/comprobante/com
 import { ComprobanteDetalleComponent } from './features/facturacion/comprobante/comprobante-detalle/comprobante-detalle.component';
 import { ChequesListComponent } from './features/facturacion/cheque/cheques-list/cheques-list.component';
 import { CuentaCorrienteDetalleComponent } from './features/cuentas-corrientes/cuenta-corriente-detalle/cuenta-corriente-detalle.component';
-<<<<<<< HEAD
 import { CuentasContablesListComponent } from './features/contabilidad/cuentas-contables-list/cuentas-contables-list.component';
 import { ImpuestosListComponent } from './features/contabilidad/impuestos-list/impuestos-list.component';
 import { EmpleadosListComponent } from './features/rrhh/empleados-list/empleados-list.component';
@@ -31,11 +30,6 @@ import { EmpleadoFormComponent } from './features/rrhh/empleado-form/empleado-fo
 import { RegistroHorasComponent } from './features/rrhh/horas/registro-horas/registro-horas.component';
 import { HorasNoLiquidadasComponent } from './features/rrhh/horas/horas-no-liquidadas/horas-no-liquidadas.component';
 import { LiquidacionesListComponent } from './features/rrhh/liquidaciones/liquidaciones-list/liquidaciones-list.component';
-=======
->>>>>>> eb52c856e12ddaccc5776f4e0936f35a9af6a0c6
-
-
-
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -121,7 +115,6 @@ export const routes: Routes = [
       { path: ':id', component: CuentaCorrienteDetalleComponent }
     ]
   },
-<<<<<<< HEAD
 
   {
     path: 'cuentas-contables',
@@ -156,8 +149,6 @@ export const routes: Routes = [
     canActivate: [authGuard],
     children: [{ path: '', component: LiquidacionesListComponent }]
   },
-=======
->>>>>>> eb52c856e12ddaccc5776f4e0936f35a9af6a0c6
 
   { path: '**', redirectTo: '' }
 ];
