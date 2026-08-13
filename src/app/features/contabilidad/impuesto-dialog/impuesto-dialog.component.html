@@ -1,0 +1,32 @@
+<h2 mat-dialog-title>{{ data.impuesto ? 'Editar impuesto' : 'Nuevo impuesto' }}</h2>
+<div mat-dialog-content>
+  <form [formGroup]="form">
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Nombre</mat-label>
+      <input matInput formControlName="nombre" placeholder="Ej: IVA, Aportes, Autónomos..." />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Período</mat-label>
+      <input matInput formControlName="periodo" placeholder="Ej: 08/2026" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Monto</mat-label>
+      <input matInput type="number" formControlName="monto" min="0.01" step="0.01" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Fecha de vencimiento</mat-label>
+      <input matInput [matDatepicker]="picker" formControlName="fechaVencimiento" />
+      <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+    </mat-form-field>
+  </form>
+
+  <p class="error" *ngIf="error()">{{ error() }}</p>
+</div>
+<div mat-dialog-actions align="end">
+  <button mat-button (click)="cancelar()">Cancelar</button>
+  <button mat-flat-button color="primary" [disabled]="form.invalid" (click)="guardar()">Guardar</button>
+</div>

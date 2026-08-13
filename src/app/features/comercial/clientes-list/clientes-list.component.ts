@@ -17,6 +17,8 @@ import { ClienteProveedorService } from '../cliente-proveedor.service';
 import { ClienteProveedorResponse } from '../cliente-proveedor.model';
 import { ConfirmDialogComponent } from '../../../shared/confirm-dialog/confirm-dialog.component';
 import { BackButtonComponent } from '../../../shared/back-button/back-button.component';
+import { Router } from '@angular/router';
+import { CuentaCorrienteService } from '../../cuentas-corrientes/cuenta-corriente.service';
 
 @Component({
   selector: 'app-clientes-list',
@@ -45,7 +47,9 @@ export class ClientesListComponent implements OnInit {
 
   columnas = ['razonSocial', 'cuit', 'tipo', 'saldo', 'estado', 'acciones'];
 
-  constructor(private service: ClienteProveedorService, private dialog: MatDialog) {
+  saldosPorCliente = signal<Record<number, number>>({});
+
+  constructor(private service: ClienteProveedorService, private dialog: MatDialog, private router: Router, private cuentaCorrienteService: CuentaCorrienteService) {
     this.busquedaControl.valueChanges
       .pipe(
         debounceTime(500),
@@ -61,22 +65,33 @@ export class ClientesListComponent implements OnInit {
   ngOnInit() {
     this.cargar();
   }
+  
 
   cargar() {
     this.cargando.set(true);
     this.service
       .listarPaginado(this.pageIndex(), this.pageSize(), this.sortBy(), this.sortDir(), !this.mostrarInactivos(), this.busqueda())
       .subscribe({
-        next: (pagina) => {
+       next: (pagina) => {
           this.items.set(pagina.content);
           this.totalItems.set(pagina.totalElements);
           this.cargando.set(false);
+
+          const ids = pagina.content.map((c) => c.id);
+          if (ids.length) {
+            this.cuentaCorrienteService.saldosDe(ids).subscribe((saldos) => this.saldosPorCliente.set(saldos));
+          }
         },
         error: () => {
           this.error.set('No se pudieron cargar los clientes/proveedores');
           this.cargando.set(false);
         }
       });
+      
+  }
+
+  saldoDe(id: number): number {
+    return this.saldosPorCliente()[id] ?? 0;
   }
 
   onPageChange(event: PageEvent) {
@@ -101,6 +116,10 @@ export class ClientesListComponent implements OnInit {
     this.mostrarInactivos.update((v) => !v);
     this.pageIndex.set(0);
     this.cargar();
+  }
+
+  verCuentaCorriente(item: ClienteProveedorResponse) {
+    this.router.navigate(['/cuentas-corrientes', item.id]);
   }
 
   toggleEstado(item: ClienteProveedorResponse) {

@@ -1,6 +1,6 @@
 .page {
   padding: 2rem;
-  max-width: 900px;
+  max-width: 1000px;
   margin: 0 auto;
 }
 
@@ -8,6 +8,12 @@
   display: flex;
   flex-direction: column;
   margin-bottom: 1.5rem;
+}
+
+.titulo-con-volver {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
 }
 
 .page-header h1 {
@@ -29,9 +35,6 @@
 }
 
 .error-banner {
-  display: flex;
-  align-items: center;
-  gap: 8px;
   background: #fdecea;
   color: #c0392b;
   padding: 10px 16px;
@@ -58,45 +61,39 @@ th, td {
   font-size: 14px;
 }
 
-.mat-column-razonSocial { width: 220px; }
-.mat-column-cuit { width: 130px; }
-.mat-column-tipo { width: 140px; }
-.mat-column-saldo { width: 140px; }
-.mat-column-estado { width: 110px; }
+.mat-column-nombre { width: 200px; }
+.mat-column-periodo { width: 120px; }
+.mat-column-monto { width: 130px; }
+.mat-column-fechaVencimiento { width: 140px; }
+.mat-column-estado { width: 130px; }
 .mat-column-acciones {
-  width: 140px;
+  width: 100px;
   text-align: right;
   padding-right: 8px !important;
 }
 
-.tipo-chip {
-  background-color: #eef1f5 !important;
-  color: #101A2E !important;
-  font-size: 12px !important;
-  min-height: 24px !important;
-}
-
-.saldo-negativo {
-  color: #c0392b;
-  font-weight: 500;
-}
-
-.estado-dot {
-  display: inline-block;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  margin-right: 6px;
-}
-
-.estado-dot.activo { background-color: #2AAE7E; }
-.estado-dot.inactivo { background-color: #c0392b; }
-
 .actions {
   display: flex;
-  gap: 0.15rem;
+  align-items: center;
   justify-content: flex-end;
+  gap: 0;
 }
+
+.actions button {
+  width: 32px;
+  height: 32px;
+  line-height: 32px;
+  flex-shrink: 0;
+}
+
+mat-chip {
+  font-size: 11px !important;
+  min-height: 22px !important;
+}
+
+.estado-pendiente { background-color: #fdf0d5 !important; color: #8a5a00 !important; }
+.estado-pagado { background-color: #d4f2e5 !important; color: #0d3d2c !important; }
+.estado-vencido { background-color: #f5d5d0 !important; color: #7a2418 !important; }
 
 .loading-container, .empty-state {
   display: flex;
@@ -116,12 +113,6 @@ th, td {
   color: #cbd0d6;
 }
 
-.titulo-con-volver {
-  display: flex;
-  align-items: flex-start;
-  gap: 8px;
-}
-
 .toolbar-lista {
   display: flex;
   align-items: center;
@@ -131,7 +122,7 @@ th, td {
   border: 1px solid #e5e7eb;
   border-radius: 999px;
   height: 46px;
-  padding: 0 16px; // antes tenía "0 6px 0 16px" — ahora simétrico en ambos lados
+  padding: 0 16px;
 }
 
 .search-wrapper {
@@ -187,44 +178,39 @@ th, td {
   justify-content: center;
 }
 
+.filtro-select {
+  width: 170px;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+::ng-deep .filtro-select .mat-mdc-text-field-wrapper {
+  background: transparent !important;
+  padding: 0 !important;
+  height: 100% !important;
+}
+
+::ng-deep .filtro-select .mdc-text-field {
+  padding: 0 !important;
+}
+
+::ng-deep .filtro-select .mdc-line-ripple {
+  display: none !important;
+}
+
+::ng-deep .filtro-select .mat-mdc-select-value,
+::ng-deep .filtro-select .mat-mdc-select-arrow {
+  color: #101A2E;
+}
+
+::ng-deep .filtro-select .mat-mdc-select-placeholder {
+  color: #9ca3af;
+}
+
 .divider {
   width: 1px;
   height: 24px;
   background: #e5e7eb;
   margin: 0 12px;
   flex-shrink: 0;
-}
-
-.toggle-wrapper {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  cursor: pointer;
-  flex-shrink: 0;
-  padding-right: 6px;
-}
-
-.toggle-label {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 13px;
-  color: #6b7280;
-  font-weight: 500;
-  white-space: nowrap;
-}
-
-.toggle-label mat-icon {
-  font-size: 18px;
-  width: 18px;
-  height: 18px;
-  color: #9ca3af;
-}
-
-::ng-deep .mat-mdc-slide-toggle.mat-checked .mdc-switch__track::after {
-  background-color: #2AAE7E !important;
-}
-
-::ng-deep .mat-mdc-slide-toggle.mat-checked .mdc-switch__handle::after {
-  background-color: #ffffff !important;
 }

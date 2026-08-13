@@ -1,0 +1,100 @@
+<div class="page">
+  <div class="page-header">
+    <div class="titulo-con-volver">
+      <app-back-button ruta="/"></app-back-button>
+      <div>
+        <h1>Empleados</h1>
+        <p class="subtitle">Legajo, valor hora y datos de contacto</p>
+      </div>
+    </div>
+    <div class="page-header-top">
+      <a mat-flat-button color="primary" routerLink="nuevo">
+        <mat-icon>add</mat-icon>
+        Nuevo empleado
+      </a>
+    </div>
+  </div>
+
+  <div class="empty-state" *ngIf="!cargando() && !error() && !items().length">
+    <mat-icon>badge</mat-icon>
+    <p>No hay empleados cargados todavía.</p>
+    <a mat-stroked-button routerLink="nuevo">Crear el primero</a>
+  </div>
+
+  <div class="toolbar-lista">
+    <div class="search-wrapper">
+      <mat-icon class="search-icon">search</mat-icon>
+      <input [formControl]="busquedaControl" placeholder="Buscar por nombre o DNI..." class="search-input" />
+      <button *ngIf="busquedaControl.value" mat-icon-button class="clear-btn" (click)="busquedaControl.setValue('')">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+    <div class="divider"></div>
+    <label class="toggle-wrapper">
+      <mat-slide-toggle [checked]="mostrarInactivos()" (change)="toggleMostrarInactivos()"></mat-slide-toggle>
+      <span class="toggle-label">
+        <mat-icon>{{ mostrarInactivos() ? 'visibility' : 'visibility_off' }}</mat-icon>
+        Ver desactivados
+      </span>
+    </label>
+  </div>
+
+  <div class="content-card">
+    <div class="loading-container" *ngIf="cargando()">
+      <mat-spinner diameter="36"></mat-spinner>
+    </div>
+
+    <table mat-table [dataSource]="items()" *ngIf="!cargando() && items().length">
+      <ng-container matColumnDef="nombre">
+        <th mat-header-cell *matHeaderCellDef>Nombre</th>
+        <td mat-cell *matCellDef="let e">{{ e.nombre }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="dni">
+        <th mat-header-cell *matHeaderCellDef>DNI</th>
+        <td mat-cell *matCellDef="let e">{{ e.dni }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="puesto">
+        <th mat-header-cell *matHeaderCellDef>Puesto</th>
+        <td mat-cell *matCellDef="let e">{{ e.puesto || '-' }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="valorHora">
+        <th mat-header-cell *matHeaderCellDef>Valor hora</th>
+        <td mat-cell *matCellDef="let e">{{ e.valorHora | currency:'ARS' }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="estado">
+        <th mat-header-cell *matHeaderCellDef>Estado</th>
+        <td mat-cell *matCellDef="let e">
+          <span class="estado-dot" [class.activo]="e.activo" [class.inactivo]="!e.activo"></span>
+          {{ e.activo ? 'Activo' : 'Inactivo' }}
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="acciones">
+        <th mat-header-cell *matHeaderCellDef></th>
+        <td mat-cell *matCellDef="let e" class="actions-cell">
+          <div class="actions">
+            <a mat-icon-button [routerLink]="[e.id, 'editar']" matTooltip="Editar">
+              <mat-icon>edit</mat-icon>
+            </a>
+            <button mat-icon-button (click)="toggleEstado(e)" [matTooltip]="e.activo ? 'Desactivar' : 'Reactivar'">
+              <mat-icon>{{ e.activo ? 'block' : 'check_circle' }}</mat-icon>
+            </button>
+          </div>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="columnas"></tr>
+      <tr mat-row *matRowDef="let row; columns: columnas;"></tr>
+    </table>
+
+    <div class="empty-state" *ngIf="!cargando() && !items().length">
+      <mat-icon>badge</mat-icon>
+      <p>No hay empleados cargados todavía.</p>
+      <a mat-stroked-button routerLink="nuevo">Crear el primero</a>
+    </div>
+  </div>
+</div>

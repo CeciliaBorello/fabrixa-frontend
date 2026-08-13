@@ -1,0 +1,124 @@
+<div class="page">
+  <div class="page-header">
+    <div class="titulo-con-volver">
+      <app-back-button ruta="/"></app-back-button>
+      <div>
+        <h1>Impuestos</h1>
+        <p class="subtitle">IVA, Aportes, Autónomos, Convenio Multilateral, Ganancias y otras obligaciones</p>
+      </div>
+    </div>
+    <div class="page-header-top">
+      <button mat-flat-button color="primary" (click)="abrirNuevo()">
+        <mat-icon>add</mat-icon>
+        Nuevo impuesto
+      </button>
+    </div>
+  </div>
+
+  <div class="error-banner" *ngIf="error()">{{ error() }}</div>
+
+  <div class="toolbar-lista">
+    <div class="search-wrapper">
+      <mat-icon class="search-icon">search</mat-icon>
+      <input [formControl]="busquedaControl" placeholder="Buscar por nombre..." class="search-input" />
+      <button *ngIf="busquedaControl.value" mat-icon-button class="clear-btn" (click)="busquedaControl.setValue('')">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+    <div class="divider"></div>
+    <mat-select
+      class="filtro-select"
+      placeholder="Todos los estados"
+      [value]="filtroEstado()"
+      (selectionChange)="onFiltroEstadoChange($event.value)">
+      <mat-option [value]="null">Todos los estados</mat-option>
+      <mat-option value="PENDIENTE">Pendiente</mat-option>
+      <mat-option value="PAGADO">Pagado</mat-option>
+      <mat-option value="VENCIDO">Vencido</mat-option>
+    </mat-select>
+  </div>
+
+  <div class="content-card">
+    <div class="loading-container" *ngIf="cargando()">
+      <mat-spinner diameter="36"></mat-spinner>
+    </div>
+
+    <table
+      mat-table
+      [dataSource]="items()"
+      matSort
+      [matSortActive]="sortBy()"
+      [matSortDirection]="sortDir()"
+      (matSortChange)="onSortChange($event)"
+      *ngIf="!cargando() && items().length">
+
+      <ng-container matColumnDef="nombre">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Impuesto</th>
+        <td mat-cell *matCellDef="let i">{{ i.nombre }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="periodo">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Período</th>
+        <td mat-cell *matCellDef="let i">{{ i.periodo }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="monto">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Monto</th>
+        <td mat-cell *matCellDef="let i">{{ i.monto | currency:'ARS' }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="fechaVencimiento">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Vencimiento</th>
+        <td mat-cell *matCellDef="let i">{{ i.fechaVencimiento | date:'dd/MM/yyyy' }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="fechaModificacion">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Última modificación</th>
+        <td mat-cell *matCellDef="let i">{{ i.fechaModificacion | date:'dd/MM/yyyy HH:mm' }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="estado">
+        <th mat-header-cell *matHeaderCellDef>Estado</th>
+        <td mat-cell *matCellDef="let i">
+          <mat-chip [class]="claseEstado(i.estado)">{{ i.estado }}</mat-chip>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="acciones">
+        <th mat-header-cell *matHeaderCellDef></th>
+        <td mat-cell *matCellDef="let i" class="actions-cell">
+          <div class="actions">
+            <button mat-icon-button *ngIf="i.estado !== 'PAGADO'" (click)="editar(i)" matTooltip="Editar">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button mat-icon-button *ngIf="i.estado !== 'PAGADO'" (click)="marcarPagado(i)" matTooltip="Marcar como pagado">
+              <mat-icon>check_circle</mat-icon>
+            </button>
+            <button mat-icon-button disabled *ngIf="i.estado === 'PAGADO'">
+              <mat-icon>remove</mat-icon>
+            </button>
+          </div>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="columnas"></tr>
+      <tr mat-row *matRowDef="let row; columns: columnas;"></tr>
+    </table>
+
+    <mat-paginator
+      *ngIf="totalItems() > 0"
+      [length]="totalItems()"
+      [pageSize]="pageSize()"
+      [pageIndex]="pageIndex()"
+      [pageSizeOptions]="[10, 25, 50]"
+      showFirstLastButtons
+      (page)="onPageChange($event)">
+    </mat-paginator>
+
+    <div class="empty-state" *ngIf="!cargando() && !items().length">
+      <mat-icon>receipt_long</mat-icon>
+      <p>No hay impuestos cargados todavía.</p>
+      <button mat-stroked-button (click)="abrirNuevo()">Crear el primero</button>
+    </div>
+  </div>
+</div>

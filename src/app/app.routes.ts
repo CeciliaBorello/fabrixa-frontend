@@ -22,6 +22,15 @@ import { ComprobantesListComponent } from './features/facturacion/comprobante/co
 import { ComprobanteFormComponent } from './features/facturacion/comprobante/comprobante-form/comprobante-form.component';
 import { ComprobanteDetalleComponent } from './features/facturacion/comprobante/comprobante-detalle/comprobante-detalle.component';
 import { ChequesListComponent } from './features/facturacion/cheque/cheques-list/cheques-list.component';
+import { CuentaCorrienteDetalleComponent } from './features/cuentas-corrientes/cuenta-corriente-detalle/cuenta-corriente-detalle.component';
+import { CuentasContablesListComponent } from './features/contabilidad/cuentas-contables-list/cuentas-contables-list.component';
+import { ImpuestosListComponent } from './features/contabilidad/impuestos-list/impuestos-list.component';
+import { EmpleadosListComponent } from './features/rrhh/empleados-list/empleados-list.component';
+import { EmpleadoFormComponent } from './features/rrhh/empleado-form/empleado-form.component';
+import { RegistroHorasComponent } from './features/rrhh/horas/registro-horas/registro-horas.component';
+import { HorasNoLiquidadasComponent } from './features/rrhh/horas/horas-no-liquidadas/horas-no-liquidadas.component';
+import { LiquidacionesListComponent } from './features/rrhh/liquidaciones/liquidaciones-list/liquidaciones-list.component';
+
 
 
 
@@ -100,6 +109,48 @@ export const routes: Routes = [
     children: [
       { path: '', component: ChequesListComponent }
     ]
+  },
+  
+  {
+    path: 'cuentas-corrientes',
+    canActivate: [authGuard],
+    children: [
+      { path: ':id', component: CuentaCorrienteDetalleComponent }
+    ]
+  },
+
+  {
+    path: 'cuentas-contables',
+    canActivate: [authGuard],
+    children: [{ path: '', component: CuentasContablesListComponent }]
+  },
+  {
+    path: 'impuestos',
+    canActivate: [authGuard],
+    children: [{ path: '', component: ImpuestosListComponent }]
+  },
+
+  {
+    path: 'empleados',
+    canActivate: [authGuard],
+    children: [
+      { path: '', component: EmpleadosListComponent },
+      { path: 'nuevo', component: EmpleadoFormComponent },
+      { path: ':id/editar', component: EmpleadoFormComponent }
+    ]
+  },
+  {
+    path: 'horas',
+    canActivate: [authGuard],
+    children: [
+      { path: '', component: RegistroHorasComponent },
+      { path: 'no-liquidadas', component: HorasNoLiquidadasComponent }
+    ]
+  },
+  {
+    path: 'liquidaciones',
+    canActivate: [authGuard],
+    children: [{ path: '', component: LiquidacionesListComponent }]
   },
 
   { path: '**', redirectTo: '' }

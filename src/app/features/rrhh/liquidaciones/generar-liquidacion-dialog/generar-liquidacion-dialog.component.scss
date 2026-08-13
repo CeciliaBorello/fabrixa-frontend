@@ -1,0 +1,27 @@
+.full-width {
+  width: 100%;
+  margin-bottom: 0.5rem;
+}
+
+mat-dialog-content {
+  min-width: 380px;
+}
+
+.preview {
+  background: #f9fafb;
+  border-radius: 8px;
+  padding: 12px 16px;
+  font-size: 14px;
+  color: #101A2E;
+  margin-top: 0.5rem;
+}
+
+.sin-horas {
+  color: #c0392b;
+}
+
+.error {
+  color: #c0392b;
+  font-size: 0.85rem;
+  margin-top: 0.5rem;
+}

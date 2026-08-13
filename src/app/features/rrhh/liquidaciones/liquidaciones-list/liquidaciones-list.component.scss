@@ -1,0 +1,102 @@
+.page {
+  padding: 2rem;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.page-header {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1.5rem;
+}
+
+.titulo-con-volver {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.page-header h1 {
+  margin: 0;
+  color: #101A2E;
+  font-size: 26px;
+}
+
+.subtitle {
+  margin: 4px 0 0;
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.page-header-top {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1rem;
+}
+
+.error-banner {
+  background: #fdecea;
+  color: #c0392b;
+  padding: 10px 16px;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  font-size: 14px;
+}
+
+.content-card {
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+}
+
+table {
+  width: 100%;
+  table-layout: fixed;
+}
+
+th, td {
+  box-sizing: border-box;
+  padding: 10px 12px !important;
+  font-size: 14px;
+}
+
+.mat-column-empleado { width: 220px; }
+.mat-column-periodo { width: 100px; }
+.mat-column-totalHoras { width: 90px; }
+.mat-column-valorHoraUsado { width: 120px; }
+.mat-column-totalAPagar { width: 140px; }
+.mat-column-fechaGeneracion { width: 160px; }
+
+.total {
+  font-weight: 700;
+  color: #2AAE7E;
+}
+
+.loading-container, .empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 4rem 2rem;
+  color: #6b7280;
+  text-align: center;
+}
+
+.empty-state mat-icon {
+  font-size: 40px;
+  width: 40px;
+  height: 40px;
+  color: #cbd0d6;
+}
+
+
+.chip-por-hora {
+  background-color: #e3f2fd;
+  color: #1565c0;
+}
+.chip-sueldo-fijo {
+  background-color: #f3e5f5;
+  color: #7b1fa2;
+}
