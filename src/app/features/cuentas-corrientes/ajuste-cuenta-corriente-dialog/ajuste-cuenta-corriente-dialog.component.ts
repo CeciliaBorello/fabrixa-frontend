@@ -26,8 +26,13 @@ export interface AjusteDialogData {
       <form [formGroup]="form">
         <div class="tipo-ajuste">
           <mat-radio-group formControlName="sentido">
+<<<<<<< HEAD
             <mat-radio-button value="SUMA">Sumar a favor nuestro</mat-radio-button>
             <mat-radio-button value="RESTA">Restar a favor nuestro</mat-radio-button>
+=======
+            <mat-radio-button value="SUMA">Sumar a favor nuestro (nos deben más)</mat-radio-button>
+            <mat-radio-button value="RESTA">Restar a favor nuestro (les debemos más / condonar deuda)</mat-radio-button>
+>>>>>>> eb52c856e12ddaccc5776f4e0936f35a9af6a0c6
           </mat-radio-group>
         </div>
 
