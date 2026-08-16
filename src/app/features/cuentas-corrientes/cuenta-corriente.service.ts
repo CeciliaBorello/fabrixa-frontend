@@ -3,10 +3,11 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { AjusteCuentaCorrienteRequest, CuentaCorrienteFila, MovimientoCuentaCorriente } from './cuenta-corriente.model';
 import { PageResponse } from '../../shared/page-response.model';
+import { environment } from '../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class CuentaCorrienteService {
-  private baseUrl = 'http://localhost:8080/api/cuentas-corrientes';
+ private baseUrl = `${environment.apiUrl}/api/cuentas-corrientes`;
 
   constructor(private http: HttpClient) {}
 

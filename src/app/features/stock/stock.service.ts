@@ -4,10 +4,11 @@ import { Observable } from 'rxjs';
 import { AjusteRequest, MovimientoResponse } from './stock.model';
 import { PageResponse } from '../../shared/page-response.model';
 import { StockFilaResponse } from './stock.model';
+import { environment } from '../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class StockService {
-  private baseUrl = 'http://localhost:8080/api/stock';
+  private baseUrl = `${environment.apiUrl}/api/stock`;
 
   constructor(private http: HttpClient) {}
 

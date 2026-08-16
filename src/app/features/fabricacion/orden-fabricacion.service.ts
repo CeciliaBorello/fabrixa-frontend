@@ -3,10 +3,11 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { FinalizarRequest, OrdenFabricacionRequest, OrdenFabricacionResponse } from './orden-fabricacion.model';
 import { PageResponse } from '../../shared/page-response.model';
+import { environment } from '../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class OrdenFabricacionService {
-  private baseUrl = 'http://localhost:8080/api/ordenes-fabricacion';
+  private baseUrl = `${environment.apiUrl}/api/ordenes-fabricacion`;
 
   constructor(private http: HttpClient) {}
 

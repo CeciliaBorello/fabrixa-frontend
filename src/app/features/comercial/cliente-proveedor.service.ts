@@ -3,10 +3,11 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { ClienteProveedorRequest, ClienteProveedorResponse } from './cliente-proveedor.model';
 import { PageResponse } from '../../shared/page-response.model';
+import { environment } from '../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class ClienteProveedorService {
-  private baseUrl = 'http://localhost:8080/api/clientes-proveedores';
+  private baseUrl = `${environment.apiUrl}/api/clientes-proveedores`;
 
   constructor(private http: HttpClient) {}
 

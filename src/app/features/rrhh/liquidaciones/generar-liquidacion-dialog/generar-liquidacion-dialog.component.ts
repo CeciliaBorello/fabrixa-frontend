@@ -43,7 +43,9 @@ export class GenerarLiquidacionDialogComponent implements OnInit {
   ) {
     this.form = this.fb.group({
       empleadoId: [null as number | null, Validators.required],
-      periodo: ['', Validators.required],
+      periodo: ['', Validators.required], // etiqueta, ej: "Agosto 2026 - 1ra quincena"
+      fechaDesde: [null as Date | null, Validators.required],
+      fechaHasta: [null as Date | null, Validators.required],
       montoAPagar: [null as number | null]
     });
   }

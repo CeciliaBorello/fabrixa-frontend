@@ -1,11 +1,12 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { NoLiquidadasPorEmpleado, RegistroHorasRequest, RegistroHorasResponse } from './registro-horas.model';
+import { environment } from '../../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class RegistroHorasService {
-  private baseUrl = 'http://localhost:8080/api/registros-horas';
+  private baseUrl = `${environment.apiUrl}/api/registros-horas`;
 
   constructor(private http: HttpClient) {}
 
@@ -15,6 +16,13 @@ export class RegistroHorasService {
 
   porEmpleado(empleadoId: number): Observable<RegistroHorasResponse[]> {
     return this.http.get<RegistroHorasResponse[]>(`${this.baseUrl}/por-empleado/${empleadoId}`);
+  }
+
+  porEmpleadoEnRango(empleadoId: number, fechaDesde: string, fechaHasta: string): Observable<RegistroHorasResponse[]> {
+    const params = new HttpParams()
+      .set('fechaDesde', fechaDesde)
+      .set('fechaHasta', fechaHasta);
+    return this.http.get<RegistroHorasResponse[]>(`${this.baseUrl}/por-empleado/${empleadoId}`, { params });
   }
 
   noLiquidadas(): Observable<NoLiquidadasPorEmpleado[]> {

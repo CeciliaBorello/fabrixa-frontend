@@ -3,10 +3,11 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { EstadoImpuesto, ImpuestoRequest, ImpuestoResponse } from './impuesto.model';
 import { PageResponse } from '../../shared/page-response.model';
+import { environment } from '../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class ImpuestoService {
-  private baseUrl = 'http://localhost:8080/api/impuestos';
+ private baseUrl = `${environment.apiUrl}/api/impuestos`;
 
   constructor(private http: HttpClient) {}
 

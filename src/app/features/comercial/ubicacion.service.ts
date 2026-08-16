@@ -2,10 +2,11 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { CiudadResponse, ProvinciaResponse } from './ubicacion.model';
+import { environment } from '../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class UbicacionService {
-  private baseUrl = 'http://localhost:8080/api/ubicaciones';
+  private baseUrl = `${environment.apiUrl}/api/ubicaciones`;
 
   constructor(private http: HttpClient) {}
 

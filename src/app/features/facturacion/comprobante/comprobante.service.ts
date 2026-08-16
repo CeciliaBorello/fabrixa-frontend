@@ -3,10 +3,11 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { ComprobanteRequest, ComprobanteResponse, DireccionComprobante, EstadoComprobante, TipoComprobante } from './comprobante.model';
 import { PageResponse } from '../../../shared/page-response.model';
+import { environment } from '../../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class ComprobanteService {
-  private baseUrl = 'http://localhost:8080/api/comprobantes';
+ private baseUrl = `${environment.apiUrl}/api/comprobantes`;
 
   constructor(private http: HttpClient) {}
 

@@ -3,10 +3,11 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { FormulaRequest, FormulaResponse } from './formula.model';
 import { PageResponse } from '../../shared/page-response.model';
+import { environment } from '../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class FormulaService {
-  private baseUrl = 'http://localhost:8080/api/formulas';
+  private baseUrl = `${environment.apiUrl}/api/formulas`;
 
   constructor(private http: HttpClient) {}
 

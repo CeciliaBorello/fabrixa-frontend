@@ -3,10 +3,11 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { ChequeResponse, EstadoCheque } from './cheque.model';
 import { PageResponse } from '../../../shared/page-response.model';
+import { environment } from '../../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class ChequeService {
-  private baseUrl = 'http://localhost:8080/api/cheques';
+  private baseUrl = `${environment.apiUrl}/api/cheques`;
 
   constructor(private http: HttpClient) {}
 

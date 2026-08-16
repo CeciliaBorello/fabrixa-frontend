@@ -3,10 +3,11 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { LiquidacionMensualRequest, LiquidacionMensualResponse } from './liquidacion.model';
 import { PageResponse } from '../../../shared/page-response.model';
+import { environment } from '../../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class LiquidacionMensualService {
-  private baseUrl = 'http://localhost:8080/api/liquidaciones';
+  private baseUrl = `${environment.apiUrl}/api/liquidaciones`;
 
   constructor(private http: HttpClient) {}
 
