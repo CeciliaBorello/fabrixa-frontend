@@ -1,0 +1,54 @@
+<h2 mat-dialog-title>Anticipos — {{ data.empleadoNombre }}</h2>
+<div mat-dialog-content>
+  <div class="toolbar">
+    <button mat-stroked-button color="primary" (click)="nuevoAnticipo()">
+      <mat-icon>add</mat-icon>
+      Nuevo anticipo
+    </button>
+  </div>
+
+  <div class="loading-container" *ngIf="cargando()">
+    <mat-spinner diameter="32"></mat-spinner>
+  </div>
+
+  <table mat-table [dataSource]="anticipos()" *ngIf="!cargando() && anticipos().length">
+    <ng-container matColumnDef="fecha">
+      <th mat-header-cell *matHeaderCellDef>Fecha</th>
+      <td mat-cell *matCellDef="let a">{{ a.fecha | date:'dd/MM/yyyy' }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="monto">
+      <th mat-header-cell *matHeaderCellDef>Monto</th>
+      <td mat-cell *matCellDef="let a">{{ a.monto | currency:'ARS' }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="motivo">
+      <th mat-header-cell *matHeaderCellDef>Motivo</th>
+      <td mat-cell *matCellDef="let a">{{ a.motivo || '-' }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="estado">
+      <th mat-header-cell *matHeaderCellDef>Estado</th>
+      <td mat-cell *matCellDef="let a">
+        <span [class.pendiente]="!a.liquidado" [class.liquidado]="a.liquidado">
+          {{ a.liquidado ? 'Descontado' : 'Pendiente' }}
+        </span>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="usuario">
+      <th mat-header-cell *matHeaderCellDef>Registrado por</th>
+      <td mat-cell *matCellDef="let a">{{ a.usuarioNombre }}</td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="columnas"></tr>
+    <tr mat-row *matRowDef="let row; columns: columnas;"></tr>
+  </table>
+
+  <p *ngIf="!cargando() && !anticipos().length" class="empty">
+    Este empleado no tiene anticipos registrados.
+  </p>
+</div>
+<div mat-dialog-actions align="end">
+  <button mat-button (click)="cerrar()">Cerrar</button>
+</div>

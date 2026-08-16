@@ -1,0 +1,58 @@
+::ng-deep .anticipo-list-panel .mdc-dialog__surface {
+  width: 700px;
+  max-width: 700px;
+}
+
+[mat-dialog-content] {
+  overflow-x: hidden; // ya no hace falta scroll interno, el panel mide lo que necesita
+}
+
+::ng-deep .mat-mdc-dialog-title {
+  color: #101A2E;
+}
+
+.toolbar {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 12px;
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  padding: 2rem 0;
+}
+
+table {
+  width: 100%;
+  table-layout: fixed;
+}
+
+th, td {
+  box-sizing: border-box;
+  padding: 10px 12px !important;
+  font-size: 14px;
+}
+
+.mat-column-fecha { width: 110px; }
+.mat-column-monto { width: 120px; }
+.mat-column-motivo { width: 160px; }
+.mat-column-estado { width: 110px; }
+.mat-column-usuario { width: 140px; }
+
+.pendiente {
+  color: #b45309;
+  font-weight: 500;
+}
+
+.liquidado {
+  color: #2AAE7E;
+  font-weight: 500;
+}
+
+.empty {
+  text-align: center;
+  color: #6b7280;
+  padding: 2rem 0;
+  font-size: 14px;
+}

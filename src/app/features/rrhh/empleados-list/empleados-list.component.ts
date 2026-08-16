@@ -14,7 +14,7 @@ import { EmpleadoService } from '../empleado.service';
 import { EmpleadoResponse } from '../empleado.model';
 import { ConfirmDialogComponent } from '../../../shared/confirm-dialog/confirm-dialog.component';
 import { BackButtonComponent } from '../../../shared/back-button/back-button.component';
-
+import { AnticipoListDialogComponent } from '../anticipos/anticipo-list-dialog/anticipo-list-dialog.component';
 @Component({
   selector: 'app-empleados-list',
   standalone: true,
@@ -80,6 +80,13 @@ export class EmpleadosListComponent implements OnInit {
         next: () => this.cargar(),
         error: () => this.error.set('No se pudo cambiar el estado')
       });
+    });
+  }
+
+  verAnticipos(empleado: EmpleadoResponse) {
+    this.dialog.open(AnticipoListDialogComponent, {
+      data: { empleadoId: empleado.id, empleadoNombre: empleado.nombre },
+      panelClass: 'anticipo-list-panel'
     });
   }
 }

@@ -1,6 +1,6 @@
 <h2 mat-dialog-title>Generar liquidación mensual</h2>
 <div mat-dialog-content>
-  <form [formGroup]="form">
+  <form [formGroup]="form" class="form">
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>Empleado</mat-label>
       <mat-select formControlName="empleadoId">
@@ -10,11 +10,38 @@
 
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>Período</mat-label>
-      <input matInput formControlName="periodo" placeholder="Ej: 08/2026" />
+      <input matInput [matDatepicker]="periodoPicker" formControlName="periodoFecha" readonly
+             placeholder="Elegí mes y año" />
+      <mat-datepicker-toggle matIconSuffix [for]="periodoPicker"></mat-datepicker-toggle>
+      <mat-datepicker #periodoPicker
+          startView="multi-year"
+          (yearSelected)="chosenYearHandler($event)"
+          (monthSelected)="chosenMonthHandler($event, periodoPicker)">
+      </mat-datepicker>
+      <mat-error *ngIf="form.get('periodoFecha')?.hasError('required')">Elegí el período</mat-error>
     </mat-form-field>
 
-    <mat-form-field appearance="outline" class="full-width" *ngIf="esSueldoFijo()">
-      <mat-label>Monto a liquidar</mat-label>
+    <ng-container *ngIf="form.get('empleadoId')?.value && !esSueldoFijo()">
+      <mat-form-field appearance="outline" class="half-width">
+        <mat-label>Desde</mat-label>
+        <input matInput [matDatepicker]="pickerDesde" formControlName="fechaDesde" />
+        <mat-datepicker-toggle matIconSuffix [for]="pickerDesde"></mat-datepicker-toggle>
+        <mat-datepicker #pickerDesde></mat-datepicker>
+        <mat-error *ngIf="form.get('fechaDesde')?.hasError('required')">Requerido</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="half-width">
+        <mat-label>Hasta</mat-label>
+        <input matInput [matDatepicker]="pickerHasta" formControlName="fechaHasta"
+               [min]="form.get('fechaDesde')?.value" />
+        <mat-datepicker-toggle matIconSuffix [for]="pickerHasta"></mat-datepicker-toggle>
+        <mat-datepicker #pickerHasta></mat-datepicker>
+        <mat-error *ngIf="form.get('fechaHasta')?.hasError('required')">Requerido</mat-error>
+      </mat-form-field>
+    </ng-container>
+
+    <mat-form-field appearance="outline" class="full-width" *ngIf="form.get('empleadoId')?.value">
+      <mat-label>Total a pagar</mat-label>
       <input matInput type="number" formControlName="montoAPagar" />
       <mat-error *ngIf="form.get('montoAPagar')?.hasError('required')">Ingresá un monto</mat-error>
     </mat-form-field>
@@ -22,20 +49,30 @@
 
   <div class="preview" *ngIf="form.get('empleadoId')?.value">
     <ng-container *ngIf="esSueldoFijo(); else previewPorHora">
-      <span class="hint">
-        Precargado con el sueldo fijo del empleado. Editable por si corresponde
-        un ajuste este mes (bono, descuento, falta).
-      </span>
+      <span class="hint">Sueldo fijo del empleado: <strong>{{ totalCalculado() | number:'1.2-2' }}</strong></span>
     </ng-container>
     <ng-template #previewPorHora>
-      <span *ngIf="cargandoPreview()">Calculando horas pendientes...</span>
-      <span *ngIf="!cargandoPreview() && horasPendientes() > 0">
-        Este empleado tiene <strong>{{ horasPendientes() }} horas</strong> pendientes de liquidar.
+      <span *ngIf="!form.get('fechaDesde')?.value || !form.get('fechaHasta')?.value" class="hint">
+        Elegí el rango de fechas para ver las horas pendientes.
       </span>
-      <span *ngIf="!cargandoPreview() && horasPendientes() === 0" class="sin-horas">
-        Este empleado no tiene horas pendientes. No se puede generar una liquidación vacía.
+      <span *ngIf="form.get('fechaDesde')?.value && form.get('fechaHasta')?.value && cargandoPreview()">
+        Calculando horas pendientes...
       </span>
+      <ng-container *ngIf="form.get('fechaDesde')?.value && form.get('fechaHasta')?.value && !cargandoPreview()">
+        <span *ngIf="horasPendientes() > 0">
+          <strong>{{ horasPendientes() }} horas</strong> pendientes ×
+          <strong>{{ empleadoSeleccionado()?.valorHora | number:'1.2-2' }}</strong> (valor hora) =
+          <strong>{{ totalCalculado() | number:'1.2-2' }}</strong>
+        </span>
+        <span *ngIf="horasPendientes() === 0" class="sin-horas">
+          No hay horas pendientes en el rango elegido. No se puede generar una liquidación vacía.
+        </span>
+      </ng-container>
     </ng-template>
+
+    <span *ngIf="anticiposPendientes() > 0" class="hint anticipo">
+      Menos anticipos pendientes: <strong>-{{ anticiposPendientes() | number:'1.2-2' }}</strong>
+    </span>
   </div>
 
   <p class="error" *ngIf="error()">{{ error() }}</p>

@@ -1,0 +1,25 @@
+[mat-dialog-content] {
+  min-width: 380px;
+}
+
+.form-anticipo {
+  padding: 5px;
+}
+
+.full-width {
+  width: 100%;
+  margin-bottom: 12px;
+}
+
+::ng-deep .mat-mdc-dialog-title {
+  color: #101A2E;
+}
+
+.error {
+  background: #fdecea;
+  color: #c0392b;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  margin-top: 8px;
+}

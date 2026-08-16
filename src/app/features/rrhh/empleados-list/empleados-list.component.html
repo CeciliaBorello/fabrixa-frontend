@@ -77,6 +77,9 @@
         <th mat-header-cell *matHeaderCellDef></th>
         <td mat-cell *matCellDef="let e" class="actions-cell">
           <div class="actions">
+            <button mat-icon-button (click)="verAnticipos(e)" matTooltip="Anticipos">
+              <mat-icon>payments</mat-icon>
+            </button>
             <a mat-icon-button [routerLink]="[e.id, 'editar']" matTooltip="Editar">
               <mat-icon>edit</mat-icon>
             </a>
