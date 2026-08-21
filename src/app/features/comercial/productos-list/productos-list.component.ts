@@ -172,12 +172,6 @@ export class ProductosListComponent implements OnInit {
     this.cargarInsumos();
   }
 
-  toggleMostrarInactivosTerminados() {
-    this.mostrarInactivosTerminados.update((v) => !v);
-    this.pageIndexTerminados.set(0);
-    this.cargarTerminados();
-  }
-
   toggleMostrarInactivosInsumos() {
     this.mostrarInactivosInsumos.update((v) => !v);
     this.pageIndexInsumos.set(0);
@@ -213,14 +207,17 @@ export class ProductosListComponent implements OnInit {
     expandidas.add(producto.id);
     this.filasExpandidas.set(expandidas);
 
-    // si ya la cacheamos antes, no volvemos a pedirla al backend
     if (this.presentacionesPorProducto()[producto.id]) return;
 
     const cargando = new Set(this.cargandoPresentaciones());
     cargando.add(producto.id);
     this.cargandoPresentaciones.set(cargando);
 
-    this.service.listarPresentaciones(producto.id).subscribe({
+    // Siempre traemos TODAS las presentaciones (activas e inactivas), sin
+    // importar el toggle "Ver desactivados" de arriba -- ese toggle filtra
+    // el estado del producto BASE, no tiene relación con sus presentaciones.
+    // Cada presentación ya muestra su propio estado en la columna "Estado".
+    this.service.listarPresentaciones(producto.id, true).subscribe({
       next: (data) => {
         this.presentacionesPorProducto.update((mapa) => ({ ...mapa, [producto.id]: data }));
         const c = new Set(this.cargandoPresentaciones());
@@ -235,21 +232,39 @@ export class ProductosListComponent implements OnInit {
     });
   }
 
+  toggleMostrarInactivosTerminados() {
+    this.mostrarInactivosTerminados.update((v) => !v);
+    this.pageIndexTerminados.set(0);
+    this.cargarTerminados();
+  }
+
   toggleEstado(item: ProductoResponse) {
+    if (!item.productoBaseId) {
+      this.service.contarPresentaciones(item.id, item.activo).subscribe((cantidad) => {
+        this.abrirConfirmacionEstado(item, cantidad);
+      });
+    } else {
+      this.abrirConfirmacionEstado(item, 0);
+    }
+  }
+
+  private abrirConfirmacionEstado(item: ProductoResponse, cantidadPresentaciones: number) {
+    const tienePresentaciones = cantidadPresentaciones > 0;
+
+    const titulo = item.activo ? 'Desactivar producto' : 'Reactivar producto';
+    const textoConfirmar = item.activo ? 'Desactivar' : 'Reactivar';
+
+    let mensaje: string;
+    if (!tienePresentaciones) {
+      mensaje = item.activo ? `¿Seguro que querés desactivar ${item.nombre}?` : `¿Reactivar ${item.nombre}?`;
+    } else if (item.activo) {
+      mensaje = `${item.nombre} tiene ${cantidadPresentaciones} presentación(es) asociada(s). Al desactivarlo, esas presentaciones también van a quedar desactivadas. ¿Confirmás?`;
+    } else {
+      mensaje = `${item.nombre} tiene ${cantidadPresentaciones} presentación(es) asociada(s). Al reactivarlo, esas presentaciones también se van a reactivar. ¿Confirmás?`;
+    }
+
     const ref = this.dialog.open(ConfirmDialogComponent, {
-      data: item.activo
-        ? {
-            titulo: 'Desactivar producto',
-            mensaje: `¿Seguro que querés desactivar ${item.nombre}?`,
-            textoConfirmar: 'Desactivar',
-            peligroso: true
-          }
-        : {
-            titulo: 'Reactivar producto',
-            mensaje: `¿Reactivar ${item.nombre}?`,
-            textoConfirmar: 'Reactivar',
-            peligroso: false
-          }
+      data: { titulo, mensaje, textoConfirmar, peligroso: item.activo }
     });
 
     ref.afterClosed().subscribe((confirmado) => {
