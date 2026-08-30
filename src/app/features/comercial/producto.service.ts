@@ -44,15 +44,15 @@ export class ProductoService {
     return this.http.get<ProductoResponse[]>(`${this.baseUrl}/base`);
   }
 
-  listarPresentaciones(id: number, incluirInactivos: boolean = false): Observable<ProductoResponse[]> {
-  return this.http.get<ProductoResponse[]>(`${this.baseUrl}/${id}/presentaciones`, {
-    params: { incluirInactivos }
-  });
-}
+  contarPresentaciones(id: number, activo: boolean): Observable<number> {
+    return this.http.get<number>(`${this.baseUrl}/${id}/presentaciones/count`, {
+      params: { activo }
+    });
+  }
 
-contarPresentaciones(id: number, activo: boolean): Observable<number> {
-  return this.http.get<number>(`${this.baseUrl}/${id}/presentaciones/count`, {
-    params: { activo }
-  });
-}
+  listarPresentaciones(id: number, mostrarInactivos: boolean = false): Observable<ProductoResponse[]> {
+    return this.http.get<ProductoResponse[]>(`${this.baseUrl}/${id}/presentaciones`, {
+      params: { mostrarInactivos }
+    });
+  }
 }

@@ -217,7 +217,7 @@ export class ProductosListComponent implements OnInit {
     // importar el toggle "Ver desactivados" de arriba -- ese toggle filtra
     // el estado del producto BASE, no tiene relación con sus presentaciones.
     // Cada presentación ya muestra su propio estado en la columna "Estado".
-    this.service.listarPresentaciones(producto.id, true).subscribe({
+    this.service.listarPresentaciones(producto.id, this.mostrarInactivosTerminados()).subscribe({
       next: (data) => {
         this.presentacionesPorProducto.update((mapa) => ({ ...mapa, [producto.id]: data }));
         const c = new Set(this.cargandoPresentaciones());
@@ -235,6 +235,11 @@ export class ProductosListComponent implements OnInit {
   toggleMostrarInactivosTerminados() {
     this.mostrarInactivosTerminados.update((v) => !v);
     this.pageIndexTerminados.set(0);
+    // El cache de presentaciones queda atado solo al id del producto, sin
+    // distinguir bajo qué vista (activos/inactivos) se pidió -- si no lo
+    // invalidamos acá, expandir el mismo producto en la vista opuesta trae
+    // los datos viejos en vez de volver a pedirlos.
+    this.presentacionesPorProducto.set({});
     this.cargarTerminados();
   }
 
@@ -314,4 +319,6 @@ export class ProductosListComponent implements OnInit {
     };
     return categoria ? (mapa[categoria] ?? categoria) : '-';
   }
+
+  
 }
