@@ -1,0 +1,33 @@
+.error-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: #fdecea;
+  color: #c0392b;
+  padding: 10px 8px 10px 16px;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  font-size: 14px;
+}
+
+.error-texto {
+  flex: 1;
+}
+
+.error-cerrar {
+  width: 32px;
+  height: 32px;
+  line-height: 32px;
+  flex-shrink: 0;
+  color: #c0392b;
+}
+
+.error-cerrar mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

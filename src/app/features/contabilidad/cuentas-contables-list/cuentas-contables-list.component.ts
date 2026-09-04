@@ -14,13 +14,14 @@ import { CuentaContableResponse } from '../cuenta-contable.model';
 import { CuentaContableDialogComponent } from '../cuenta-contable-dialog/cuenta-contable-dialog.component';
 import { ConfirmDialogComponent } from '../../../shared/confirm-dialog/confirm-dialog.component';
 import { BackButtonComponent } from '../../../shared/back-button/back-button.component';
+import { ErrorBannerComponent } from '../../../shared/error-banner/error-banner.component';
 
 @Component({
   selector: 'app-cuentas-contables-list',
   standalone: true,
   imports: [
     CommonModule, ReactiveFormsModule, MatTableModule, MatButtonModule, MatIconModule,
-    MatProgressSpinnerModule, MatTooltipModule, MatSlideToggleModule, MatDialogModule, BackButtonComponent
+    MatProgressSpinnerModule, MatTooltipModule, MatSlideToggleModule, MatDialogModule, BackButtonComponent, ErrorBannerComponent
   ],
   templateUrl: './cuentas-contables-list.component.html',
   styleUrl: './cuentas-contables-list.component.scss'

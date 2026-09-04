@@ -14,13 +14,14 @@ import { ChequeService } from '../cheque.service';
 import { ChequeResponse, EstadoCheque } from '../cheque.model';
 import { ConfirmDialogComponent } from '../../../../shared/confirm-dialog/confirm-dialog.component';
 import { BackButtonComponent } from '../../../../shared/back-button/back-button.component';
+import { ErrorBannerComponent } from '../../../../shared/error-banner/error-banner.component';
 
 @Component({
   selector: 'app-cheques-list',
   standalone: true,
   imports: [
     CommonModule, ReactiveFormsModule, MatTableModule, MatTabsModule, MatPaginatorModule,
-    MatButtonModule, MatIconModule, MatProgressSpinnerModule, MatTooltipModule, MatDialogModule, BackButtonComponent
+    MatButtonModule, MatIconModule, MatProgressSpinnerModule, MatTooltipModule, MatDialogModule, BackButtonComponent, ErrorBannerComponent
   ],
   templateUrl: './cheques-list.component.html',
   styleUrl: './cheques-list.component.scss'

@@ -10,11 +10,12 @@ import { MovimientoCuentaCorriente } from '../cuenta-corriente.model';
 import { ClienteProveedorService } from '../../comercial/cliente-proveedor.service';
 import { AjusteCuentaCorrienteDialogComponent } from '../ajuste-cuenta-corriente-dialog/ajuste-cuenta-corriente-dialog.component';
 import { BackButtonComponent } from '../../../shared/back-button/back-button.component';
+import { ErrorBannerComponent } from '../../../shared/error-banner/error-banner.component';
 
 @Component({
   selector: 'app-cuenta-corriente-detalle',
   standalone: true,
-  imports: [CommonModule, RouterLink, MatIconModule, MatButtonModule, MatProgressSpinnerModule, MatDialogModule, BackButtonComponent],
+  imports: [CommonModule, RouterLink, MatIconModule, MatButtonModule, MatProgressSpinnerModule, MatDialogModule, BackButtonComponent, ErrorBannerComponent],
   templateUrl: './cuenta-corriente-detalle.component.html',
   styleUrl: './cuenta-corriente-detalle.component.scss'
 })

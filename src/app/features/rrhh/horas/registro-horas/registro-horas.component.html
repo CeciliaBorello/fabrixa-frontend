@@ -9,7 +9,7 @@
     </div>
   </div>
 
-  <div class="error-banner" *ngIf="error()">{{ error() }}</div>
+  <app-error-banner [mensaje]="error()" (cerrar)="error.set('')"></app-error-banner>
 
   <div class="form-card">
     <form [formGroup]="form" (ngSubmit)="guardar()" class="form-row">

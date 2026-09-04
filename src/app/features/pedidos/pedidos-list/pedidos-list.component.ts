@@ -18,6 +18,7 @@ import { PedidoService } from '../pedido.service';
 import { PedidoResponse } from '../pedido.model';
 import { ConfirmDialogComponent } from '../../../shared/confirm-dialog/confirm-dialog.component';
 import { BackButtonComponent } from '../../../shared/back-button/back-button.component';
+import { ErrorBannerComponent } from '../../../shared/error-banner/error-banner.component';
 
 @Component({
   selector: 'app-pedidos-list',
@@ -25,7 +26,7 @@ import { BackButtonComponent } from '../../../shared/back-button/back-button.com
   imports: [
     CommonModule, RouterLink, ReactiveFormsModule, MatTableModule, MatSortModule, MatPaginatorModule,
     MatButtonModule, MatIconModule, MatChipsModule, MatProgressSpinnerModule, MatTooltipModule,
-    MatSlideToggleModule, MatDialogModule, BackButtonComponent
+    MatSlideToggleModule, MatDialogModule, BackButtonComponent, ErrorBannerComponent
   ],
   templateUrl: './pedidos-list.component.html',
   styleUrl: './pedidos-list.component.scss',

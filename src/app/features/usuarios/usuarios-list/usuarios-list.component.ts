@@ -19,6 +19,9 @@ import { AuthService } from '../../../core/auth/auth.service';
 import { BackButtonComponent } from '../../../shared/back-button/back-button.component';
 import { debounceTime, filter as rxFilter } from 'rxjs';import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { ConfirmDialogComponent } from '../../../shared/confirm-dialog/confirm-dialog.component';
+import { ErrorBannerComponent } from '../../../shared/error-banner/error-banner.component';
+
+
 
 @Component({
   selector: 'app-usuarios-list',
@@ -26,7 +29,7 @@ import { ConfirmDialogComponent } from '../../../shared/confirm-dialog/confirm-d
   imports: [
     CommonModule, RouterLink, ReactiveFormsModule, MatTableModule, MatSortModule, MatPaginatorModule,
     MatButtonModule, MatIconModule, MatChipsModule, MatProgressSpinnerModule, MatTooltipModule,
-    MatFormFieldModule, MatInputModule, MatSlideToggleModule, BackButtonComponent
+    MatFormFieldModule, MatInputModule, MatSlideToggleModule, BackButtonComponent, MatDialogModule, ErrorBannerComponent
   ],
   templateUrl: './usuarios-list.component.html',
   styleUrl: './usuarios-list.component.scss'

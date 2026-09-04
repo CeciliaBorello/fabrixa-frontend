@@ -17,13 +17,14 @@ import { ComprobanteService } from '../comprobante.service';
 import { ComprobanteResponse, EstadoComprobante, TipoComprobante } from '../comprobante.model';
 import { ConfirmDialogComponent } from '../../../../shared/confirm-dialog/confirm-dialog.component';
 import { BackButtonComponent } from '../../../../shared/back-button/back-button.component';
+import { ErrorBannerComponent } from '../../../../shared/error-banner/error-banner.component';
 
 @Component({
   selector: 'app-comprobantes-list',
   standalone: true,
   imports: [
     CommonModule, RouterLink, ReactiveFormsModule, MatTableModule, MatSortModule, MatSelectModule, MatPaginatorModule,
-    MatButtonModule, MatIconModule, MatChipsModule, MatProgressSpinnerModule, MatTooltipModule, MatDialogModule, BackButtonComponent
+    MatButtonModule, MatIconModule, MatChipsModule, MatProgressSpinnerModule, MatTooltipModule, MatDialogModule, BackButtonComponent, ErrorBannerComponent
   ],
   templateUrl: './comprobantes-list.component.html',
   styleUrl: './comprobantes-list.component.scss'

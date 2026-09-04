@@ -19,6 +19,7 @@ import { ConfirmDialogComponent } from '../../../shared/confirm-dialog/confirm-d
 import { BackButtonComponent } from '../../../shared/back-button/back-button.component';
 import { Router } from '@angular/router';
 import { CuentaCorrienteService } from '../../cuentas-corrientes/cuenta-corriente.service';
+import { ErrorBannerComponent } from '../../../shared/error-banner/error-banner.component';
 
 @Component({
   selector: 'app-clientes-list',
@@ -26,7 +27,7 @@ import { CuentaCorrienteService } from '../../cuentas-corrientes/cuenta-corrient
   imports: [
     CommonModule, RouterLink, ReactiveFormsModule, MatTableModule, MatSortModule, MatPaginatorModule,
     MatButtonModule, MatIconModule, MatChipsModule, MatProgressSpinnerModule, MatTooltipModule,
-    MatSlideToggleModule, MatDialogModule, BackButtonComponent
+    MatSlideToggleModule, MatDialogModule, BackButtonComponent, ErrorBannerComponent
   ],
   templateUrl: './clientes-list.component.html',
   styleUrl: './clientes-list.component.scss'

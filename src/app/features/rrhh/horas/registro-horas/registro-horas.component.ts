@@ -18,6 +18,7 @@ import { EmpleadoResponse, TipoRemuneracion } from '../../empleado.model';
 import { ConfirmDialogComponent } from '../../../../shared/confirm-dialog/confirm-dialog.component';
 import { BackButtonComponent } from '../../../../shared/back-button/back-button.component';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { ErrorBannerComponent } from '../../../../shared/error-banner/error-banner.component';
 
 @Component({
   selector: 'app-registro-horas',
@@ -25,7 +26,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
   imports: [
     CommonModule, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatSelectModule,
     MatButtonModule, MatIconModule, MatDatepickerModule, MatNativeDateModule, MatTableModule,
-    MatTooltipModule, MatDialogModule, BackButtonComponent, MatProgressSpinnerModule
+    MatTooltipModule, MatDialogModule, BackButtonComponent, MatProgressSpinnerModule, ErrorBannerComponent
   ],
   providers: [provideNativeDateAdapter()],
   templateUrl: './registro-horas.component.html',

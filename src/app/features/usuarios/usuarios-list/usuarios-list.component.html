@@ -21,7 +21,7 @@
   </div>
 
   <ng-container *ngIf="!sinPermiso()">
-    <div class="error-banner" *ngIf="error()">{{ error() }}</div>
+    <app-error-banner [mensaje]="error()" (cerrar)="error.set('')"></app-error-banner>
     
   <div class="toolbar-lista">
     <div class="search-wrapper">

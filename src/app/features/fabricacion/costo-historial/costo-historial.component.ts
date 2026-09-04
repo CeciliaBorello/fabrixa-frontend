@@ -7,11 +7,12 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { OrdenFabricacionService } from '../orden-fabricacion.service';
 import { OrdenFabricacionResponse } from '../orden-fabricacion.model';
 import { BackButtonComponent } from '../../../shared/back-button/back-button.component';
+import { ErrorBannerComponent } from '../../../shared/error-banner/error-banner.component';
 
 @Component({
   selector: 'app-costo-historial',
   standalone: true,
-  imports: [CommonModule, MatTableModule, MatIconModule, MatProgressSpinnerModule, BackButtonComponent],
+  imports: [CommonModule, MatTableModule, MatIconModule, MatProgressSpinnerModule, BackButtonComponent, ErrorBannerComponent],
   templateUrl: './costo-historial.component.html',
   styleUrl: './costo-historial.component.scss'
 })

@@ -6,11 +6,12 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { RegistroHorasService } from '../registro-horas.service';
 import { NoLiquidadasPorEmpleado } from '../registro-horas.model';
 import { BackButtonComponent } from '../../../../shared/back-button/back-button.component';
+import { ErrorBannerComponent } from '../../../../shared/error-banner/error-banner.component';
 
 @Component({
   selector: 'app-horas-no-liquidadas',
   standalone: true,
-  imports: [CommonModule, MatTableModule, MatIconModule, MatProgressSpinnerModule, BackButtonComponent],
+  imports: [CommonModule, MatTableModule, MatIconModule, MatProgressSpinnerModule, BackButtonComponent, ErrorBannerComponent],
   templateUrl: './horas-no-liquidadas.component.html',
   styleUrl: './horas-no-liquidadas.component.scss'
 })

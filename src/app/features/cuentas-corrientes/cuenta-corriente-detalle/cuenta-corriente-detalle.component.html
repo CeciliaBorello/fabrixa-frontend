@@ -15,7 +15,7 @@
     </div>
   </div>
 
-  <div class="error-banner" *ngIf="error()">{{ error() }}</div>
+  <app-error-banner [mensaje]="error()" (cerrar)="error.set('')"></app-error-banner>
 
   <div class="saldo-card" [class]="claseSaldo(saldoActual())">
     <span class="label">Saldo actual</span>

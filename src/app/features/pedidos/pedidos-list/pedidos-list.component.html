@@ -15,7 +15,7 @@
     </div>
   </div>
 
-  <div class="error-banner" *ngIf="error()">{{ error() }}</div>
+  <app-error-banner [mensaje]="error()" (cerrar)="error.set('')"></app-error-banner>
 
   <div class="toolbar-lista">
     <div class="search-wrapper">
@@ -40,15 +40,16 @@
       <mat-spinner diameter="36"></mat-spinner>
     </div>
 
-    <table
-      mat-table
-      multiTemplateDataRows
-      [dataSource]="items()"
-      matSort
-      [matSortActive]="sortBy()"
-      [matSortDirection]="sortDir()"
-      (matSortChange)="onSortChange($event)"
-      *ngIf="!cargando() && items().length">
+  <table
+    mat-table
+    multiTemplateDataRows
+    [dataSource]="items()"
+    matSort
+    matSortDisableClear
+    [matSortActive]="sortBy()"
+    [matSortDirection]="sortDir()"
+    (matSortChange)="onSortChange($event)"
+    *ngIf="!cargando() && items().length">
 
       <ng-container matColumnDef="id">
         <th mat-header-cell *matHeaderCellDef>#</th>

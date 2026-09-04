@@ -21,6 +21,7 @@ import { PrecioDialogComponent } from '../precio-dialog/precio-dialog.component'
 import { ConfirmDialogComponent } from '../../../shared/confirm-dialog/confirm-dialog.component';
 import { BackButtonComponent } from '../../../shared/back-button/back-button.component';
 import { OrdenFabricacionService } from '../../fabricacion/orden-fabricacion.service';
+import { ErrorBannerComponent } from '../../../shared/error-banner/error-banner.component';
 
 @Component({
   selector: 'app-productos-list',
@@ -28,7 +29,7 @@ import { OrdenFabricacionService } from '../../fabricacion/orden-fabricacion.ser
   imports: [
     CommonModule, RouterLink, ReactiveFormsModule, MatTabsModule, MatTableModule, MatSortModule,
     MatPaginatorModule, MatButtonModule, MatIconModule, MatProgressSpinnerModule, MatTooltipModule,
-    MatSlideToggleModule, MatDialogModule, BackButtonComponent
+    MatSlideToggleModule, MatDialogModule, BackButtonComponent, ErrorBannerComponent
   ],
   templateUrl: './productos-list.component.html',
   styleUrl: './productos-list.component.scss',

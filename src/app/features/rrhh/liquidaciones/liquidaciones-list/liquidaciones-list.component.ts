@@ -14,6 +14,7 @@ import { LiquidacionMensualResponse } from '../liquidacion.model';
 import { TipoRemuneracion } from '../../empleado.model';
 import { GenerarLiquidacionDialogComponent } from '../generar-liquidacion-dialog/generar-liquidacion-dialog.component';
 import { BackButtonComponent } from '../../../../shared/back-button/back-button.component';
+import { ErrorBannerComponent } from '../../../../shared/error-banner/error-banner.component';
 
 @Component({
   selector: 'app-liquidaciones-list',
@@ -21,7 +22,7 @@ import { BackButtonComponent } from '../../../../shared/back-button/back-button.
   imports: [
     CommonModule, ReactiveFormsModule, MatTableModule, MatPaginatorModule,
     MatButtonModule, MatIconModule, MatProgressSpinnerModule, MatChipsModule,
-    MatDialogModule, BackButtonComponent
+    MatDialogModule, BackButtonComponent, ErrorBannerComponent
   ],
   templateUrl: './liquidaciones-list.component.html',
   styleUrl: './liquidaciones-list.component.scss'

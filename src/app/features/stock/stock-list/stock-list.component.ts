@@ -17,13 +17,14 @@ import { StockService } from '../stock.service';
 import { StockFilaResponse } from '../stock.model';
 import { AjusteDialogComponent } from '../ajuste-dialog/ajuste-dialog.component';
 import { BackButtonComponent } from '../../../shared/back-button/back-button.component';
+import { ErrorBannerComponent } from '../../../shared/error-banner/error-banner.component';
 
 @Component({
   selector: 'app-stock-list',
   standalone: true,
   imports: [
     CommonModule, ReactiveFormsModule, MatTableModule, MatTabsModule, MatSortModule, MatPaginatorModule,
-    MatButtonModule, MatIconModule, MatProgressSpinnerModule, MatTooltipModule, MatDialogModule, BackButtonComponent
+    MatButtonModule, MatIconModule, MatProgressSpinnerModule, MatTooltipModule, MatDialogModule, BackButtonComponent, ErrorBannerComponent
   ],
   templateUrl: './stock-list.component.html',
   styleUrl: './stock-list.component.scss',

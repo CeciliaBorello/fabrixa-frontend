@@ -1,0 +1,6 @@
+<div class="error-banner" *ngIf="mensaje">
+  <span class="error-texto">{{ mensaje }}</span>
+  <button mat-icon-button class="error-cerrar" (click)="cerrar.emit()" matTooltip="Cerrar" aria-label="Cerrar aviso">
+    <mat-icon>close</mat-icon>
+  </button>
+</div>

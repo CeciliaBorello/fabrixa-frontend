@@ -18,6 +18,7 @@ import { FormulaService } from '../formula.service';
 import { FormulaResponse } from '../formula.model';
 import { ConfirmDialogComponent } from '../../../shared/confirm-dialog/confirm-dialog.component';
 import { BackButtonComponent } from '../../../shared/back-button/back-button.component';
+import { ErrorBannerComponent } from '../../../shared/error-banner/error-banner.component';
 
 @Component({
   selector: 'app-formulas-list',
@@ -25,7 +26,7 @@ import { BackButtonComponent } from '../../../shared/back-button/back-button.com
   imports: [
     CommonModule, RouterLink, ReactiveFormsModule, MatTableModule, MatSortModule, MatPaginatorModule,
     MatButtonModule, MatIconModule, MatChipsModule, MatProgressSpinnerModule, MatTooltipModule,
-    MatSlideToggleModule, MatDialogModule, BackButtonComponent
+    MatSlideToggleModule, MatDialogModule, BackButtonComponent, ErrorBannerComponent
   ],
   templateUrl: './formulas-list.component.html',
   styleUrl: './formulas-list.component.scss',

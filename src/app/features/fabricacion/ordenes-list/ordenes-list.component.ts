@@ -18,6 +18,7 @@ import { OrdenFabricacionResponse } from '../orden-fabricacion.model';
 import { ConfirmDialogComponent } from '../../../shared/confirm-dialog/confirm-dialog.component';
 import { FinalizarDialogComponent } from '../finalizar-dialog/finalizar-dialog.component';
 import { BackButtonComponent } from '../../../shared/back-button/back-button.component';
+import { ErrorBannerComponent } from '../../../shared/error-banner/error-banner.component';
 
 @Component({
   selector: 'app-ordenes-list',
@@ -25,7 +26,7 @@ import { BackButtonComponent } from '../../../shared/back-button/back-button.com
   imports: [
     CommonModule, RouterLink, ReactiveFormsModule, MatTableModule, MatSortModule, MatPaginatorModule,
     MatButtonModule, MatIconModule, MatChipsModule, MatProgressSpinnerModule, MatTooltipModule,
-    MatSlideToggleModule, MatDialogModule, BackButtonComponent
+    MatSlideToggleModule, MatDialogModule, BackButtonComponent, ErrorBannerComponent
   ],
   templateUrl: './ordenes-list.component.html',
   styleUrl: './ordenes-list.component.scss'
@@ -112,9 +113,21 @@ export class OrdenesListComponent implements OnInit {
   }
 
   iniciar(orden: OrdenFabricacionResponse) {
-    this.service.iniciar(orden.id).subscribe({
-      next: () => this.cargar(),
-      error: (err) => this.error.set(err.error ?? 'No se pudo iniciar la producción (¿hay stock suficiente de los insumos?)')
+    const ref = this.dialog.open(ConfirmDialogComponent, {
+      data: {
+        titulo: 'Iniciar producción',
+        mensaje: `¿Confirmás que arranca la producción de la orden #${orden.id} de ${orden.productoNombre}? Se va a descontar el stock de los insumos según la fórmula.`,
+        textoConfirmar: 'Iniciar',
+        peligroso: false
+      }
+    });
+    ref.afterClosed().subscribe((confirmado) => {
+      if (confirmado) {
+        this.service.iniciar(orden.id).subscribe({
+          next: () => this.cargar(),
+          error: (err) => this.error.set(err.error ?? 'No se pudo iniciar la producción (¿hay stock suficiente de los insumos?)')
+        });
+      }
     });
   }
 

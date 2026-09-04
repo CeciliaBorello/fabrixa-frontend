@@ -15,10 +15,7 @@
     </div>
   </div>
 
-  <div class="error-banner" *ngIf="error()">
-    <mat-icon>error_outline</mat-icon>
-    {{ error() }}
-  </div>
+  <app-error-banner [mensaje]="error()" (cerrar)="error.set('')"></app-error-banner>
 
   <div class="toolbar-lista">
     <div class="search-wrapper">

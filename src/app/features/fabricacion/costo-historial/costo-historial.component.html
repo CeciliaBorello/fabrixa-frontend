@@ -9,7 +9,7 @@
     </div>
   </div>
 
-  <div class="error-banner" *ngIf="error()">{{ error() }}</div>
+  <app-error-banner [mensaje]="error()" (cerrar)="error.set('')"></app-error-banner>
 
   <div class="costo-actual-card" *ngIf="costoMasReciente() != null">
     <span class="label">Costo unitario más reciente</span>
